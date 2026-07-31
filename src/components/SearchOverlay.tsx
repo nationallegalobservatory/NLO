@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useChat } from '@ai-sdk/react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { searchLocalFirst, trackSearchQueryLocalFirst } from '@/lib/api/offlineActions';
 
 interface SearchResult {
   slug: string;
@@ -17,6 +18,7 @@ interface SearchResult {
   authorName: string;
   category: string;
   excerpt?: string;
+  url?: string;
 }
 
 
@@ -140,6 +142,18 @@ export default function SearchOverlay({
     setIsLoading(true);
 
     try {
+      const localResults = await searchLocalFirst(searchQuery);
+      if (latestQueryRef.current !== searchQuery) {
+        return;
+      }
+
+      if (localResults.length > 0 || !navigator.onLine) {
+        setResults(localResults);
+        setSelectedIndex(-1);
+        setErrorMsg(null);
+        return;
+      }
+
       const res = await fetch(
         `/api/search?q=${encodeURIComponent(searchQuery)}`,
         signal ? { signal } : undefined
@@ -162,7 +176,14 @@ export default function SearchOverlay({
         return;
       }
       console.error('Search error:', err);
-      setErrorMsg('Failed to connect to the search service.');
+      const localResults = await searchLocalFirst(searchQuery);
+      if (localResults.length > 0) {
+        setResults(localResults);
+        setSelectedIndex(-1);
+        setErrorMsg(null);
+      } else {
+        setErrorMsg('Offline search index is empty. Open the archive once while online.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -224,6 +245,11 @@ export default function SearchOverlay({
 
   const toggleAiMode = async () => {
     const newMode = !isAiMode;
+    if (newMode && !navigator.onLine) {
+      setErrorMsg('AI search is unavailable offline. Local archive search is ready.');
+      return;
+    }
+
     setIsAiMode(newMode);
     
     const trimmedQuery = query.trim();
@@ -265,6 +291,10 @@ export default function SearchOverlay({
   };
 
   const getArticleUrl = (result: SearchResult, withHighlight = false) => {
+    if (result.url && result.type !== 'judgment' && result.type !== 'policy' && result.type !== 'research' && result.type !== 'opinion') {
+      return result.url;
+    }
+
     const typeMapping: Record<string, string> = {
       judgment: 'judgments',
       policy: 'policies',
@@ -278,11 +308,7 @@ export default function SearchOverlay({
 
   const handleSelect = (result: SearchResult) => {
     if (query.trim().length >= 2) {
-      fetch('/api/search/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: query.trim() }),
-      }).catch(console.error);
+      void trackSearchQueryLocalFirst(query.trim()).catch(console.error);
     }
     router.push(getArticleUrl(result));
     onClose();
@@ -293,11 +319,7 @@ export default function SearchOverlay({
   const handleJumpToMention = (e: React.MouseEvent, result: SearchResult) => {
     e.stopPropagation();
     if (query.trim().length >= 2) {
-      fetch('/api/search/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: query.trim() }),
-      }).catch(console.error);
+      void trackSearchQueryLocalFirst(query.trim()).catch(console.error);
     }
     router.push(getArticleUrl(result, true));
     onClose();

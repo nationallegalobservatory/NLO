@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { preferenceRepository } from '@/lib/local/repositories';
 
 type Theme = 'light' | 'dark';
 
@@ -35,7 +36,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    setTheme((prev) => {
+      const nextTheme = prev === 'light' ? 'dark' : 'light';
+      void preferenceRepository.savePreference('theme', nextTheme);
+      return nextTheme;
+    });
   };
 
   // Prevent layout shift/flash by hiding components that depend on client theme state during server render

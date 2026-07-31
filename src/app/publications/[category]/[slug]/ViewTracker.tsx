@@ -1,25 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
+import { recordPageViewLocalFirst } from '@/lib/api/offlineActions';
 
 export default function ViewTracker({ slug }: { slug: string }) {
   useEffect(() => {
     const trackView = async () => {
       try {
-        const res = await fetch('/api/views', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          // Find the views counter in the DOM and update it smoothly
-          const viewDisplay = document.getElementById('view-count-display');
-          if (viewDisplay && data.views) {
-            const span = viewDisplay.querySelector('span');
-            if (span) {
-              span.textContent = `${data.views} views`;
-            }
+        const views = await recordPageViewLocalFirst(slug);
+        const viewDisplay = document.getElementById('view-count-display');
+        if (viewDisplay && views) {
+          const span = viewDisplay.querySelector('span');
+          if (span) {
+            span.textContent = `${views} local views`;
           }
         }
       } catch (err) {

@@ -1,0 +1,34 @@
+{
+  "name": "National Legal Observatory",
+  "short_name": "NLO",
+  "description": "Local-first legal research archive with offline reading, search, drafts, and sync.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff9eb",
+  "theme_color": "#561922",
+  "categories": ["education", "productivity", "news"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Publications",
+      "short_name": "Archive",
+      "url": "/publications",
+      "icons": [{ "src": "/icon.png", "sizes": "1024x1024" }]
+    },
+    {
+      "name": "Submit Research",
+      "short_name": "Submit",
+      "url": "/contact",
+      "icons": [{ "src": "/icon.png", "sizes": "1024x1024" }]
+    }
+  ]
+}

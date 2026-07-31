@@ -2,11 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  '';
 
 export const isSupabaseConfigured = (): boolean => {
   return typeof window !== 'undefined'
-    ? !!(window as any).__SUPABASE_CONFIGURED__ || (!!supabaseUrl && !!supabaseAnonKey && supabaseUrl !== 'your-supabase-url')
+    ? !!(window as Window & { __SUPABASE_CONFIGURED__?: boolean }).__SUPABASE_CONFIGURED__ ||
+        (!!supabaseUrl && !!supabaseAnonKey && supabaseUrl !== 'your-supabase-url')
     : !!supabaseUrl && !!supabaseAnonKey && supabaseUrl !== 'your-supabase-url';
 };
 
@@ -19,10 +23,14 @@ export const getSupabaseClient = () => {
   }
 
   if (!supabaseClient) {
+    const isBrowser = typeof window !== 'undefined';
     supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: true,
-        autoRefreshToken: true,
+        persistSession: isBrowser,
+        autoRefreshToken: isBrowser,
+        detectSessionInUrl: isBrowser,
+        flowType: 'pkce',
+        storageKey: 'nlo-supabase-session',
       },
     });
   }

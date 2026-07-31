@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono, Playfair_Display, Source_Serif_4 } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '../components/ThemeProvider';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MobileBottomNav from '../components/MobileBottomNav';
+import PWAProvider from '../components/PWAProvider';
+import SyncStatusDock from '../components/SyncStatusDock';
 // removed ChatBox
 
 // Initialize fonts
@@ -40,6 +42,7 @@ export const metadata: Metadata = {
   description:
     'A professional academic legal journal and policy think tank focused on constitutional reviews, data surveillance analysis, and climate litigation frontiers.',
   metadataBase: new URL('https://legal-observatory.org'),
+  manifest: '/manifest.webmanifest',
   keywords: [
     'Legal Review',
     'Constitutional Law',
@@ -76,6 +79,18 @@ export const metadata: Metadata = {
     description: 'Independent Legal Research.',
     images: ['/icon.png'],
   },
+  appleWebApp: {
+    capable: true,
+    title: 'NLO',
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#561922' },
+    { media: '(prefers-color-scheme: dark)', color: '#0F1115' },
+  ],
 };
 
 export default function RootLayout({
@@ -91,14 +106,17 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col transition-colors duration-300">
         <ThemeProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
-              {children}
-            </main>
-            <Footer />
-            <MobileBottomNav />
-          </div>
+          <PWAProvider>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow max-w-[1600px] w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in">
+                {children}
+              </main>
+              <Footer />
+              <MobileBottomNav />
+              <SyncStatusDock />
+            </div>
+          </PWAProvider>
         </ThemeProvider>
       </body>
     </html>

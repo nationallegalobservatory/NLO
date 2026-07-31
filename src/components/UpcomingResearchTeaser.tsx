@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, BookOpen, ArrowUpRight, Calendar, User, Bell, CheckCircle2, Loader2 } from 'lucide-react';
+import { createReminderLocalFirst } from '@/lib/api/offlineActions';
 
 interface PublishedArticle {
   title: string;
@@ -98,23 +99,18 @@ export default function UpcomingResearchTeaser({ publishAt, article }: UpcomingR
 
     setReminderStatus('loading');
     try {
-      const res = await fetch('/api/reminder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: reminderEmail.trim(), articleSlug: article.slug }),
-      });
-      const data = await res.json();
+      const result = await createReminderLocalFirst(reminderEmail.trim(), article.slug);
 
-      if (data.success) {
+      if (result.success) {
         setReminderStatus('success');
-        setReminderMessage(data.message);
+        setReminderMessage(result.message);
       } else {
         setReminderStatus('error');
-        setReminderMessage(data.message || 'Something went wrong.');
+        setReminderMessage(result.message || 'Something went wrong.');
       }
     } catch {
       setReminderStatus('error');
-      setReminderMessage('Network error. Please try again.');
+      setReminderMessage('Could not save this reminder locally.');
     }
   };
 

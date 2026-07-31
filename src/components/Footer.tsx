@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Landmark, ArrowRight, Mail, HelpCircle } from 'lucide-react';
 import HelpDeskModal from './HelpDeskModal';
+import { subscribeNewsletterLocalFirst } from '@/lib/api/offlineActions';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -21,25 +22,20 @@ export default function Footer() {
 
     setStatus('loading');
     try {
-      const res = await fetch('/api/newsletter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
+      const result = await subscribeNewsletterLocalFirst(email);
+
+      if (result.success) {
         setStatus('success');
-        setMessage(data.message || 'Subscription successful!');
+        setMessage(result.message || 'Subscription saved.');
         setEmail('');
       } else {
         setStatus('error');
-        setMessage(data.message || 'Something went wrong. Please try again.');
+        setMessage(result.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
       console.error(err);
       setStatus('error');
-      setMessage('Network error. Please try again later.');
+      setMessage('Could not save this subscription locally.');
     }
   };
 

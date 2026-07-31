@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle, ChevronDown, Info, Landmark, Mail, Send } from 'lucide-react';
+import { saveContactSubmissionLocalFirst } from '@/lib/api/offlineActions';
 
 type SubmissionCategory = 'general' | 'judgment-review' | 'policy-brief' | 'research-article' | 'essay' | 'blog-post';
 
@@ -29,61 +30,50 @@ export default function ContactPage() {
   });
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
   const updateForm = (field: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (status === 'error') setStatus('idle');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.name || !form.email) {
       setStatus('error');
+      setStatusMessage('Please fill in all required fields marked with an asterisk (*).');
       return;
     }
 
     const { category } = form;
-    let mailtoSubject = '';
-    let mailtoBody = `Name: ${form.name}\nEmail: ${form.email}\nCategory: ${category.replace('-', ' ').toUpperCase()}\n\n`;
 
     if (category === 'general') {
       if (!form.subject || !form.message) {
         setStatus('error');
+        setStatusMessage('Please include a subject and message.');
         return;
       }
-      mailtoSubject = `NLO General Inquiry: ${form.subject}`;
-      mailtoBody += `Subject: ${form.subject}\n\nMessage:\n${form.message}`;
     } else {
       if (!form.title || !form.abstract) {
         setStatus('error');
+        setStatusMessage('Please include a submission title and abstract.');
         return;
-      }
-
-      mailtoSubject = `NLO Submission: ${form.title} [${category}]`;
-      mailtoBody += `Title: ${form.title}\n`;
-
-      if (category === 'judgment-review') {
-        mailtoBody += `Case Name: ${form.caseName}\nCourt/Jurisdiction: ${form.court}\n`;
-      } else if (category === 'policy-brief') {
-        mailtoBody += `Policy Area: ${form.policyArea}\n`;
-      } else if (category === 'research-article') {
-        mailtoBody += `Keywords: ${form.keywords}\n`;
-      }
-
-      mailtoBody += `\nAbstract:\n${form.abstract}\n\n`;
-
-      if (form.editorNotes) {
-        mailtoBody += `Editor Notes:\n${form.editorNotes}\n\n`;
-      }
-
-      if (form.draftText) {
-        mailtoBody += `Full Text Draft:\n${form.draftText}\n`;
       }
     }
 
-    setStatus('success');
-    window.location.href = `mailto:Nationallegalobservatory@gmail.com?subject=${encodeURIComponent(mailtoSubject)}&body=${encodeURIComponent(mailtoBody)}`;
+    setStatus('loading');
+    try {
+      const result = await saveContactSubmissionLocalFirst(form, attachedFiles);
+      setStatus('success');
+      setStatusMessage(result.message);
+      setAttachedFiles([]);
+    } catch (error) {
+      console.error(error);
+      setStatus('error');
+      setStatusMessage('Could not save this submission locally.');
+    }
   };
 
   const isEditorial = form.category !== 'general';
@@ -281,8 +271,8 @@ export default function ContactPage() {
               <div className="flex items-start gap-3 border border-emerald-700/25 bg-emerald-700/10 p-4 text-emerald-800 dark:text-emerald-300">
                 <CheckCircle className="mt-0.5 h-5 w-5 shrink-0" />
                 <div className="text-sm">
-                  <span className="block font-bold">Opening your email client...</span>
-                  <span>Please ensure you hit Send in your mail app to complete the submission.</span>
+                  <span className="block font-bold">Submission saved.</span>
+                  <span>{statusMessage}</span>
                 </div>
               </div>
             )}
@@ -290,7 +280,9 @@ export default function ContactPage() {
             {status === 'error' && (
               <div className="flex items-start gap-3 border border-rose-700/25 bg-rose-700/10 p-4 text-rose-700 dark:text-rose-300">
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-                <span className="font-semibold">Please fill in all required fields marked with an asterisk (*).</span>
+                <span className="font-semibold">
+                  {statusMessage || 'Please fill in all required fields marked with an asterisk (*).'}
+                </span>
               </div>
             )}
 
@@ -299,11 +291,31 @@ export default function ContactPage() {
                 <div className="flex items-start gap-3 border border-oxblood/25 bg-oxblood/10 p-4 text-oxblood dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
                   <Info className="mt-0.5 h-5 w-5 shrink-0" />
                   <div className="text-sm leading-7">
-                    <span className="block font-bold">Document Upload Notice</span>
+                    <span className="block font-bold">Document Upload</span>
                     <span>
-                      If you prefer to submit a PDF or Word document, manually attach the file to the email that opens when you click the button below.
+                      PDF and Word drafts are stored locally first and uploaded when sync is available.
                     </span>
                   </div>
+                </div>
+              )}
+
+              {isEditorial && (
+                <div className="space-y-2">
+                  <label className={labelClass}>Attach Draft Files</label>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx,.rtf,.txt,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(event) =>
+                      setAttachedFiles(Array.from(event.currentTarget.files || []))
+                    }
+                    className={`${fieldClass} cursor-pointer file:mr-3 file:border-0 file:bg-oxblood file:px-3 file:py-1.5 file:font-technical-ui file:text-[10px] file:font-bold file:uppercase file:tracking-[0.14em] file:text-white dark:file:bg-primary dark:file:text-background`}
+                  />
+                  {attachedFiles.length > 0 && (
+                    <p className="font-technical-ui text-[11px] uppercase tracking-[0.14em] text-on-surface-variant dark:text-on-background/50">
+                      {attachedFiles.length} file{attachedFiles.length === 1 ? '' : 's'} staged
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -316,7 +328,7 @@ export default function ContactPage() {
                   <span className="h-5 w-5 animate-spin border-2 border-current border-t-transparent" />
                 ) : (
                   <>
-                    <span>Prepare Submission Email</span>
+                    <span>Save Submission</span>
                     <Send className="h-4 w-4" />
                   </>
                 )}
