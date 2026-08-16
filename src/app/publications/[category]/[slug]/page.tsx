@@ -12,6 +12,7 @@ import Avatar from '../../../../components/Avatar';
 import { Calendar, Clock, User, ArrowLeft, FileText } from 'lucide-react';
 import CiteSection from './CiteSection';
 import CopyLinkButton from '../../../../components/CopyLinkButton';
+import OfflineArticleReader from '@/components/OfflineArticleReader';
 interface RouteParams {
   category: string;
   slug: string;
@@ -89,6 +90,7 @@ export default async function ArticlePage(props: PageProps) {
 
   return (
     <div className="space-y-10 py-4">
+      <OfflineArticleReader slug={resolvedParams.slug} category={resolvedParams.category} />
       {/* Reading Progress Indicator */}
       <ReadingProgressBar />
       {/* Ctrl+F style highlight — activated by ?highlight= URL param from search */}
@@ -258,7 +260,7 @@ export default async function ArticlePage(props: PageProps) {
           )}
 
           {/* Rendered HTML content from markdown (using Tailwind CSS prose classes) */}
-          <article className="prose max-w-none dark:prose-invert prose-headings:font-serif prose-h2:text-xl prose-h2:font-extrabold prose-h2:mt-8 prose-h2:pb-1 prose-h2:border-b prose-h2:border-slate-200/50 dark:prose-h2:border-slate-800/50 prose-h3:text-lg prose-h3:font-bold prose-h3:mt-6 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-slate-300 dark:prose-blockquote:border-slate-850 prose-blockquote:pl-4 prose-blockquote:italic prose-p:leading-relaxed prose-li:leading-relaxed prose-table:text-xs text-justify">
+          <article className="prose max-w-none dark:prose-invert prose-headings:font-serif prose-h2:text-xl prose-h2:font-extrabold prose-h2:mt-8 prose-h2:pb-1 prose-h2:border-b prose-h2:border-slate-200/50 dark:prose-h2:border-slate-800/50 prose-h3:text-lg prose-h3:font-bold prose-h3:mt-6 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-slate-300 dark:prose-blockquote:border-slate-850 prose-blockquote:pl-4 prose-blockquote:italic prose-p:leading-relaxed prose-li:leading-relaxed prose-table:text-xs sm:text-justify">
             <div dangerouslySetInnerHTML={{ __html: article.content }} />
           </article>
 
@@ -350,6 +352,7 @@ export default async function ArticlePage(props: PageProps) {
               <Avatar
                 src={article.authorDetails?.avatar}
                 alt={article.authorDetails?.name || 'Author'}
+                authorSlug={article.author}
                 className="w-12 h-12 rounded-full object-cover border border-slate-100 dark:border-slate-800"
               />
               <div className="space-y-1">

@@ -120,7 +120,7 @@ export default function ContactPage() {
     <div className="mx-auto max-w-6xl py-6 sm:py-10">
       <header className="border-b border-outline-variant/45 pb-8 text-center dark:border-primary/20">
         <p className={sectionLabelClass}>Editorial Desk</p>
-        <h1 className="mt-5 font-serif text-5xl font-bold leading-tight text-on-background dark:text-on-background sm:text-6xl">
+        <h1 className="mt-5 font-serif text-3xl font-bold leading-tight text-on-background dark:text-on-background sm:text-5xl lg:text-6xl">
           Contact the Editors
         </h1>
         <div className="mx-auto mt-6 h-px w-28 bg-oxblood dark:bg-primary" />

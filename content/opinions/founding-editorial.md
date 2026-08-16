@@ -14,7 +14,7 @@ coverImage: "/images/founding_note.jpg"
 # Why India Needs Independent Legal Observation
 ## A Founding Note — National Legal Observatory
 
-By Bhoomija Khanna, Founder & Research Director
+By [Bhoomija Khanna](/bhoomija), Founder & Research Director
 
 There is a particular kind of frustration that comes with studying law in India today.
 
@@ -42,7 +42,7 @@ The legal profession trains us to read carefully, argue precisely, and remain ac
 
 If you are a student, a practitioner, an academic, or simply someone who believes that legal literacy matters, I invite you to read, to engage, and to hold this platform to the standards it sets for itself.
 
-**Bhoomija Khanna**  
+**[Bhoomija Khanna](/bhoomija)**  
 Founder & Research Director, National Legal Observatory  
 B.A. LL.B. (Hons.), Alliance University Bengaluru – 562 106, Karnataka, India  
 June 2026

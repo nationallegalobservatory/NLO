@@ -64,8 +64,14 @@ export default async function PrivateArticleReader(props: PageProps) {
             )}
 
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500 font-medium">
-              By {article.authorDetails?.name || 'Bhoomija Khanna'} &mdash;{' '}
-              {formattedDate}
+              By{' '}
+              <Link
+                href="/bhoomija"
+                className="font-semibold text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline transition"
+              >
+                {article.authorDetails?.name || 'Bhoomija Khanna'}
+              </Link>{' '}
+              &mdash; {formattedDate}
             </p>
           </div>
 

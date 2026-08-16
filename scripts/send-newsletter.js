@@ -32,12 +32,15 @@ const TESTERS = [
 ];
 
 const SUBSCRIBERS = [
-  'aksohi12@gmail.com',
-  'akaanshasirohia@gmail.com',
-  'bhoomija.k2810@gmail.com',
-  'jhilmili.k06@gmail.com',
-  'kbhoomija04@gmail.com',
+  'lakshaywork5577@gmail.com',
+  'batrasaksham007@gmail.com',
+  'utkarshisbest69@gmail.com',
   'alexallenwheeler@gmail.com',
+  'kbhoomija04@gmail.com',
+  'jhilmili.k06@gmail.com',
+  'bhoomija.k2810@gmail.com',
+  'akaanshasirohia@gmail.com',
+  'aksohi12@gmail.com',
 ];
 
 const transporter = nodemailer.createTransport({

@@ -4,6 +4,7 @@ import ArticleCard from '../../components/ArticleCard';
 import Link from 'next/link';
 import { AlertCircle, ArrowUpDown, FileText, Landmark, Search, Tag } from 'lucide-react';
 import FilterBar from '../../components/FilterBar';
+import OfflinePublicationsArchive from '@/components/OfflinePublicationsArchive';
 
 interface SearchParams {
   q?: string;
@@ -37,7 +38,7 @@ export default async function PublicationsPage(props: PageProps) {
   const readTime = params.readTime || '';
   const sort = params.sort || 'date';
   const pageNum = parseInt(params.page || '1', 10);
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
 
   const rawArticles = await getArticles();
   const categories = await getCategories();
@@ -141,9 +142,10 @@ export default async function PublicationsPage(props: PageProps) {
   };
 
   const formatFilters = [
+    { slug: 'monthly-report', name: 'Monthly Reviews' },
+    { slug: 'research', name: 'Research Articles' },
     { slug: 'judgment', name: 'Judgment Reviews' },
     { slug: 'policy', name: 'Policy Briefs' },
-    { slug: 'research', name: 'Research Articles' },
     { slug: 'opinion', name: 'Essays & Opinions' },
     { slug: 'blog', name: 'Blog Posts' },
   ];
@@ -176,6 +178,9 @@ export default async function PublicationsPage(props: PageProps) {
 
   return (
     <div className="mx-auto max-w-screen-2xl py-4 sm:py-10">
+      <OfflinePublicationsArchive
+        searchParams={{ q: query, category, type: activeType, tag: activeTag, author, year, readTime, sort, page: params.page }}
+      />
       <header className="border-b border-outline-variant/45 pb-8 dark:border-primary/20">
         <span className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-oxblood dark:text-primary">
           Archive Catalogue

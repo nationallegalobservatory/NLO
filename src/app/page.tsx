@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, BookOpen, Clock, Laptop, Landmark, Mail, Scale, Users } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, Clock, Laptop, Landmark, Mail, Scale, Users, Calendar, Sparkles } from 'lucide-react';
 import { getArticles } from '../lib/content';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from '../components/Avatar';
+import AuthorLink from '../components/AuthorLink';
 
 function getPublicationPath(article: Pick<ArticleData, 'type' | 'slug'>) {
   const folder =
@@ -19,7 +20,7 @@ function getPublicationPath(article: Pick<ArticleData, 'type' | 'slug'>) {
 }
 
 function getBadgeLabel(article: ArticleData) {
-  if (article.format === 'monthly-report') return 'RESEARCH';
+  if (article.format === 'monthly-report') return 'REPORT';
   if (article.type === 'opinion') return 'OPINION';
   if (article.type === 'policy') return 'POLICY';
   if (article.type === 'judgment') return 'JUDGMENT';
@@ -46,6 +47,7 @@ function HomeAvatar({
     <Avatar
       src={article.authorDetails?.avatar}
       alt={article.authorDetails?.name || 'Author'}
+      authorSlug={article.author}
       className={className}
     />
   );
@@ -53,26 +55,27 @@ function HomeAvatar({
 
 function HeroSection() {
   const actionClass =
-    'inline-flex items-center gap-2 border border-outline-variant bg-surface-container-lowest px-4 py-3 font-technical-ui text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant transition hover:border-oxblood hover:text-oxblood dark:border-primary/25 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary dark:hover:text-primary';
+    'inline-flex items-center gap-2 border border-outline-variant/60 bg-surface-container-lowest/80 backdrop-blur-sm px-4 py-2.5 font-technical-ui text-[11px] font-bold uppercase tracking-[0.18em] text-on-surface-variant transition-all hover:border-oxblood hover:text-oxblood hover:shadow-md dark:border-primary/25 dark:bg-surface-container-low/90 dark:text-on-background/80 dark:hover:border-primary dark:hover:text-primary';
 
   return (
-    <section className="relative overflow-hidden border-b border-outline-variant/50 bg-[linear-gradient(180deg,rgba(255,249,235,0)_0%,rgba(244,238,219,0.74)_100%)] px-4 py-16 text-center dark:border-primary/15 dark:bg-[linear-gradient(180deg,rgba(15,17,21,0)_0%,rgba(21,24,30,0.9)_100%)] sm:px-8 sm:py-24">
-      <div className="mx-auto flex min-h-[430px] max-w-[1120px] flex-col items-center justify-center">
-        <span className="font-technical-ui text-[11px] font-bold uppercase tracking-[0.32em] text-oxblood dark:text-primary sm:text-xs">
+    <section className="relative overflow-hidden border-b border-outline-variant/40 bg-transparent px-4 py-12 text-center dark:border-primary/15 sm:px-8 sm:py-20">
+      <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-oxblood/20 bg-oxblood/5 px-3.5 py-1 font-technical-ui text-[11px] font-bold uppercase tracking-[0.28em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
+          <Sparkles className="h-3.5 w-3.5" />
           Independent Legal Research
         </span>
 
-        <h1 className="mt-8 font-serif text-5xl font-bold leading-tight text-on-background dark:text-on-background sm:text-6xl lg:text-[72px]">
+        <h1 className="mt-6 font-serif text-4xl font-bold leading-tight text-on-background dark:text-on-background sm:text-6xl lg:text-[64px] tracking-tight">
           National Legal Observatory
         </h1>
 
-        <div className="mt-10 h-px w-24 bg-oxblood/25 dark:bg-primary/55" />
+        <div className="mt-8 h-1 w-20 rounded-full bg-gradient-to-r from-transparent via-[#D3AC2B] to-transparent" />
 
-        <p className="mt-10 max-w-3xl font-serif text-xl italic leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-3xl">
+        <p className="mt-8 max-w-3xl font-serif text-lg italic leading-relaxed text-on-surface-variant dark:text-on-background/80 sm:text-2xl">
           {"“The National Legal Observatory is an attempt to address an observation gap.”"}
         </p>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link href="/publications" className={actionClass}>
             <BookOpen className="h-4 w-4" />
             Browse Papers
@@ -89,13 +92,7 @@ function HeroSection() {
             <Users className="h-4 w-4" />
             Authors
           </Link>
-        </div>
-
-        <div className="mt-4">
-          <Link
-            href="/contact"
-            className={actionClass}
-          >
+          <Link href="/contact" className={actionClass}>
             <Mail className="h-4 w-4" />
             Submit Research
           </Link>
@@ -107,24 +104,24 @@ function HeroSection() {
 
 function EditorialDirective() {
   return (
-    <section className="mx-auto max-w-5xl border-4 border-double border-oxblood bg-surface-container-lowest/55 px-4 py-6 text-center dark:border-primary dark:bg-surface-container/80 sm:px-12 sm:py-12">
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-6">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center border border-oxblood/25 bg-oxblood/10 text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
-          <Landmark className="h-8 w-8" />
+    <section className="mx-auto max-w-5xl rounded-xl border border-oxblood/30 bg-surface-container-lowest/70 p-6 text-center shadow-sm backdrop-blur dark:border-primary/30 dark:bg-surface-container/80 sm:p-10">
+      <div className="mx-auto flex max-w-4xl flex-col items-center gap-5">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-oxblood/25 bg-oxblood/10 text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
+          <Landmark className="h-6 w-6" />
         </div>
-        <div className="space-y-4">
-          <h2 className="font-serif text-3xl font-bold text-on-background dark:text-on-background sm:text-5xl">
+        <div className="space-y-3">
+          <h2 className="font-serif text-2xl font-bold text-on-background dark:text-on-background sm:text-4xl">
             Our Editorial Directive
           </h2>
-          <p className="font-body-md text-base leading-8 text-on-surface-variant dark:text-on-background/75 sm:text-lg">
+          <p className="font-body-md text-sm leading-7 text-on-surface-variant dark:text-on-background/75 sm:text-base sm:leading-8">
             Constitutional law, civil litigation, criminal justice, commercial and contract law, environmental law, labour law, family law, technology and policy; these are all territories this platform covers, with the same rigour and the same commitment to primary sources.
           </p>
           <div className="flex items-center justify-center gap-4 pt-2">
-            <span className="h-px w-12 bg-oxblood dark:bg-primary" />
+            <span className="h-px w-12 bg-oxblood/40 dark:bg-primary/40" />
             <span className="font-technical-ui text-[11px] font-bold uppercase tracking-[0.28em] text-oxblood dark:text-primary">
               Est. 2026
             </span>
-            <span className="h-px w-12 bg-oxblood dark:bg-primary" />
+            <span className="h-px w-12 bg-oxblood/40 dark:bg-primary/40" />
           </div>
         </div>
       </div>
@@ -137,56 +134,83 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
   const coverImage = article.coverImage || '/images/weaponization/cover.png';
 
   return (
-    <article className="grid grid-cols-1 items-stretch gap-8 md:grid-cols-12">
-      <div className="group relative flex min-h-[380px] flex-col border border-outline-variant/45 bg-surface-container p-5 dark:border-primary/15 dark:bg-surface-container md:col-span-7 sm:p-12">
-        <div className="absolute right-0 top-0 p-3 sm:p-4">
-          <span className="bg-oxblood px-3 py-1 font-technical-ui text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.16em] text-white dark:bg-primary dark:text-background">
-            Featured Case
-          </span>
-        </div>
-
-        <span className="mb-4 sm:mb-6 block font-technical-ui text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-oxblood dark:text-primary">
-          In-Depth Analysis
-        </span>
-        <h3 className="max-w-3xl font-serif text-2xl sm:text-4xl lg:text-[56px] font-bold leading-tight text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary">
-          <Link href={href} className="focus:outline-none">
-            {article.title}
-          </Link>
-        </h3>
-        <p className="mt-4 sm:mt-6 max-w-3xl font-body-md text-sm sm:text-base leading-7 sm:leading-8 text-on-surface-variant line-clamp-4 dark:text-on-background/70">
-          {getExcerpt(article)}
-        </p>
-
-        <div className="mt-auto flex flex-col gap-4 border-t border-outline-variant/45 pt-4 sm:pt-6 dark:border-primary/15 sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex items-center gap-3">
-            <HomeAvatar article={article} className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25" />
-            <div className="min-w-0">
-              <p className="font-technical-ui text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-on-background dark:text-on-background">
-                {article.authorDetails?.name || 'Observatory Scholar'}
-              </p>
-              <p className="font-technical-ui text-[10px] sm:text-[11px] text-on-surface-variant dark:text-on-background/50">
-                {article.readingTime}
-              </p>
+    <article className="group relative h-full w-full overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm transition-all hover:shadow-md dark:border-primary/20 dark:bg-surface-container">
+      <div className="grid grid-cols-1 items-stretch md:grid-cols-12">
+        <div className="flex flex-col justify-between p-6 sm:p-8 md:col-span-7">
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/30 pb-3 dark:border-primary/15">
+              <span className="inline-flex items-center gap-1.5 rounded-sm bg-oxblood px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-white dark:bg-primary dark:text-background">
+                Featured Case
+              </span>
+              <div className="flex items-center gap-3 font-technical-ui text-[11px] text-on-surface-variant dark:text-on-background/50">
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-oxblood dark:text-primary" />
+                  {article.readingTime}
+                </span>
+              </div>
             </div>
+
+            <h3 className="mt-4 font-serif text-2xl font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-3xl lg:text-3xl xl:text-4xl">
+              <Link href={href} className="focus:outline-none">
+                {article.title}
+              </Link>
+            </h3>
+
+            <p className="mt-4 font-body-md text-sm leading-relaxed text-on-surface-variant line-clamp-3 dark:text-on-background/70 sm:text-base">
+              {getExcerpt(article)}
+            </p>
+
+            {article.categories && article.categories.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {article.categories.map((cat) => (
+                  <span
+                    key={cat}
+                    className="border border-outline-variant/50 px-2 py-0.5 font-technical-ui text-[10px] font-semibold uppercase tracking-[0.14em] text-on-surface-variant dark:border-primary/20 dark:text-on-background/55"
+                  >
+                    #{cat.replace('-', ' ')}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
-          <Link
-            href={href}
-            className="inline-flex items-center gap-2 border-b border-oxblood pb-1 font-technical-ui text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-oxblood transition-all hover:pb-2 dark:border-primary dark:text-primary"
-          >
-            Read Manuscript
-            <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </Link>
-        </div>
-      </div>
+          <div className="mt-6 flex flex-col gap-4 border-t border-outline-variant/30 pt-4 dark:border-primary/15 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <HomeAvatar
+                article={article}
+                className="h-9 w-9 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25"
+              />
+              <div className="min-w-0">
+                <AuthorLink
+                  slug={article.author}
+                  className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-on-background hover:text-oxblood dark:text-on-background dark:hover:text-primary transition-colors block"
+                >
+                  {article.authorDetails?.name || 'Observatory Scholar'}
+                </AuthorLink>
+                <p className="font-technical-ui text-[11px] text-on-surface-variant dark:text-on-background/50">
+                  {article.date}
+                </p>
+              </div>
+            </div>
 
-      <div className="min-h-[250px] sm:min-h-[430px] border border-outline-variant/30 bg-surface-container-high dark:border-primary/15 dark:bg-surface-container-low md:col-span-5">
-        <div
-          className="h-full min-h-[250px] sm:min-h-[430px] bg-cover bg-center grayscale contrast-125 opacity-90 transition-opacity hover:opacity-100 dark:opacity-45 dark:hover:opacity-70"
-          style={{ backgroundImage: `url(${coverImage})` }}
-          aria-label={article.title}
-          role="img"
-        />
+            <Link
+              href={href}
+              className="inline-flex items-center gap-2 border-b border-oxblood pb-0.5 font-technical-ui text-[11px] font-bold uppercase tracking-[0.2em] text-oxblood transition-all hover:gap-3 dark:border-primary dark:text-primary"
+            >
+              Read Article
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="relative min-h-[220px] border-t border-outline-variant/30 bg-surface-container-high dark:border-primary/15 dark:bg-surface-container-low md:col-span-5 md:border-l md:border-t-0">
+          <div
+            className="h-full min-h-[220px] bg-cover bg-center grayscale contrast-125 opacity-90 transition-opacity hover:opacity-100 dark:opacity-50 dark:hover:opacity-75"
+            style={{ backgroundImage: `url(${coverImage})` }}
+            aria-label={article.title}
+            role="img"
+          />
+        </div>
       </div>
     </article>
   );
@@ -196,38 +220,46 @@ function SubmissionCard({ article }: { article: ArticleData }) {
   const href = getPublicationPath(article);
 
   return (
-    <article className="group flex min-h-[160px] flex-col border-b-2 border-oxblood/10 bg-surface-container-low p-5 transition-colors hover:border-oxblood dark:border-primary/15 dark:bg-surface-container-low dark:hover:border-primary">
-      <div className="flex items-center justify-between gap-3 font-technical-ui text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-oxblood dark:text-primary">
-        <span>
-          {getBadgeLabel(article)}
-        </span>
-        <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          {article.readingTime}
-        </span>
+    <article className="group flex flex-col justify-between rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-5 shadow-xs transition-all hover:border-oxblood/50 hover:shadow-sm dark:border-primary/15 dark:bg-surface-container-low dark:hover:border-primary/50">
+      <div>
+        <div className="flex items-center justify-between gap-3 font-technical-ui text-[10px] font-semibold uppercase tracking-[0.18em] text-oxblood dark:text-primary">
+          <span className="rounded-xs bg-oxblood/10 px-2 py-0.5 dark:bg-primary/10">
+            {getBadgeLabel(article)}
+          </span>
+          <span className="flex items-center gap-1 text-on-surface-variant dark:text-on-background/50">
+            <Clock className="h-3 w-3" />
+            {article.readingTime}
+          </span>
+        </div>
+
+        <h4 className="mt-3 font-serif text-lg font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-xl">
+          <Link href={href} className="focus:outline-none">
+            {article.title}
+          </Link>
+        </h4>
       </div>
 
-      <h4 className="mt-4 max-w-2xl font-serif text-lg sm:text-2xl font-semibold leading-tight text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary">
-        <Link href={href} className="focus:outline-none">
-          {article.title}
-        </Link>
-      </h4>
-
-      <div className="mt-auto border-t border-outline-variant/35 pt-4 dark:border-primary/15">
+      <div className="mt-4 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <HomeAvatar article={article} className="h-6 w-6 sm:h-7 sm:w-7 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25" />
-            <p className="truncate font-technical-ui text-[11px] sm:text-xs font-medium text-on-surface-variant dark:text-on-background/55">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <HomeAvatar
+              article={article}
+              className="h-6 w-6 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25"
+            />
+            <AuthorLink
+              slug={article.author}
+              className="truncate font-technical-ui text-[11px] font-medium text-on-surface-variant hover:text-oxblood dark:text-on-background/60 dark:hover:text-primary transition-colors"
+            >
               {article.authorDetails?.name || 'Observatory Scholar'}
-            </p>
+            </AuthorLink>
           </div>
 
           <Link
             href={href}
-            className="inline-flex items-center gap-1 font-technical-ui text-[11px] sm:text-xs font-bold uppercase tracking-[0.16em] text-oxblood transition hover:text-on-background dark:text-primary dark:hover:text-on-background"
+            className="inline-flex items-center gap-1 font-technical-ui text-[10px] font-bold uppercase tracking-[0.16em] text-oxblood transition hover:gap-1.5 dark:text-primary"
           >
             Read
-            <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
       </div>
@@ -239,36 +271,61 @@ function ResearchDeskCard({ article }: { article: ArticleData }) {
   const href = getPublicationPath(article);
 
   return (
-    <article className="group relative overflow-hidden border border-outline-variant/40 bg-surface-container-lowest p-5 dark:border-primary/15 dark:bg-surface-container sm:p-8">
-      <div className="relative flex min-h-[320px] flex-col">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 border border-emerald-600/25 bg-emerald-700/10 px-3 py-1 font-technical-ui text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.24em] text-emerald-800 dark:text-emerald-300">
-            Published Research
-          </span>
-          <span className="font-technical-ui text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.24em] text-on-surface-variant dark:text-on-background/45">
-            Research Article
-          </span>
+    <article className="group relative overflow-hidden rounded-xl border border-oxblood/30 bg-surface-container-lowest p-6 shadow-sm dark:border-primary/25 dark:bg-surface-container sm:p-10">
+      <div className="relative flex flex-col justify-between">
+        <div>
+          <div className="flex flex-wrap items-center gap-2.5 border-b border-outline-variant/30 pb-3 dark:border-primary/15">
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-emerald-600/30 bg-emerald-700/10 px-3 py-1 font-technical-ui text-[10px] font-bold uppercase tracking-[0.22em] text-emerald-800 dark:text-emerald-300">
+              Published Research
+            </span>
+            <span className="font-technical-ui text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant dark:text-on-background/50">
+              Research Article
+            </span>
+            <span className="ml-auto flex items-center gap-1 font-technical-ui text-[11px] text-on-surface-variant dark:text-on-background/50">
+              <Clock className="h-3.5 w-3.5 text-oxblood dark:text-primary" />
+              {article.readingTime}
+            </span>
+          </div>
+
+          <div className="mt-6 max-w-4xl space-y-3">
+            <h3 className="font-serif text-2xl font-bold leading-tight text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-3xl lg:text-4xl">
+              <Link href={href} className="focus:outline-none">
+                {article.title}
+              </Link>
+            </h3>
+            <p className="max-w-3xl font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
+              {getExcerpt(article)}
+            </p>
+          </div>
+
+          {article.categories && article.categories.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {article.categories.map((cat) => (
+                <span
+                  key={cat}
+                  className="border border-oxblood/20 bg-oxblood/5 px-2.5 py-0.5 font-technical-ui text-[10px] font-semibold uppercase tracking-[0.16em] text-oxblood dark:border-primary/20 dark:bg-primary/10 dark:text-primary"
+                >
+                  #{cat.replace('-', ' ')}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="mt-8 max-w-4xl space-y-4">
-          <h3 className="font-serif text-2xl sm:text-4xl lg:text-[60px] font-bold leading-tight text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary">
-            <Link href={href} className="focus:outline-none">
-              {article.title}
-            </Link>
-          </h3>
-          <p className="max-w-3xl font-body-md text-sm sm:text-base leading-7 sm:leading-8 text-on-surface-variant dark:text-on-background/70">
-            {getExcerpt(article)}
-          </p>
-        </div>
-
-        <div className="mt-auto flex flex-col gap-4 border-t border-outline-variant/35 pt-5 dark:border-primary/15 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mt-8 flex flex-col gap-4 border-t border-outline-variant/30 pt-4 dark:border-primary/15 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <HomeAvatar article={article} className="h-8 w-8 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25" />
+            <HomeAvatar
+              article={article}
+              className="h-9 w-9 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25"
+            />
             <div>
-              <p className="font-technical-ui text-xs font-semibold uppercase tracking-[0.14em] text-on-background dark:text-on-background">
+              <AuthorLink
+                slug={article.author}
+                className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-on-background hover:text-oxblood dark:text-on-background dark:hover:text-primary transition-colors block"
+              >
                 {article.authorDetails?.name || 'Observatory Scholar'}
-              </p>
-              <p className="font-technical-ui text-[9px] sm:text-[10px] uppercase tracking-[0.24em] text-on-surface-variant dark:text-on-background/45">
+              </AuthorLink>
+              <p className="font-technical-ui text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-on-background/50">
                 National Legal Observatory Research Desk
               </p>
             </div>
@@ -276,7 +333,7 @@ function ResearchDeskCard({ article }: { article: ArticleData }) {
 
           <Link
             href={href}
-            className="inline-flex items-center gap-2 border border-oxblood bg-oxblood px-4 py-2.5 font-technical-ui text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-on-background dark:border-primary dark:bg-primary dark:text-background dark:hover:bg-tertiary-fixed"
+            className="inline-flex items-center gap-2 rounded-md border border-oxblood bg-oxblood px-5 py-2.5 font-technical-ui text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:bg-on-background dark:border-primary dark:bg-primary dark:text-background dark:hover:bg-tertiary-fixed"
           >
             Read Article
             <ArrowUpRight className="h-4 w-4" />
@@ -291,28 +348,31 @@ export default async function Homepage() {
   const articles = await getArticles();
   const articleBySlug = new Map(articles.map((article) => [article.slug, article]));
 
+  const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;
+  const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =
-    articleBySlug.get('the-weaponization-of-human-rights') ?? articles[0] ?? null;
-  const monthlyReviewArticle = articleBySlug.get('monthly-legal-review-june-2026') ?? null;
+    deepfakesArticle ?? weaponizationArticle ?? articles[0] ?? null;
+  const julyReviewArticle = articleBySlug.get('monthly-legal-review-july-2026') ?? null;
+  const juneReviewArticle = articleBySlug.get('monthly-legal-review-june-2026') ?? null;
   const manufacturingConsentArticle = articleBySlug.get('manufacturing-consent') ?? null;
   const foundingEditorialArticle = articleBySlug.get('founding-editorial') ?? null;
   const researchDeskArticle =
     manufacturingConsentArticle ?? articles.find((article) => article.type === 'research') ?? featuredArticle;
 
   const recentArticles = [
-    monthlyReviewArticle,
-    manufacturingConsentArticle,
-    foundingEditorialArticle,
+    julyReviewArticle,
+    weaponizationArticle,
+    juneReviewArticle,
   ].filter(Boolean) as ArticleData[];
 
   return (
-    <div className="mx-auto max-w-[1120px] space-y-20 py-2 sm:py-6">
+    <div className="mx-auto max-w-[1120px] space-y-16 py-2 sm:py-6">
       <HeroSection />
       <EditorialDirective />
 
-      <section className="space-y-8">
-        <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-4 dark:border-primary/20">
-          <h1 className="font-serif text-3xl font-semibold text-on-background dark:text-on-background sm:text-4xl lg:text-5xl">
+      <section className="space-y-6">
+        <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-3 dark:border-primary/20">
+          <h1 className="font-serif text-2xl font-bold text-on-background dark:text-on-background sm:text-3xl lg:text-4xl">
             Current Publications
           </h1>
           <Link
@@ -324,14 +384,21 @@ export default async function Homepage() {
           </Link>
         </div>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.95fr)_minmax(360px,0.95fr)] items-start">
-          {featuredArticle && <FeaturedPublicationCard article={featuredArticle} />}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,0.9fr)] items-stretch">
+          <div className="flex flex-col h-full space-y-3">
+            <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-on-surface-variant dark:text-on-background/45">
+              Featured Analysis
+            </p>
+            <div className="flex-1 flex">
+              {featuredArticle && <FeaturedPublicationCard article={featuredArticle} />}
+            </div>
+          </div>
 
-          <div className="space-y-4">
+          <div className="flex flex-col h-full space-y-3">
             <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-on-surface-variant dark:text-on-background/45">
               Recent Submissions
             </p>
-            <div className="space-y-4">
+            <div className="flex-1 flex flex-col justify-between gap-3">
               {recentArticles.map((article) => (
                 <SubmissionCard key={article.slug} article={article} />
               ))}
@@ -340,9 +407,9 @@ export default async function Homepage() {
         </div>
       </section>
 
-      <section className="space-y-8">
-        <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-4 dark:border-primary/20">
-          <h2 className="font-serif text-3xl font-semibold text-on-background dark:text-on-background sm:text-4xl lg:text-5xl">
+      <section className="space-y-6">
+        <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-3 dark:border-primary/20">
+          <h2 className="font-serif text-2xl font-bold text-on-background dark:text-on-background sm:text-3xl lg:text-4xl">
             Research Desk
           </h2>
           <Link

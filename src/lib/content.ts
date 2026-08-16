@@ -98,19 +98,11 @@ export function formatPublicationDate(
     return article.date;
   }
 
-  const monthYearOnly =
-    article.format === 'monthly-report' || article.slug === 'founding-editorial';
-
-  return date.toLocaleDateString('en-US', monthYearOnly
-    ? {
-        year: 'numeric',
-        month: 'long',
-      }
-    : {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 export async function getCategories(): Promise<CategoryData[]> {

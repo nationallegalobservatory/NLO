@@ -7,12 +7,13 @@ type AuthorLinkProps = {
   children?: React.ReactNode;
 };
 
-export function getAuthorHref(slug?: string) {
-  if (slug === 'bhoomija-khanna' || slug === 'bhoomija') {
+export function getAuthorHref(slug?: string, name?: string) {
+  const check = (slug || name || '').toLowerCase();
+  if (check.includes('bhoomija') || check === 'bhoomija-khanna') {
     return '/bhoomija';
   }
 
-  if (slug === 'utkarsh-mani-tripathi') {
+  if (check === 'utkarsh-mani-tripathi' || check.includes('utkarsh')) {
     return '/authors/utkarsh-mani-tripathi';
   }
 
@@ -20,7 +21,7 @@ export function getAuthorHref(slug?: string) {
 }
 
 export default function AuthorLink({ slug, name, className, children }: AuthorLinkProps) {
-  const href = getAuthorHref(slug);
+  const href = getAuthorHref(slug, name);
   const content = children ?? name ?? 'Observatory Author';
 
   return (

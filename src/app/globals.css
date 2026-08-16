@@ -503,6 +503,70 @@ body {
   --tw-prose-invert-code: #f0ece4;
   --tw-prose-invert-pre-code: #f1f5f9;
   --tw-prose-invert-pre-bg: #222222;
+
+  /* Mobile overflow protection */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Prose tables: horizontal scroll on mobile */
+.prose table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Prevent long links / URLs from causing horizontal overflow */
+.prose a {
+  word-break: break-all;
+}
+
+/* Prose pre/code blocks: horizontal scroll on mobile */
+.prose pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: disable text-justify on narrow screens (avoids ugly word gaps) */
+@media (max-width: 640px) {
+  .prose,
+  article.prose {
+    text-align: left !important;
+  }
+
+  .prose h2 {
+    font-size: 1.15rem;
+  }
+
+  .prose h3 {
+    font-size: 1.05rem;
+  }
+
+  .prose blockquote {
+    padding-left: 0.75rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .prose img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ─── Mobile Bottom Nav Safe Area ─────────────────────────────── */
+@media (max-width: 767px) {
+  /* Ensure footer content isn't hidden behind floating bottom nav */
+  footer {
+    padding-bottom: 5.5rem;
+  }
+
+  /* Minimum touch target size for mobile links and buttons */
+  .prose a {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
 }
 
 /* ─── Scrollbar ───────────────────────────────────────────────── */

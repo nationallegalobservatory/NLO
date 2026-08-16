@@ -13,7 +13,7 @@ export default function AboutPage() {
     <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       {/* Platform Header */}
       <header className="border-b border-slate-200 dark:border-slate-800 pb-10 text-center sm:text-left">
-        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[1.6vw] min-[400px]:text-[8px] sm:text-[10px] md:text-xs font-semibold uppercase tracking-tighter sm:tracking-wider text-slate-500 dark:text-slate-400 mb-6 w-full">
+        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-2 gap-y-1 text-[9px] sm:text-[10px] md:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6 w-full">
           <span>NATIONAL LEGAL OBSERVATORY</span>
           <span className="text-slate-300 dark:text-slate-700">&bull;</span>
           <span>Independent Legal Research | India</span>
@@ -127,11 +127,13 @@ export default function AboutPage() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Board Member Card Placeholder */}
+          {/* Board Member Card */}
           <div className="flex items-center gap-4 p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md transition">
-            <Avatar src="/images/bhoomija-avatar.png" alt="Bhoomija Khanna" className="w-16 h-16 rounded-full object-cover" />
+            <Avatar src="/images/bhoomija-avatar.png" alt="Bhoomija Khanna" authorSlug="bhoomija" className="w-16 h-16 rounded-full object-cover" />
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-white">Bhoomija Khanna</h4>
+              <Link href="/bhoomija" className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                <h4 className="font-bold text-slate-900 dark:text-white hover:underline">Bhoomija Khanna</h4>
+              </Link>
               <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold mb-1">Editor-in-Chief</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">Alliance University</p>
             </div>

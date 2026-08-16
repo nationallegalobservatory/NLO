@@ -68,6 +68,10 @@ export default function SyncStatusDock() {
 
   const hasWork = summary.pending > 0 || summary.failed > 0 || summary.conflicts > 0 || !online;
 
+  if (!hasWork && !open) {
+    return null;
+  }
+
   return (
     <>
       <div className="fixed bottom-20 right-3 z-40 flex max-w-[calc(100vw-1.5rem)] items-center gap-2 border border-outline-variant/70 bg-surface-container-lowest/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-primary/25 dark:bg-surface-container/95 md:bottom-4 md:right-4">

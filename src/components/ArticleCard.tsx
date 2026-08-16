@@ -66,6 +66,7 @@ export default function ArticleCard({ article, searchTerm }: { article: ArticleD
             <Avatar
               src={article.authorDetails?.avatar}
               alt={article.authorDetails?.name || 'Author'}
+              authorSlug={article.author}
               className="h-7 w-7 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25"
             />
             <AuthorLink

@@ -56,7 +56,7 @@ references:
 - **Policy Pulse:** Telangana Advocates Protection Act | E-Prisons Module
 - **Editor's Note:** The Courts, the Algorithm, and the Question Nobody Is Asking
 
-*Research Director: Bhoomija Khanna | Alliance University, Bangalore*
+*Research Director: [Bhoomija Khanna](/bhoomija) | Alliance University, Bangalore*
 
 ---
 
@@ -200,7 +200,7 @@ The Supreme Court closed proceedings in a case that drove the development of the
 
 ### The Courts, the Algorithm, and the Question Nobody Is Asking
 
-*By Bhoomija Khanna, Research Director*
+*By [Bhoomija Khanna](/bhoomija), Research Director*
 
 The Supreme Court's draft AI regulations for courts dropped on June 3. The comment deadline was June 20. I spent two weeks reading the draft and I want to put on record what I think is being missed.
 
@@ -224,7 +224,7 @@ That distinction matters. And it will matter more the longer we pretend it does 
 
 ---
 
-*Bhoomija Khanna*
+*[Bhoomija Khanna](/bhoomija)*
 *Research Director, National Legal Observatory*
 *B.A. LL.B. (Hons.), Alliance University, Bangalore*
 *June 2026*

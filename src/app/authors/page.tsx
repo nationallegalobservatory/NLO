@@ -43,13 +43,16 @@ export default function AuthorsPage() {
               <Avatar
                 src="/images/bhoomija-avatar.png"
                 alt="Bhoomija Khanna"
+                authorSlug="bhoomija"
                 className="h-20 w-20 shrink-0 rounded-full border border-outline-variant object-cover grayscale dark:border-primary/25 sm:h-24 sm:w-24"
               />
               <div className="space-y-2 text-center sm:text-left">
                 <div>
-                  <h3 className="font-serif text-xl font-bold text-on-background dark:text-on-background">
-                    Bhoomija Khanna
-                  </h3>
+                  <Link href="/bhoomija" className="hover:text-oxblood dark:hover:text-primary transition-colors">
+                    <h3 className="font-serif text-xl font-bold text-on-background dark:text-on-background hover:underline">
+                      Bhoomija Khanna
+                    </h3>
+                  </Link>
                   <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-oxblood dark:text-primary">
                     Founder & Chief Editor
                   </p>

@@ -1,4 +1,57 @@
 import { generateSW } from 'workbox-build';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function collectContentRoutes() {
+  const root = path.resolve('content');
+  const routes = new Set([
+    '/',
+    '/about',
+    '/authors',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/citation-permissions',
+    '/bhoomija',
+    '/publications',
+    '/offline',
+  ]);
+
+  const authorsDir = path.join(root, 'authors');
+  if (fs.existsSync(authorsDir)) {
+    for (const file of fs.readdirSync(authorsDir)) {
+      if (file.endsWith('.md')) {
+        routes.add(`/authors/${file.replace(/\.md$/, '')}`);
+      }
+    }
+  }
+
+  const publishFolders = [
+    ['research', 'research'],
+    ['opinions', 'opinions'],
+    ['judgments', 'judgments'],
+    ['policies', 'policies'],
+  ];
+
+  for (const [folder, routeFolder] of publishFolders) {
+    const dir = path.join(root, folder);
+    if (!fs.existsSync(dir)) continue;
+
+    for (const file of fs.readdirSync(dir)) {
+      if (file.endsWith('.md')) {
+        const slug = file.replace(/\.md$/, '');
+        routes.add(`/publications/${routeFolder}/${slug}`);
+        if (folder === 'research') {
+          routes.add(`/bhoomija/research/${slug}`);
+        }
+      }
+    }
+  }
+
+  return Array.from(routes);
+}
+
+const routeEntries = collectContentRoutes().map((url) => ({ url, revision: null }));
 
 const { count, size, warnings } = await generateSW({
   swDest: 'public/sw.js',
@@ -13,13 +66,8 @@ const { count, size, warnings } = await generateSW({
   skipWaiting: true,
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^source$/],
   additionalManifestEntries: [
-    { url: '/', revision: null },
-    { url: '/offline', revision: null },
-    { url: '/publications', revision: null },
-    { url: '/authors', revision: null },
-    { url: '/about', revision: null },
-    { url: '/contact', revision: null },
     { url: '/api/offline/bootstrap', revision: null },
+    ...routeEntries,
   ],
   navigateFallback: '/offline',
   navigateFallbackDenylist: [/^\/api\//, /^\/_next\//],
@@ -40,7 +88,7 @@ const { count, size, warnings } = await generateSW({
       handler: 'NetworkFirst',
       options: {
         cacheName: 'nlo-pages',
-        networkTimeoutSeconds: 3,
+        networkTimeoutSeconds: 10,
         expiration: {
           maxEntries: 80,
           maxAgeSeconds: 60 * 60 * 24 * 30,

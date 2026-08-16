@@ -65,6 +65,15 @@ const EXPERIENCE = [
 const PUBLICATIONS = [
   {
     type: 'Monthly Review',
+    title: 'Monthly Legal Review — Vol. 1 | Issue 2 | July 2026',
+    desc: 'Covering the Supreme Court ruling on AI-hallucinated citations (Pooja Ramesh Singh), Compassionate Release for Elderly Prisoners, Court Live-Stream Ban, and Monsoon Session 2026.',
+    href: '/publications/research/monthly-legal-review-july-2026',
+    tag: 'NLO Monthly Review · July 2026',
+    readOnline: true,
+    comingSoon: false,
+  },
+  {
+    type: 'Monthly Review',
     title: 'Monthly Legal Review — Vol. 1 | Issue 1 | June 2026',
     desc: 'The inaugural Monthly Legal Review covering Supreme Court AI Regulations, Online Gaming Ruling, and Delimitation Battles.',
     href: '/publications/research/monthly-legal-review-june-2026',

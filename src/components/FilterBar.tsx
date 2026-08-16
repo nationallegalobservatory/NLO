@@ -46,9 +46,10 @@ export default function FilterBar({ categories, authors, years, totalItems }: Fi
   }, []);
 
   const formatFilters = [
+    { slug: 'monthly-report', name: 'Monthly Reviews' },
+    { slug: 'research', name: 'Research Articles' },
     { slug: 'judgment', name: 'Judgment Reviews' },
     { slug: 'policy', name: 'Policy Briefs' },
-    { slug: 'research', name: 'Research Articles' },
     { slug: 'opinion', name: 'Essays & Opinions' },
     { slug: 'blog', name: 'Blog Posts' },
   ];
