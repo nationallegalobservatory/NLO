@@ -142,17 +142,9 @@ export default function Footer() {
           {/* Column 3: Submission & Support */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-white mb-4">
-              Contributors
+              Quick Links
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/bhoomija"
-                  className="flex items-center gap-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition font-medium"
-                >
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#7d1919] dark:bg-[#C5A059]"></span> Bhoomija Khanna (Founder)
-                </Link>
-              </li>
               <li>
                 <Link href="/about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
                   Editorial Board
