@@ -352,12 +352,13 @@ export default async function Homepage() {
   const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =
     deepfakesArticle ?? weaponizationArticle ?? articles[0] ?? null;
+  const tukaramArticle = articleBySlug.get('tukaram-v-maharashtra-nlo-judgment-review') ?? null;
   const julyReviewArticle = articleBySlug.get('monthly-legal-review-july-2026') ?? null;
   const juneReviewArticle = articleBySlug.get('monthly-legal-review-june-2026') ?? null;
   const manufacturingConsentArticle = articleBySlug.get('manufacturing-consent') ?? null;
   const foundingEditorialArticle = articleBySlug.get('founding-editorial') ?? null;
   const researchDeskArticle =
-    manufacturingConsentArticle ?? articles.find((article) => article.type === 'research') ?? featuredArticle;
+    tukaramArticle ?? manufacturingConsentArticle ?? articles.find((article) => article.type === 'research') ?? featuredArticle;
 
   const recentArticles = [
     julyReviewArticle,
