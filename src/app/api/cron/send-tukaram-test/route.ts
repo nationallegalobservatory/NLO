@@ -88,7 +88,7 @@ export async function GET(request: Request) {
     if (result.success) {
       return NextResponse.json({
         success: true,
-        message: \`Test email successfully sent to \${testerEmail}\`,
+        message: `Test email successfully sent to ${testerEmail}`,
       });
     } else {
       throw new Error(result.error);
