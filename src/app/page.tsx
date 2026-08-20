@@ -367,7 +367,7 @@ export default async function Homepage() {
         a.slug !== featuredArticle?.slug &&
         a.slug !== researchDeskArticle?.slug
     )
-    .slice(0, 5);
+    .slice(0, 3);
 
   return (
     <div className="mx-auto max-w-[1120px] space-y-16 py-2 sm:py-6">
