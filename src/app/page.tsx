@@ -5,6 +5,7 @@ import { getArticles } from '../lib/content';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from '../components/Avatar';
 import AuthorLink from '../components/AuthorLink';
+import { CountdownWrapper } from './CountdownWrapper';
 
 function getPublicationPath(article: Pick<ArticleData, 'type' | 'slug'>) {
   const folder =
@@ -422,7 +423,15 @@ export default async function Homepage() {
           </Link>
         </div>
 
-        {researchDeskArticle && <ResearchDeskCard article={researchDeskArticle} />}
+        {researchDeskArticle && (
+          researchDeskArticle.slug === 'tukaram-v-maharashtra-nlo-judgment-review' ? (
+            <CountdownWrapper targetDate="2026-08-20T18:40:00+05:30">
+              <ResearchDeskCard article={researchDeskArticle} />
+            </CountdownWrapper>
+          ) : (
+            <ResearchDeskCard article={researchDeskArticle} />
+          )
+        )}
       </section>
     </div>
   );
