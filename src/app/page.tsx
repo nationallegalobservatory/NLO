@@ -361,11 +361,13 @@ export default async function Homepage() {
   const researchDeskArticle =
     tukaramArticle ?? manufacturingConsentArticle ?? articles.find((article) => article.type === 'research') ?? featuredArticle;
 
-  const recentArticles = [
-    julyReviewArticle,
-    weaponizationArticle,
-    juneReviewArticle,
-  ].filter(Boolean) as ArticleData[];
+  const recentArticles = articles
+    .filter(
+      (a) =>
+        a.slug !== featuredArticle?.slug &&
+        a.slug !== researchDeskArticle?.slug
+    )
+    .slice(0, 5);
 
   return (
     <div className="mx-auto max-w-[1120px] space-y-16 py-2 sm:py-6">
