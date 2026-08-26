@@ -65,6 +65,15 @@ const EXPERIENCE = [
 const PUBLICATIONS = [
   {
     type: 'Monthly Review',
+    title: 'Monthly Legal Review — Vol. 1 | Issue 3 | August 2026',
+    desc: 'Covering the Supreme Court Jojari river basin governance order (2026 INSC 812), Section 196 CrPC defamation ruling, Bar Council gender representation, and Monsoon Session 2026 recap.',
+    href: '/publications/research/monthly-legal-review-august-2026',
+    tag: 'Embargoed · Unlocks 27 Aug 2026, 6:30 PM',
+    readOnline: true,
+    comingSoon: false,
+  },
+  {
+    type: 'Monthly Review',
     title: 'Monthly Legal Review — Vol. 1 | Issue 2 | July 2026',
     desc: 'Covering the Supreme Court ruling on AI-hallucinated citations (Pooja Ramesh Singh), Compassionate Release for Elderly Prisoners, Court Live-Stream Ban, and Monsoon Session 2026.',
     href: '/publications/research/monthly-legal-review-july-2026',

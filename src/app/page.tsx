@@ -5,6 +5,7 @@ import { getArticles } from '../lib/content';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from '../components/Avatar';
 import AuthorLink from '../components/AuthorLink';
+import DynamicReleaseCountdown from '../components/DynamicReleaseCountdown';
 import { CountdownWrapper } from './CountdownWrapper';
 
 function getPublicationPath(article: Pick<ArticleData, 'type' | 'slug'>) {
@@ -136,9 +137,9 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
 
   return (
     <article className="group relative h-full w-full overflow-hidden rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm transition-all hover:shadow-md dark:border-primary/20 dark:bg-surface-container">
-      <div className="grid grid-cols-1 items-stretch md:grid-cols-12">
+      <div className="grid grid-cols-1 items-stretch md:grid-cols-12 h-full">
         <div className="flex flex-col justify-between p-6 sm:p-8 md:col-span-7">
-          <div>
+          <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/30 pb-3 dark:border-primary/15">
               <span className="inline-flex items-center gap-1.5 rounded-sm bg-oxblood px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-white dark:bg-primary dark:text-background">
                 Featured Case
@@ -151,18 +152,18 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
               </div>
             </div>
 
-            <h3 className="mt-4 font-serif text-2xl font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-3xl lg:text-3xl xl:text-4xl">
+            <h3 className="font-serif text-2xl font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-3xl">
               <Link href={href} className="focus:outline-none">
                 {article.title}
               </Link>
             </h3>
 
-            <p className="mt-4 font-body-md text-sm leading-relaxed text-on-surface-variant line-clamp-3 dark:text-on-background/70 sm:text-base">
+            <p className="font-body-md text-sm leading-relaxed text-on-surface-variant line-clamp-4 dark:text-on-background/70 sm:text-base">
               {getExcerpt(article)}
             </p>
 
             {article.categories && article.categories.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5 pt-1">
                 {article.categories.map((cat) => (
                   <span
                     key={cat}
@@ -186,7 +187,7 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
                   slug={article.author}
                   className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-on-background hover:text-oxblood dark:text-on-background dark:hover:text-primary transition-colors block"
                 >
-                  {article.authorDetails?.name || 'Observatory Scholar'}
+                  {article.authorDetails?.name || 'Bhoomija Khanna'}
                 </AuthorLink>
                 <p className="font-technical-ui text-[11px] text-on-surface-variant dark:text-on-background/50">
                   {article.date}
@@ -196,7 +197,7 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
 
             <Link
               href={href}
-              className="inline-flex items-center gap-2 border-b border-oxblood pb-0.5 font-technical-ui text-[11px] font-bold uppercase tracking-[0.2em] text-oxblood transition-all hover:gap-3 dark:border-primary dark:text-primary"
+              className="inline-flex items-center gap-2 border-b border-oxblood pb-0.5 font-technical-ui text-[11px] font-bold uppercase tracking-[0.2em] text-oxblood transition-all hover:gap-3 dark:border-primary dark:text-primary shrink-0"
             >
               Read Article
               <ArrowUpRight className="h-4 w-4" />
@@ -204,9 +205,9 @@ function FeaturedPublicationCard({ article }: { article: ArticleData }) {
           </div>
         </div>
 
-        <div className="relative min-h-[220px] border-t border-outline-variant/30 bg-surface-container-high dark:border-primary/15 dark:bg-surface-container-low md:col-span-5 md:border-l md:border-t-0">
+        <div className="relative min-h-[220px] md:min-h-full border-t border-outline-variant/30 bg-surface-container-high dark:border-primary/15 dark:bg-surface-container-low md:col-span-5 md:border-l md:border-t-0">
           <div
-            className="h-full min-h-[220px] bg-cover bg-center grayscale contrast-125 opacity-90 transition-opacity hover:opacity-100 dark:opacity-50 dark:hover:opacity-75"
+            className="absolute inset-0 bg-cover bg-center grayscale contrast-125 opacity-90 transition-opacity hover:opacity-100 dark:opacity-50 dark:hover:opacity-75"
             style={{ backgroundImage: `url(${coverImage})` }}
             aria-label={article.title}
             role="img"
@@ -221,7 +222,7 @@ function SubmissionCard({ article }: { article: ArticleData }) {
   const href = getPublicationPath(article);
 
   return (
-    <article className="group flex flex-col justify-between rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-5 shadow-xs transition-all hover:border-oxblood/50 hover:shadow-sm dark:border-primary/15 dark:bg-surface-container-low dark:hover:border-primary/50">
+    <article className="group flex h-full flex-col justify-between rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-4 sm:p-5 shadow-xs transition-all hover:border-oxblood/50 hover:shadow-sm dark:border-primary/15 dark:bg-surface-container-low dark:hover:border-primary/50">
       <div>
         <div className="flex items-center justify-between gap-3 font-technical-ui text-[10px] font-semibold uppercase tracking-[0.18em] text-oxblood dark:text-primary">
           <span className="rounded-xs bg-oxblood/10 px-2 py-0.5 dark:bg-primary/10">
@@ -233,14 +234,14 @@ function SubmissionCard({ article }: { article: ArticleData }) {
           </span>
         </div>
 
-        <h4 className="mt-3 font-serif text-lg font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary sm:text-xl">
+        <h4 className="mt-2.5 font-serif text-base sm:text-lg font-bold leading-snug text-on-background transition-colors group-hover:text-oxblood dark:text-on-background dark:group-hover:text-primary line-clamp-2">
           <Link href={href} className="focus:outline-none">
             {article.title}
           </Link>
         </h4>
       </div>
 
-      <div className="mt-4 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
+      <div className="mt-3 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <HomeAvatar
@@ -251,13 +252,13 @@ function SubmissionCard({ article }: { article: ArticleData }) {
               slug={article.author}
               className="truncate font-technical-ui text-[11px] font-medium text-on-surface-variant hover:text-oxblood dark:text-on-background/60 dark:hover:text-primary transition-colors"
             >
-              {article.authorDetails?.name || 'Observatory Scholar'}
+              {article.authorDetails?.name || 'Bhoomija Khanna'}
             </AuthorLink>
           </div>
 
           <Link
             href={href}
-            className="inline-flex items-center gap-1 font-technical-ui text-[10px] font-bold uppercase tracking-[0.16em] text-oxblood transition hover:gap-1.5 dark:text-primary"
+            className="inline-flex items-center gap-1 font-technical-ui text-[10px] font-bold uppercase tracking-[0.16em] text-oxblood transition hover:gap-1.5 dark:text-primary shrink-0"
           >
             Read
             <ArrowRight className="h-3 w-3" />
@@ -324,7 +325,7 @@ function ResearchDeskCard({ article }: { article: ArticleData }) {
                 slug={article.author}
                 className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-on-background hover:text-oxblood dark:text-on-background dark:hover:text-primary transition-colors block"
               >
-                {article.authorDetails?.name || 'Observatory Scholar'}
+                {article.authorDetails?.name || 'Bhoomija Khanna'}
               </AuthorLink>
               <p className="font-technical-ui text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-on-background/50">
                 National Legal Observatory Research Desk
@@ -346,26 +347,29 @@ function ResearchDeskCard({ article }: { article: ArticleData }) {
 }
 
 export default async function Homepage() {
-  const articles = await getArticles();
-  const articleBySlug = new Map(articles.map((article) => [article.slug, article]));
+  const allArticles = await getArticles(undefined, true);
+  const articleBySlug = new Map(allArticles.map((article) => [article.slug, article]));
 
+  const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
   const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;
   const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =
-    deepfakesArticle ?? weaponizationArticle ?? articles[0] ?? null;
+    deepfakesArticle ?? weaponizationArticle ?? allArticles[0] ?? null;
   const tukaramArticle = articleBySlug.get('tukaram-v-maharashtra-nlo-judgment-review') ?? null;
   const julyReviewArticle = articleBySlug.get('monthly-legal-review-july-2026') ?? null;
   const juneReviewArticle = articleBySlug.get('monthly-legal-review-june-2026') ?? null;
   const manufacturingConsentArticle = articleBySlug.get('manufacturing-consent') ?? null;
   const foundingEditorialArticle = articleBySlug.get('founding-editorial') ?? null;
   const researchDeskArticle =
-    tukaramArticle ?? manufacturingConsentArticle ?? articles.find((article) => article.type === 'research') ?? featuredArticle;
+    tukaramArticle ?? manufacturingConsentArticle ?? allArticles.find((article) => article.type === 'research') ?? featuredArticle;
 
-  const recentArticles = articles
+  const publicArticles = await getArticles();
+  const recentArticles = publicArticles
     .filter(
       (a) =>
         a.slug !== featuredArticle?.slug &&
-        a.slug !== researchDeskArticle?.slug
+        a.slug !== researchDeskArticle?.slug &&
+        a.slug !== augustReviewArticle?.slug
     )
     .slice(0, 3);
 
@@ -373,6 +377,13 @@ export default async function Homepage() {
     <div className="mx-auto max-w-[1120px] space-y-16 py-2 sm:py-6">
       <HeroSection />
       <EditorialDirective />
+
+      {augustReviewArticle && (
+        <DynamicReleaseCountdown
+          article={augustReviewArticle}
+          targetDate="2026-08-27T18:30:00+05:30"
+        />
+      )}
 
       <section className="space-y-6">
         <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-3 dark:border-primary/20">
@@ -388,12 +399,12 @@ export default async function Homepage() {
           </Link>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,0.9fr)] items-stretch">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1.15fr)] items-stretch">
           <div className="flex flex-col h-full space-y-3">
             <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-on-surface-variant dark:text-on-background/45">
               Featured Analysis
             </p>
-            <div className="flex-1 flex">
+            <div className="flex-1 flex h-full">
               {featuredArticle && <FeaturedPublicationCard article={featuredArticle} />}
             </div>
           </div>
@@ -402,7 +413,7 @@ export default async function Homepage() {
             <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-on-surface-variant dark:text-on-background/45">
               Recent Submissions
             </p>
-            <div className="flex-1 flex flex-col justify-between gap-3">
+            <div className="flex-1 grid grid-rows-3 gap-3.5 h-full">
               {recentArticles.map((article) => (
                 <SubmissionCard key={article.slug} article={article} />
               ))}
@@ -426,13 +437,7 @@ export default async function Homepage() {
         </div>
 
         {researchDeskArticle && (
-          researchDeskArticle.slug === 'tukaram-v-maharashtra-nlo-judgment-review' ? (
-            <CountdownWrapper targetDate="2026-08-20T18:40:00+05:30">
-              <ResearchDeskCard article={researchDeskArticle} />
-            </CountdownWrapper>
-          ) : (
-            <ResearchDeskCard article={researchDeskArticle} />
-          )
+          <ResearchDeskCard article={researchDeskArticle} />
         )}
       </section>
     </div>

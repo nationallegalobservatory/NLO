@@ -83,6 +83,7 @@ export interface ArticleData {
   references?: string[];
   bibliography?: BibliographyEntry[];
   coverImage?: string;
+  publishAt?: string; // scheduled launch ISO timestamp
 }
 
 const BANNED_BIBLIOGRAPHY_HOSTS = new Set([
@@ -314,18 +315,25 @@ export function getCategoryBySlug(slug: string): CategoryData | undefined {
 // Get author profile by slug
 export function getAuthorBySlug(slug: string): AuthorData | undefined {
   try {
-    const filePath = path.join(contentDirectory, 'authors', `${slug}.md`);
+    let normalizedSlug = slug || 'bhoomija-khanna';
+    if (normalizedSlug === 'bhoomija') normalizedSlug = 'bhoomija-khanna';
+
+    let filePath = path.join(contentDirectory, 'authors', `${normalizedSlug}.md`);
+    if (!fs.existsSync(filePath)) {
+      filePath = path.join(contentDirectory, 'authors', 'bhoomija-khanna.md');
+      normalizedSlug = 'bhoomija-khanna';
+    }
     if (!fs.existsSync(filePath)) return undefined;
 
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
 
     return {
-      slug: data.slug || slug,
-      name: data.name || '',
-      role: data.role || '',
-      avatar: data.avatar || '',
-      bio: data.bio || '',
+      slug: data.slug || normalizedSlug,
+      name: data.name || 'Bhoomija Khanna',
+      role: data.role || 'National Legal Observatory Founder & Chief Editor',
+      avatar: data.avatar || '/images/bhoomija-avatar.png',
+      bio: data.bio || 'Bhoomija Khanna is the founder and chief editor of the National Legal Observatory.',
       socialLinks: data.socialLinks || {},
       content: content,
     };
@@ -406,6 +414,7 @@ export async function getArticleBySlug(
       abstract: data.abstract,
       references: data.references,
       bibliography,
+      publishAt: data.publishAt,
       // Access control
       draft: data.draft || false,
       private: data.private || false,
@@ -418,7 +427,8 @@ export async function getArticleBySlug(
 
 // Get all articles across folders, or in a specific folder
 export async function getArticles(
-  typeFolder?: 'judgments' | 'policies' | 'research' | 'opinions'
+  typeFolder?: 'judgments' | 'policies' | 'research' | 'opinions',
+  includeScheduled: boolean = false
 ): Promise<ArticleData[]> {
   const folders = typeFolder
     ? [typeFolder]
@@ -441,7 +451,13 @@ export async function getArticles(
     );
 
     allArticles = allArticles.concat(
-      articles.filter((art): art is ArticleData => art !== undefined && !art.draft && !art.private)
+      articles.filter((art): art is ArticleData => {
+        if (!art || art.draft || art.private) return false;
+        if (!includeScheduled && art.publishAt && new Date(art.publishAt).getTime() > Date.now()) {
+          return false;
+        }
+        return true;
+      })
     );
   }
 

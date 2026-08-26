@@ -60,6 +60,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 }
 
 import { redirect } from 'next/navigation';
+import DynamicReleaseCountdown from '../../../../components/DynamicReleaseCountdown';
 
 export default async function ArticlePage(props: PageProps) {
   const resolvedParams = await props.params;
@@ -83,6 +84,16 @@ export default async function ArticlePage(props: PageProps) {
   // Private articles are only accessible from Bhoomija's profile reader
   if (article.private) {
     redirect('/bhoomija');
+  }
+
+  const isEmbargoed = article.publishAt ? new Date(article.publishAt).getTime() > Date.now() : false;
+
+  if (isEmbargoed) {
+    return (
+      <div className="mx-auto max-w-4xl py-12">
+        <DynamicReleaseCountdown article={article} targetDate={article.publishAt} />
+      </div>
+    );
   }
 
   const related = await getRelatedArticles(article, 3);

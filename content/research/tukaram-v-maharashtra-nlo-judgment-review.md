@@ -3,7 +3,7 @@ slug: "tukaram-v-maharashtra-nlo-judgment-review"
 type: "research"
 title: "Custody, Consent, and the Limits of Law: Revisiting Tukaram v. State of Maharashtra"
 author: "bhoomija-khanna"
-date: "2026-08-20"
+date: "2026-07-27"
 categories: ["criminal-law", "constitutional-law"]
 tags: ["Consent", "Rape Law", "Custodial Violence", "Mathura Case"]
 abstract: "Some judgments fail quietly. Tukaram v. State of Maharashtra did not. The case concerns the alleged rape of a young tribal girl, Mathura, by two policemen inside a police station. The Supreme Court acquitted both men, reversing a conviction the Bombay High Court had already secured. The reasoning behind that acquittal, and the public reckoning it provoked, make this one of the most consequential criminal law decisions in Indian legal history, not because the Court got the law right, but because it got the law so visibly wrong that Parliament had to intervene."

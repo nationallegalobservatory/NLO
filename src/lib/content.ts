@@ -211,9 +211,10 @@ export async function getAuthorBySlug(slug: string): Promise<AuthorData | undefi
 }
 
 export async function getArticles(
-  typeFolder?: 'judgments' | 'policies' | 'research' | 'opinions'
+  typeFolder?: 'judgments' | 'policies' | 'research' | 'opinions',
+  includeScheduled: boolean = false
 ): Promise<ArticleData[]> {
-  const localArticles = await getLocalArticles(typeFolder);
+  const localArticles = await getLocalArticles(typeFolder, includeScheduled);
   const localArticlesMap = new Map(localArticles.map((a) => [a.slug, a]));
 
   if (isSupabaseConfigured()) {
@@ -263,12 +264,19 @@ export async function getArticles(
                 bibliography: local.bibliography || mapped.bibliography,
                 date: local.date || mapped.date,
                 authorDetails: local.authorDetails || mapped.authorDetails,
+                publishAt: local.publishAt || mapped.publishAt,
               };
             }
             return mapped;
           })
-          // Only show articles that exist in local content AND are not drafts
-          .filter((art: ArticleData) => localArticlesMap.has(art.slug) && !art.draft);
+          // Only show articles that exist in local content AND are not drafts AND are not unlaunched scheduled
+          .filter((art: ArticleData) => {
+            if (!localArticlesMap.has(art.slug) || art.draft) return false;
+            if (!includeScheduled && art.publishAt && new Date(art.publishAt).getTime() > Date.now()) {
+              return false;
+            }
+            return true;
+          });
 
         const combined = [...mappedDb, ...localOnlyArticles];
         // Ensure final list is sorted by date (since local dates might override DB dates)

@@ -17,6 +17,9 @@ const cspHeader = `
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: process.cwd(),
+  },
   /* config options here */
 
   // Bundle local markdown content into Vercel serverless functions.

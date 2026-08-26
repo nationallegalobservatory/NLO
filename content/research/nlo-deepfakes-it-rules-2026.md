@@ -1,12 +1,12 @@
 ---
 slug: "nlo-deepfakes-it-rules-2026"
 type: "research"
-title: "NLO Deepfakes IT Rules 2026"
-author: "bhoomija"
+title: "The Three-Hour Problem: How India's IT Amendment Rules 2026 Try to Outrun the Deepfake"
+author: "bhoomija-khanna"
 date: "2026-08-20"
-categories: []
-tags: []
-abstract: ""
+categories: ["technology-law", "public-policy"]
+tags: ["Deepfakes", "IT Rules 2026", "AI Regulation", "Safe Harbour"]
+abstract: "On February 10, 2026, the Ministry of Electronics and Information Technology notified the IT Amendment Rules 2026, establishing a strict 3-hour takedown window for Synthetically Generated Information (SGI) and mandatory AI labelling duties under Section 79 safe harbour due diligence."
 ---
 
 __NATIONAL LEGAL OBSERVATORY__

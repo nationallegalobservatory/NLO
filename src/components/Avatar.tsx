@@ -25,13 +25,15 @@ export default function Avatar({
   authorSlug,
   disableLink = false,
 }: AvatarProps) {
-  const [imgSrc, setImgSrc] = useState<string>(src || SILHOUETTE);
-
   const isBhoomija =
+    !authorSlug ||
     authorSlug === 'bhoomija-khanna' ||
     authorSlug === 'bhoomija' ||
     (typeof src === 'string' && src.toLowerCase().includes('bhoomija')) ||
     (alt && alt.toLowerCase().includes('bhoomija'));
+
+  const defaultAvatar = isBhoomija ? '/images/bhoomija-avatar.png' : SILHOUETTE;
+  const [imgSrc, setImgSrc] = useState<string>(src || defaultAvatar);
 
   const resolvedHref =
     href ||
