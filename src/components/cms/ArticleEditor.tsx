@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { CmsRole } from '@/lib/cms/session';
 
@@ -106,6 +107,13 @@ export function ArticleEditor({
               Read-only
             </span>
           )}
+          <Link
+            href={`/cms/articles/${encodeURIComponent(article.slug)}/preview`}
+            target="_blank"
+            className="border border-outline-variant px-3 py-1.5 font-technical-ui uppercase tracking-[0.18em] hover:border-primary hover:text-primary"
+          >
+            Preview
+          </Link>
           <button
             onClick={onSave}
             disabled={busy || isReadOnly}
