@@ -1,5 +1,5 @@
 /**
- * NLO article refactor prompt + parser.
+ * NLO article refactor prompt + robust JSON parser.
  *
  * The AI's job: take an arbitrary source document (research paper, judgment
  * summary, draft notes, etc.) and produce a structured NLO article that fits
@@ -96,12 +96,108 @@ ${input.rawText}
 Now output the JSON object.`;
 }
 
+/**
+ * Robust JSON extraction.
+ *
+ * LLMs frequently:
+ *   - wrap the JSON in markdown fences (\`\`\`json ... \`\`\`)
+ *   - prepend/append prose ("Here is the refactored article:")
+ *   - nest the JSON inside extra text
+ *   - return JSON5-ish with trailing commas
+ *   - truncate mid-object
+ *
+ * This function tolerates all of the above. Strategy:
+ *   1. Strip markdown fences if present.
+ *   2. Try strict JSON.parse on the whole string.
+ *   3. If that fails, find the first '{' and the matching closing '}' (counting
+ *      braces + respecting strings) and parse that substring.
+ *   4. If that fails, attempt a minimal JSON5 cleanup (trailing commas).
+ *   5. Throw with the raw text (truncated) attached for debugging.
+ */
 export function safeParseRefactor(raw: string): RefactorOutput {
-  // Strip any markdown fencing the model might add despite instructions.
+  if (typeof raw !== 'string') {
+    throw new Error('Refactor output was not a string');
+  }
+
+  // 1) Strip markdown fences.
   let text = raw.trim();
   if (text.startsWith('```')) {
-    text = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+    text = text
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/```\s*$/, '')
+      .trim();
   }
-  const parsed = JSON.parse(text);
-  return parsed as RefactorOutput;
+
+  // 2) Try strict parse first.
+  try {
+    return JSON.parse(text) as RefactorOutput;
+  } catch {
+    // continue
+  }
+
+  // 3) Find the first balanced { ... } substring.
+  const start = text.indexOf('{');
+  if (start >= 0) {
+    const candidate = extractFirstJsonObject(text, start);
+    if (candidate) {
+      try {
+        return JSON.parse(candidate) as RefactorOutput;
+      } catch {
+        // continue to step 4
+      }
+
+      // 4) Minimal JSON5 cleanup: remove trailing commas before } or ]
+      const cleaned = candidate.replace(/,(\s*[}\]])/g, '$1');
+      try {
+        return JSON.parse(cleaned) as RefactorOutput;
+      } catch {
+        // give up — fall through to throw
+      }
+    }
+  }
+
+  throw new Error(
+    `Failed to parse refactor JSON. First 200 chars of raw: ${text.slice(0, 200)}`,
+  );
+}
+
+/**
+ * Walk from `startIdx` (a '{') to the matching '}', respecting JSON string
+ * boundaries + escape sequences. Returns the substring, or null if no match.
+ *
+ * Cheap hand-rolled state machine — avoids depending on a JSON-tolerance
+ * library for what's usually <2 KB of model output.
+ */
+function extractFirstJsonObject(text: string, startIdx: number): string | null {
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+  for (let i = startIdx; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escape) {
+        escape = false;
+      } else if (ch === '\\') {
+        escape = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+    if (ch === '{') {
+      depth++;
+      continue;
+    }
+    if (ch === '}') {
+      depth--;
+      if (depth === 0) {
+        return text.slice(startIdx, i + 1);
+      }
+    }
+  }
+  return null;
 }

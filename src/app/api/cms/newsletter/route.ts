@@ -9,6 +9,22 @@ export const runtime = 'nodejs';
 export const maxDuration = 300;
 
 /**
+ * Map an article type to its public-site URL folder.
+ * Must stay in sync with the public site's folder structure
+ * (src/app/publications/[category]/[slug]/page.tsx).
+ */
+function publicUrlForArticleType(type: string, slug: string): string {
+  const folder: Record<string, string> = {
+    judgment: 'judgments',
+    policy: 'policies',
+    research: 'research',
+    opinion: 'opinions',
+  };
+  const f = folder[type] || 'research';
+  return `${f}/${slug}`;
+}
+
+/**
  * POST /api/cms/newsletter
  * body: { subject, intro?, articleSlugs: string[], scheduleFor?: string }
  *
@@ -26,7 +42,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'UNAUTHENTICATED' }, { status: 401 });
   }
 
-  const { subject, intro, articleSlugs, scheduleFor } = (await req.json().catch(() => ({}))) as {
+  const { subject, intro, articleSlugs, scheduleFor } = (await req
+    .json()
+    .catch(() => ({}))) as {
     subject?: string;
     intro?: string;
     articleSlugs?: string[];
@@ -63,12 +81,8 @@ export async function POST(req: NextRequest) {
   }
 
   // 2) Build the email HTML (use the NLO template style — keep it simple)
-  const html = renderEmail({
-    subject,
-    intro,
-    articles,
-    siteOrigin: req.nextUrl.origin,
-  });
+  const siteOrigin = req.nextUrl.origin;
+  const html = renderEmail({ subject, intro, articles, siteOrigin });
 
   // 3) Create the send_log entry
   const { data: log, error: logErr } = await admin
@@ -119,6 +133,7 @@ export async function POST(req: NextRequest) {
   const BATCH = 50;
   let sent = 0;
   let failed = 0;
+  const errors: string[] = [];
   for (let i = 0; i < subscribers.length; i += BATCH) {
     const batch = subscribers.slice(i, i + BATCH);
     try {
@@ -133,6 +148,8 @@ export async function POST(req: NextRequest) {
       sent += batch.length;
     } catch (err) {
       failed += batch.length;
+      const msg = (err as Error).message;
+      errors.push(msg);
       console.error('[newsletter] batch failed', err);
     }
   }
@@ -143,6 +160,7 @@ export async function POST(req: NextRequest) {
       status: failed === 0 ? 'sent' : failed < sent ? 'partial' : 'failed',
       sent_count: sent,
       failed_count: failed,
+      error_message: errors.length > 0 ? errors.slice(0, 3).join(' | ') : null,
       finished_at: new Date().toISOString(),
     })
     .eq('id', log.id);
@@ -180,21 +198,22 @@ function renderEmail({
   siteOrigin: string;
 }): string {
   const articleHtml = articles
-    .map(
-      (a) => `
+    .map((a) => {
+      const url = `${siteOrigin}/publications/${publicUrlForArticleType(a.type, a.slug)}`;
+      return `
   <tr><td style="padding: 24px 0; border-bottom: 1px solid #e5e5e5;">
     <p style="margin: 0 0 4px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #888;">
       ${escapeHtml(a.type)} · ${escapeHtml(a.date)}
     </p>
     <h2 style="margin: 0 0 8px; font-size: 18px; line-height: 1.3;">
-      <a href="${siteOrigin}/publications/research/${encodeURIComponent(a.slug)}" style="color: #7a1f2b; text-decoration: none;">
+      <a href="${url}" style="color: #7a1f2b; text-decoration: none;">
         ${escapeHtml(a.title)}
       </a>
     </h2>
     ${a.abstract ? `<p style="margin: 0 0 8px; color: #444; font-size: 14px; line-height: 1.5;">${escapeHtml(a.abstract)}</p>` : ''}
     ${a.citation ? `<p style="margin: 0; color: #888; font-size: 12px;">${escapeHtml(a.citation)}</p>` : ''}
-  </td></tr>`,
-    )
+  </td></tr>`;
+    })
     .join('');
 
   return `<!doctype html>

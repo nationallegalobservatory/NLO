@@ -55,3 +55,7 @@ subscribers.txt
 # Local scratch and temp
 /scratch/
 /supabase/.temp/
+
+# macOS Finder metadata
+._*
+.DS_Store

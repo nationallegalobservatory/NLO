@@ -9,6 +9,15 @@ interface PageProps {
   searchParams: Promise<{ status?: string; q?: string }>;
 }
 
+const STATUSES = ['all', 'draft', 'review', 'scheduled', 'published', 'archived'] as const;
+const STATUS_COLORS: Record<string, string> = {
+  draft: 'border-outline-variant text-on-surface-variant',
+  review: 'border-amber-500/50 text-amber-700 dark:text-amber-400',
+  scheduled: 'border-blue-500/50 text-blue-700 dark:text-blue-400',
+  published: 'border-primary/50 text-primary bg-primary/5',
+  archived: 'border-outline-variant text-on-surface-variant opacity-60',
+};
+
 export default async function CmsArticlesPage({ searchParams }: PageProps) {
   const session = await readSession();
   if (!session) redirect('/cms/login');
@@ -17,7 +26,7 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
 
   if (!isCmsBackendConfigured()) {
     return (
-      <div className="p-8 max-w-3xl">
+      <div className="p-4 sm:p-8 max-w-3xl">
         <h1 className="text-2xl font-semibold mb-4">Articles</h1>
         <div className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
           CMS not configured. See <code className="font-mono">/cms/README.md</code>.
@@ -44,18 +53,18 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
   const { data: articles, error } = await query.limit(200);
 
   return (
-    <div className="p-8 max-w-6xl">
-      <header className="mb-6 flex items-end justify-between gap-4 flex-wrap">
-        <div>
+    <div className="p-4 sm:p-6 md:p-8 max-w-6xl">
+      <header className="mb-4 sm:mb-6 flex items-end justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
           <p className="font-technical-ui text-[10px] uppercase tracking-[0.28em] text-on-surface-variant">
             Library
           </p>
-          <h1 className="text-2xl font-semibold mt-1">Articles</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold mt-1">Articles</h1>
         </div>
         <div className="flex gap-2">
           <Link
             href="/cms/upload"
-            className="border border-oxblood bg-oxblood text-white px-3 py-1.5 text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background"
+            className="border border-oxblood bg-oxblood text-white px-3 py-2 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background inline-flex items-center"
           >
             + New
           </Link>
@@ -63,7 +72,7 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
       </header>
 
       <div className="mb-4 flex flex-wrap gap-2 text-xs">
-        {(['all', 'draft', 'review', 'scheduled', 'published', 'archived'] as const).map((s) => {
+        {STATUSES.map((s) => {
           const active = (status ?? 'all') === s;
           const href = s === 'all' ? '/cms/articles' : `/cms/articles?status=${s}`;
           return (
@@ -71,7 +80,7 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
               key={s}
               href={href}
               className={
-                'px-3 py-1.5 border font-technical-ui uppercase tracking-[0.14em] ' +
+                'px-3 py-2 min-h-[36px] border font-technical-ui uppercase tracking-[0.14em] inline-flex items-center ' +
                 (active
                   ? 'border-primary text-primary bg-primary/10'
                   : 'border-outline-variant text-on-surface-variant hover:border-primary')
@@ -89,57 +98,99 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      <div className="border border-outline-variant">
-        <table className="w-full text-sm">
-          <thead className="bg-surface-container-low">
-            <tr>
-              <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                Title
-              </th>
-              <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                Type
-              </th>
-              <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                Status
-              </th>
-              <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
-                Date
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-outline-variant">
+      {(articles ?? []).length === 0 ? (
+        <div className="border border-outline-variant p-8 text-center text-sm text-on-surface-variant">
+          No articles match. Try a different status, or upload one.
+        </div>
+      ) : (
+        <>
+          {/* === DESKTOP/TABLET: dense table (md+) === */}
+          <div className="hidden md:block border border-outline-variant overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead className="bg-surface-container-low">
+                <tr>
+                  <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                    Title
+                  </th>
+                  <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                    Type
+                  </th>
+                  <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                    Status
+                  </th>
+                  <th className="text-left px-4 py-2 font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+                    Date
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant">
+                {(articles ?? []).map((a) => (
+                  <tr key={a.slug} className="hover:bg-surface-container-low">
+                    <td className="px-4 py-2">
+                      <Link
+                        href={`/cms/articles/${encodeURIComponent(a.slug)}`}
+                        className="text-foreground hover:text-primary"
+                      >
+                        {a.title}
+                      </Link>
+                      <p className="text-xs text-on-surface-variant font-mono mt-0.5">{a.slug}</p>
+                    </td>
+                    <td className="px-4 py-2 text-xs uppercase tracking-[0.12em]">{a.type}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={
+                          'px-2 py-0.5 border text-[10px] uppercase tracking-[0.12em] ' +
+                          (STATUS_COLORS[a.cms_status ?? 'published'] ||
+                            STATUS_COLORS.draft)
+                        }
+                      >
+                        {a.cms_status ?? 'published'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-xs text-on-surface-variant">
+                      {a.cms_publish_at
+                        ? new Date(a.cms_publish_at).toLocaleDateString()
+                        : a.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* === MOBILE: card list (<md) === */}
+          <div className="md:hidden space-y-3">
             {(articles ?? []).map((a) => (
-              <tr key={a.slug} className="hover:bg-surface-container-low">
-                <td className="px-4 py-2">
-                  <Link
-                    href={`/cms/articles/${encodeURIComponent(a.slug)}`}
-                    className="text-foreground hover:text-primary"
+              <Link
+                key={a.slug}
+                href={`/cms/articles/${encodeURIComponent(a.slug)}`}
+                className="block border border-outline-variant p-3 hover:border-primary active:bg-surface-container-low transition-colors"
+              >
+                <p className="text-sm font-medium text-foreground leading-snug">{a.title}</p>
+                <p className="text-xs text-on-surface-variant font-mono mt-1 truncate">{a.slug}</p>
+                <div className="flex items-center gap-2 mt-2 text-[10px] font-technical-ui uppercase tracking-[0.12em]">
+                  <span className="text-on-surface-variant">{a.type}</span>
+                  <span className="text-on-surface-variant">·</span>
+                  <span
+                    className={
+                      'px-1.5 py-0.5 border ' +
+                      (STATUS_COLORS[a.cms_status ?? 'published'] || STATUS_COLORS.draft)
+                    }
                   >
-                    {a.title}
-                  </Link>
-                  <p className="text-xs text-on-surface-variant font-mono mt-0.5">{a.slug}</p>
-                </td>
-                <td className="px-4 py-2 text-xs uppercase tracking-[0.12em]">{a.type}</td>
-                <td className="px-4 py-2 text-xs uppercase tracking-[0.12em]">
-                  {a.cms_status ?? 'published'}
-                </td>
-                <td className="px-4 py-2 text-xs text-on-surface-variant">
-                  {a.cms_publish_at
-                    ? new Date(a.cms_publish_at).toLocaleDateString()
-                    : a.date}
-                </td>
-              </tr>
+                    {a.cms_status ?? 'published'}
+                  </span>
+                  <span className="text-on-surface-variant">·</span>
+                  <span className="text-on-surface-variant">
+                    {a.cms_publish_at
+                      ? new Date(a.cms_publish_at).toLocaleDateString()
+                      : a.date}
+                  </span>
+                </div>
+              </Link>
             ))}
-            {(articles ?? []).length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-sm text-on-surface-variant">
-                  No articles match. Try a different status, or upload one.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
