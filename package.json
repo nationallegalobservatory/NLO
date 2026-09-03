@@ -7,7 +7,9 @@
     "build": "npm run pwa:build && next build",
     "pwa:build": "node scripts/generate-sw.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "postinstall": "node -e \"console.log('NLO: review AUTH_SETUP.md and DEPLOYMENT.md to finish setup.')\""
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.18",
@@ -52,5 +54,9 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "workbox-build": "7.4.1"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
   }
 }

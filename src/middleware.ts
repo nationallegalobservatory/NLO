@@ -3,7 +3,13 @@ import { verifySession } from '@/lib/cms/session';
 
 const SESSION_COOKIE = 'nlo-cms-session';
 
-const PUBLIC_CMS_PATHS = new Set(['/cms/login', '/cms/api/auth/magic', '/cms/api/auth/callback']);
+const PUBLIC_CMS_PATHS = new Set([
+  '/cms/login',
+  '/api/cms/auth/magic',
+  '/api/cms/auth/callback',
+  '/api/cms/auth/logout',
+  '/api/cms/auth/dev-login',
+]);
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

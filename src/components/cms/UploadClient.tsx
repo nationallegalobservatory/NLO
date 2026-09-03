@@ -185,8 +185,33 @@ export function UploadClient() {
 
   return (
     <div className="space-y-6">
+
+      <style>{`
+        /* NLO Upload — direct color fallbacks (Tailwind 4 missed these in some builds) */
+        .nlo-dropzone { border-color: #d8c1c2; background: transparent; }
+        .nlo-dropzone:hover { border-color: #c5a05980; background: #15181E; }
+        .nlo-dropzone.dragging { border-color: #c5a059; background: rgba(197, 160, 89, 0.10); }
+        .nlo-dropzone.has-file { border-color: rgba(197, 160, 89, 0.40); background: rgba(197, 160, 89, 0.05); }
+        .nlo-type-btn { border-color: #d8c1c2; background: #0F1115; color: #FDF6E3; }
+        .nlo-type-btn:hover { border-color: #c5a059; }
+        .nlo-type-btn.active { border-color: #c5a059; background: rgba(197, 160, 89, 0.10); color: #c5a059; }
+        .nlo-action-btn { background: #c5a059; color: #0F1115; border-color: #c5a059; }
+        .nlo-action-btn:hover { background: #e0c285; border-color: #e0c285; }
+        .nlo-action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .nlo-secondary-btn { border-color: #d8c1c2; color: #FDF6E3; background: transparent; }
+        .nlo-secondary-btn:hover { border-color: #c5a059; color: #c5a059; }
+        .nlo-progress-track { background: #15181E; }
+        .nlo-progress-bar { background: #c5a059; }
+        .nlo-text-label { color: #c5a059; }
+        .nlo-text-muted { color: #8a7e7e; }
+        .nlo-text-error { color: #ff6b6b; }
+        .nlo-error-banner { border-color: rgba(255, 107, 107, 0.40); background: rgba(255, 107, 107, 0.10); color: #ff6b6b; }
+        .nlo-info-banner { border-color: rgba(197, 160, 89, 0.40); background: rgba(197, 160, 89, 0.05); color: #FDF6E3; }
+        .nlo-upload-status { border-color: #d8c1c2; color: #FDF6E3; }
+        .nlo-file-name { color: #FDF6E3; }
+      `}</style>
       {phase === 'done' && refactor ? (
-        <div className="border border-primary/40 bg-primary/5 px-4 py-4 text-sm">
+        <div className="nlo-info-banner border px-4 py-4 text-sm">
           <strong className="block mb-1">Refactor complete.</strong>
           Redirecting to <code className="font-mono break-all">{refactor.articleSlug}</code> for review…
         </div>
@@ -207,12 +232,8 @@ export function UploadClient() {
               }
             }}
             className={
-              'border-2 border-dashed rounded-md p-6 sm:p-10 text-center cursor-pointer transition-colors min-h-[180px] flex flex-col items-center justify-center ' +
-              (dragging
-                ? 'border-primary bg-primary/10'
-                : file
-                  ? 'border-primary/40 bg-primary/5'
-                  : 'border-outline-variant hover:border-primary/50 hover:bg-surface-container-low')
+              'nlo-dropzone border-2 border-dashed rounded-md p-6 sm:p-10 text-center cursor-pointer transition-colors min-h-[180px] flex flex-col items-center justify-center ' +
+              (dragging ? 'dragging' : file ? 'has-file' : '')
             }
           >
             <input
@@ -224,15 +245,15 @@ export function UploadClient() {
             />
             {file ? (
               <>
-                <p className="text-sm font-medium">{file.name}</p>
-                <p className="text-xs text-on-surface-variant mt-1">
+                <p className="nlo-file-name text-sm font-medium">{file.name}</p>
+                <p className="nlo-text-muted text-xs mt-1">
                   {(file.size / 1024).toFixed(1)} KB · click to change
                 </p>
               </>
             ) : (
               <>
-                <p className="text-sm font-medium">Drop file here, or tap to browse</p>
-                <p className="text-xs text-on-surface-variant mt-2">
+                <p className="nlo-file-name text-sm font-medium">Drop file here, or tap to browse</p>
+                <p className="nlo-text-muted text-xs mt-2">
                   PDF, DOCX, MD, or TXT · up to 25 MB
                 </p>
               </>
@@ -240,14 +261,14 @@ export function UploadClient() {
           </div>
 
           {validationError && (
-            <div className="border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+            <div className="nlo-error-banner border px-4 py-3 text-sm">
               {validationError}
             </div>
           )}
 
           {/* === Article type picker === */}
           <fieldset className="space-y-3">
-            <legend className="text-xs font-technical-ui uppercase tracking-[0.18em] text-on-surface-variant">
+            <legend className="nlo-text-label text-xs font-technical-ui uppercase tracking-[0.18em]">
               Article type
             </legend>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -257,10 +278,8 @@ export function UploadClient() {
                   type="button"
                   onClick={() => setArticleType(t)}
                   className={
-                    'border px-3 py-2 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.14em] ' +
-                    (articleType === t
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-outline-variant bg-surface-container-lowest hover:border-primary')
+                    'nlo-type-btn border px-3 py-2 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.14em] ' +
+                    (articleType === t ? 'active' : '')
                   }
                 >
                   {t}
@@ -278,13 +297,13 @@ export function UploadClient() {
           {/* === Progress bar (during upload) === */}
           {phase === 'uploading' && (
             <div className="space-y-1">
-              <div className="flex justify-between text-xs text-on-surface-variant">
+              <div className="nlo-text-muted flex justify-between text-xs">
                 <span>Uploading + extracting…</span>
                 <span>{progress}%</span>
               </div>
-              <div className="h-1.5 bg-surface-container-low overflow-hidden">
+              <div className="nlo-progress-track h-1.5 overflow-hidden">
                 <div
-                  className="h-full bg-primary transition-all"
+                  className="nlo-progress-bar h-full transition-all"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -298,7 +317,7 @@ export function UploadClient() {
                 type="button"
                 onClick={onUpload}
                 disabled={!file || phase === 'uploading'}
-                className="border border-oxblood bg-oxblood text-white px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background disabled:opacity-50"
+                className="nlo-action-btn border px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em]"
               >
                 {phase === 'uploading' ? 'Uploading…' : 'Upload + extract'}
               </button>
@@ -307,7 +326,7 @@ export function UploadClient() {
                 type="button"
                 onClick={onRefactor}
                 disabled={upload.extractionStatus !== 'extracted' || phase === 'refactoring'}
-                className="border border-oxblood bg-oxblood text-white px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background disabled:opacity-50"
+                className="nlo-action-btn border px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em]"
               >
                 {phase === 'refactoring' ? 'Refactoring…' : 'Refactor into NLO format'}
               </button>
@@ -316,7 +335,7 @@ export function UploadClient() {
               <button
                 type="button"
                 onClick={reset}
-                className="border border-outline-variant px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em] hover:border-primary"
+                className="nlo-secondary-btn border px-4 py-2.5 min-h-[44px] text-xs font-technical-ui uppercase tracking-[0.18em]"
               >
                 Start over
               </button>
@@ -325,8 +344,8 @@ export function UploadClient() {
 
           {/* === Upload status === */}
           {upload && (
-            <div className="border border-outline-variant p-4 text-sm">
-              <p className="text-xs font-technical-ui uppercase tracking-[0.18em] text-on-surface-variant mb-1">
+            <div className="nlo-upload-status border p-4 text-sm">
+              <p className="nlo-text-muted text-xs font-technical-ui uppercase tracking-[0.18em] mb-1">
                 Upload status
               </p>
               <p>
@@ -336,7 +355,7 @@ export function UploadClient() {
                   : `Extraction ${upload.extractionStatus}.`}
               </p>
               {upload.errorMessage && (
-                <p className="text-error text-xs mt-2">{upload.errorMessage}</p>
+                <p className="nlo-text-error text-xs mt-2">{upload.errorMessage}</p>
               )}
             </div>
           )}
