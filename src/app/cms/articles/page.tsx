@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { readSession } from '@/lib/cms/session';
 import { redirect } from 'next/navigation';
 import { getSupabaseAdmin, isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
+import { getArticles as getLocalArticles } from '@/lib/markdown';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,33 +25,62 @@ export default async function CmsArticlesPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const status = params.status;
 
+  let articles: Array<{
+    slug: string;
+    title: string;
+    type: string;
+    date: string;
+    cms_status: string;
+    cms_publish_at: string | null;
+    categories: string[];
+    tags: string[];
+    cms_updated_at: string | null;
+  }> = [];
+  let error: { message: string } | null = null;
+
   if (!isCmsBackendConfigured()) {
-    return (
-      <div className="p-4 sm:p-8 max-w-3xl">
-        <h1 className="text-2xl font-semibold mb-4">Articles</h1>
-        <div className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
-          CMS not configured. See <code className="font-mono">/cms/README.md</code>.
-        </div>
-      </div>
-    );
+    const local = await getLocalArticles(undefined, true);
+    articles = local.map((a) => {
+      const dStr = (a.date as unknown) instanceof Date ? (a.date as unknown as Date).toISOString().split('T')[0] : String(a.date || '');
+      return {
+        slug: a.slug,
+        title: a.title,
+        type: a.type,
+        date: dStr,
+        cms_status: 'published',
+        cms_publish_at: null,
+        categories: a.categories,
+        tags: a.tags,
+        cms_updated_at: dStr,
+      };
+    });
+    if (status && status !== 'all' && status !== 'published') {
+      articles = [];
+    }
+    if (params.q) {
+      const q = params.q.toLowerCase();
+      articles = articles.filter((a) => a.title.toLowerCase().includes(q));
+    }
+  } else {
+    const admin = getSupabaseAdmin();
+    if (!admin) return null;
+
+    let query = admin
+      .from('articles')
+      .select('slug, title, type, date, cms_status, cms_publish_at, categories, tags, cms_updated_at')
+      .order('cms_updated_at', { ascending: false, nullsFirst: false });
+
+    if (status && ['draft', 'review', 'scheduled', 'published', 'archived'].includes(status)) {
+      query = query.eq('cms_status', status);
+    }
+    if (params.q) {
+      query = query.ilike('title', `%${params.q}%`);
+    }
+
+    const res = await query.limit(200);
+    articles = res.data ?? [];
+    error = res.error;
   }
-
-  const admin = getSupabaseAdmin();
-  if (!admin) return null;
-
-  let query = admin
-    .from('articles')
-    .select('slug, title, type, date, cms_status, cms_publish_at, categories, tags, cms_updated_at')
-    .order('cms_updated_at', { ascending: false, nullsFirst: false });
-
-  if (status && ['draft', 'review', 'scheduled', 'published', 'archived'].includes(status)) {
-    query = query.eq('cms_status', status);
-  }
-  if (params.q) {
-    query = query.ilike('title', `%${params.q}%`);
-  }
-
-  const { data: articles, error } = await query.limit(200);
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-6xl">

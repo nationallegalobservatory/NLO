@@ -27,9 +27,12 @@ export function getSupabaseAdmin(): SupabaseClient | null {
 }
 
 export function isCmsBackendConfigured(): boolean {
-  return !!(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY &&
-    process.env.CMS_SESSION_SECRET
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const secret = process.env.CMS_SESSION_SECRET;
+
+  if (!url || !key || !secret) return false;
+  if (url.includes('YOUR_PROJECT') || url.includes('your-supabase-url')) return false;
+  if (key.startsWith('ey...') || key === 'your-supabase-service-role-key') return false;
+  return true;
 }

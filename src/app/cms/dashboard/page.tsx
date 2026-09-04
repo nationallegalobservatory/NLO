@@ -26,9 +26,29 @@ interface DashboardStats {
   }>;
 }
 
+import { getArticles as getLocalArticles } from '@/lib/markdown';
+
 async function loadStats(): Promise<DashboardStats | { error: string }> {
   if (!isCmsBackendConfigured()) {
-    return { error: 'CMS not configured. See /cms/README.md.' };
+    const local = await getLocalArticles(undefined, true);
+    const { getLocalSubscribers, getLocalCampaigns } = await import('@/lib/cms/localStore');
+    const localSubs = getLocalSubscribers();
+    const localCampaigns = getLocalCampaigns();
+    return {
+      drafts: 0,
+      scheduled: 0,
+      published: local.length,
+      subscribers: localSubs.length,
+      pendingUploads: 0,
+      recentArticles: local.slice(0, 8).map((a) => ({
+        slug: a.slug,
+        title: a.title,
+        date: (a.date as unknown) instanceof Date ? (a.date as unknown as Date).toISOString().split('T')[0] : String(a.date || ''),
+        cms_status: 'published',
+        cms_publish_at: null,
+      })),
+      recentSends: localCampaigns,
+    };
   }
   const admin = getSupabaseAdmin();
   if (!admin) return { error: 'CMS not configured.' };
@@ -195,16 +215,16 @@ function Stat({
   const body = (
     <div
       className={
-        'border p-4 ' +
+        'border p-4 transition-colors ' +
         (highlight
-          ? 'border-primary/40 bg-primary/5'
-          : 'border-outline-variant bg-surface-container-lowest')
+          ? 'border-primary/50 bg-primary/10 text-primary'
+          : 'border-outline-variant bg-surface-container-lowest hover:border-primary/50')
       }
     >
-      <p className="font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant">
+      <p className="font-technical-ui text-[10px] uppercase tracking-[0.18em] text-on-surface-variant font-medium">
         {label}
       </p>
-      <p className="text-2xl font-semibold mt-1">{value}</p>
+      <p className="text-2xl font-semibold mt-1 text-foreground">{value}</p>
     </div>
   );
   if (href) {

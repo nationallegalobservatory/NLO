@@ -98,7 +98,7 @@ export function ComposeClient({
           onChange={(e) => setSubject(e.target.value)}
           required
           placeholder="NLO Monthly Review — August 2026"
-          className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+          className="w-full border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
         />
       </label>
 
@@ -111,7 +111,7 @@ export function ComposeClient({
           onChange={(e) => setIntro(e.target.value)}
           rows={5}
           placeholder={`Dear subscriber,\n\nThis month at the Observatory…`}
-          className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+          className="w-full border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
         />
       </label>
 
@@ -183,7 +183,7 @@ export function ComposeClient({
             type="datetime-local"
             value={scheduleAt}
             onChange={(e) => setScheduleAt(e.target.value)}
-            className="border border-outline bg-surface-container-lowest px-3 py-2 text-sm"
+            className="border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         )}
         {scheduleMode === 'later' && (
@@ -202,7 +202,8 @@ export function ComposeClient({
         <button
           type="submit"
           disabled={busy}
-          className="border border-oxblood bg-oxblood text-white px-4 py-2 text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background disabled:opacity-50"
+          style={{ backgroundColor: '#c5a059', color: '#090D14' }}
+          className="border border-[#d4b068] px-5 py-2.5 text-xs font-technical-ui uppercase tracking-[0.18em] font-bold hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
         >
           {busy
             ? 'Sending…'

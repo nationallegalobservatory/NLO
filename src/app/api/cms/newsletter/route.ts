@@ -32,9 +32,6 @@ function publicUrlForArticleType(type: string, slug: string): string {
  * row that the cron route will pick up.
  */
 export async function POST(req: NextRequest) {
-  if (!isCmsBackendConfigured()) {
-    return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-  }
   let session;
   try {
     session = await requireSession();
@@ -53,6 +50,72 @@ export async function POST(req: NextRequest) {
 
   if (!subject || !Array.isArray(articleSlugs) || articleSlugs.length === 0) {
     return NextResponse.json({ error: 'MISSING_FIELDS' }, { status: 400 });
+  }
+
+  if (!isCmsBackendConfigured()) {
+    const { getLocalSubscribers, saveLocalCampaign } = await import('@/lib/cms/localStore');
+    const { getArticles } = await import('@/lib/markdown');
+
+    const subs = getLocalSubscribers();
+    if (subs.length === 0) {
+      return NextResponse.json(
+        { error: 'NO_SUBSCRIBERS', message: 'No subscribers found in database. Add subscribers first.' },
+        { status: 400 },
+      );
+    }
+
+    const allArts = await getArticles(undefined, true);
+    const selectedArts = allArts
+      .filter((a) => articleSlugs.includes(a.slug))
+      .map((a) => ({
+        slug: a.slug,
+        title: a.title,
+        date: (a.date as unknown) instanceof Date ? (a.date as unknown as Date).toISOString().slice(0, 10) : String(a.date || ''),
+        type: a.type,
+        abstract: a.abstract || null,
+        citation: a.citation || null,
+        coverImage: a.coverImage || null,
+        content: a.content || '',
+      }));
+
+    if (selectedArts.length === 0) {
+      return NextResponse.json({ error: 'NO_ARTICLES', message: 'Selected articles not found.' }, { status: 400 });
+    }
+
+    const siteOrigin = req.nextUrl.origin;
+    const html = renderEmail({ subject, intro, articles: selectedArts, siteOrigin });
+
+    let sentCount = subs.length;
+    let failedCount = 0;
+    if (process.env.GMAIL_APP_PASSWORD) {
+      const { sendEmail } = await import('@/lib/email');
+      for (const s of subs) {
+        try {
+          await sendEmail({ to: s.email, subject, html });
+        } catch {
+          failedCount++;
+        }
+      }
+    }
+
+    const campaignLog = saveLocalCampaign({
+      campaign_subject: subject,
+      recipient_count: subs.length,
+      sent_count: sentCount,
+      failed_count: failedCount,
+      status: scheduleFor ? 'scheduled' : 'sent',
+      scheduled_for: scheduleFor || null,
+      finished_at: scheduleFor ? null : new Date().toISOString(),
+      sent_by: session.email,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      sent: sentCount,
+      failed: failedCount,
+      sendLogId: campaignLog.id,
+      scheduled: !!scheduleFor,
+    });
   }
 
   const admin = getSupabaseAdmin();

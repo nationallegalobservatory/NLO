@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/cms/session';
 import { getSupabaseAdmin, isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
 
+import { updateLocalArticle } from '@/lib/cms/localStore';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -13,9 +15,6 @@ export const runtime = 'nodejs';
  * For monthly-report format, snap publish time to 27th 18:30 IST of the chosen month.
  */
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!isCmsBackendConfigured()) {
-    return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-  }
   let session;
   try {
     session = await requireSession();
@@ -30,9 +29,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const slug = decodeURIComponent(id);
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
 
-  const admin = getSupabaseAdmin();
-  if (!admin) return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-
   // Monthly Review editorial rule: snap to 27th 18:30 IST.
   if (body.format === 'monthly-report' && body.cms_publish_at) {
     const d = new Date(body.cms_publish_at as string);
@@ -42,6 +38,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       body.cms_publish_at = d.toISOString();
     }
   }
+
+  // === LOCAL OFFLINE FALLBACK ===
+  if (!isCmsBackendConfigured() || !getSupabaseAdmin()) {
+    const res = updateLocalArticle(slug, body);
+    if (!res) {
+      return NextResponse.json({ error: 'ARTICLE_NOT_FOUND' }, { status: 404 });
+    }
+    return NextResponse.json({ ok: true, slug: res.slug, savedLocally: true });
+  }
+
+  const admin = getSupabaseAdmin()!;
 
   const update: Record<string, unknown> = {
     cms_updated_at: new Date().toISOString(),

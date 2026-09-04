@@ -3,6 +3,8 @@ import { requireSession } from '@/lib/cms/session';
 import { getSupabaseAdmin, isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
 import { extractText } from '@/lib/cms/extract';
 
+import { saveLocalUpload } from '@/lib/cms/localStore';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -20,13 +22,10 @@ const ACCEPTED_EXTS = ['.pdf', '.docx', '.md', '.markdown', '.txt'];
  * POST /api/cms/upload
  * multipart/form-data: file=<file>, articleType=judgment|policy|research|opinion
  *
- * Saves the file to Supabase storage, extracts text synchronously, creates a
- * cms_uploads row. The client then calls /api/cms/refactor with the upload id.
+ * Saves the file (Supabase storage or local store fallback), extracts text synchronously.
+ * The client then calls /api/cms/refactor with the upload id.
  */
 export async function POST(req: NextRequest) {
-  if (!isCmsBackendConfigured()) {
-    return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-  }
   let session;
   try {
     session = await requireSession();
@@ -60,12 +59,51 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const admin = getSupabaseAdmin();
-  if (!admin) {
-    return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  // === LOCAL OFFLINE FALLBACK ===
+  if (!isCmsBackendConfigured() || !getSupabaseAdmin()) {
+    let extractedText = '';
+    let extractionStatus: 'extracted' | 'failed' = 'extracted';
+    let errorMessage: string | null = null;
+
+    try {
+      const result = await extractText(bytes, file.name, file.type);
+      extractedText = result.text;
+      if (!extractedText) {
+        extractionStatus = 'failed';
+        errorMessage = result.warnings.join('; ') || 'No text extracted.';
+      }
+    } catch (err) {
+      extractionStatus = 'failed';
+      errorMessage = (err as Error).message;
+    }
+
+    const localUpload = saveLocalUpload({
+      originalFilename: file.name,
+      mimeType: file.type || 'application/octet-stream',
+      buffer: bytes,
+      extractedText,
+      extractionStatus,
+      errorMessage,
+      uploaderEmail: session.email,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      upload: {
+        id: localUpload.id,
+        originalFilename: localUpload.originalFilename,
+        byteSize: localUpload.byteSize,
+        extractionStatus: localUpload.extractionStatus,
+        extractedCharCount: localUpload.extractedCharCount,
+        errorMessage: localUpload.errorMessage,
+        suggestedNext: localUpload.extractionStatus === 'extracted' ? 'refactor' : 'review',
+      },
+    });
   }
 
-  const bytes = Buffer.from(await file.arrayBuffer());
+  const admin = getSupabaseAdmin()!;
 
   // 1) Upload to Supabase Storage (bucket: cms-uploads)
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');

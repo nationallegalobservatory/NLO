@@ -599,9 +599,10 @@ export async function GET(request: Request) {
       });
     }
 
+    const nvidiaKey = process.env.NVIDIA_API_KEY?.trim();
     const rawApiKey = process.env.GEMINI_API_KEY?.trim();
     const apiKeys = rawApiKey ? rawApiKey.split(',').map(k => k.trim()).filter(Boolean) : [];
-    if (apiKeys.length === 0) {
+    if (!nvidiaKey && apiKeys.length === 0) {
       return NextResponse.json({
         aiResponse: null,
         aiError: 'AI search is not configured on this server yet.',
@@ -670,50 +671,74 @@ export async function GET(request: Request) {
         webPreviews,
         scope
       );
-      const requestBody = JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: promptText,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.1,
-          maxOutputTokens: 8000,
-        },
-      });
 
-      for (const key of apiKeys) {
+      // 1) Try NVIDIA NIM Primary (Ultra-Fast)
+      if (nvidiaKey) {
         try {
-          const aiRes = await fetch(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-goog-api-key': key,
-              },
-              body: requestBody,
-            }
-          );
+          const nimModel = process.env.NVIDIA_DEFAULT_MODEL || 'deepseek-ai/deepseek-v4-flash-0731';
+          const nimRes = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${nvidiaKey}`,
+            },
+            body: JSON.stringify({
+              model: nimModel,
+              messages: [{ role: 'user', content: promptText }],
+              temperature: 0.1,
+              max_tokens: 350,
+            }),
+          });
 
-          if (aiRes.ok) {
-            const data = await aiRes.json();
-            const rawResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-            aiResponse = rawResponse ? formatCompactAiResponse(rawResponse) : null;
+          if (nimRes.ok) {
+            const data = await nimRes.json();
+            const raw = data?.choices?.[0]?.message?.content?.trim() || '';
+            aiResponse = raw ? formatCompactAiResponse(raw) : null;
             aiError = null;
-            break;
           } else {
-            console.error('AI search API error with a key:', await aiRes.text());
-            aiError = 'AI summary temporarily unavailable.';
+            console.warn('[search/ai] NVIDIA NIM returned', nimRes.status, await nimRes.text().catch(() => ''));
           }
-        } catch (fetchError) {
-          console.error('Failed to fetch AI summary with a key:', fetchError);
-          aiError = 'AI summary temporarily unavailable.';
+        } catch (nimErr) {
+          console.error('[search/ai] NVIDIA NIM fetch error:', nimErr);
         }
+      }
+
+      // 2) Fallback to Gemini if NVIDIA failed or was unset
+      if (!aiResponse && apiKeys.length > 0) {
+        const requestBody = JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 800 },
+        });
+
+        for (const key of apiKeys) {
+          try {
+            const aiRes = await fetch(
+              'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-goog-api-key': key,
+                },
+                body: requestBody,
+              }
+            );
+
+            if (aiRes.ok) {
+              const data = await aiRes.json();
+              const rawResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+              aiResponse = rawResponse ? formatCompactAiResponse(rawResponse) : null;
+              aiError = null;
+              break;
+            }
+          } catch {
+            // continue
+          }
+        }
+      }
+
+      if (!aiResponse && !aiError) {
+        aiError = 'AI summary temporarily unavailable.';
       }
     } catch (e) {
       console.error('Failed to construct AI request:', e);

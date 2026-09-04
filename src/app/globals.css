@@ -243,58 +243,58 @@
   /* Colors - Dark Theme */
   --foreground: var(--on-background);
   --on-tertiary-fixed-variant: #5d4201;
-  --error: #ba1a1a;
+  --error: #ffb4ab;
   --tertiary-fixed-dim: #e9c176;
-  --primary-container: #722f37;
-  --surface-variant: #e9e2d0;
-  --on-error: #ffffff;
-  --surface-container-highest: #1A1D23;
+  --primary-container: #3d1219;
+  --surface-variant: #1E222A;
+  --on-error: #690005;
+  --surface-container-highest: #252B35;
   --primary: #C5A059;
   --surface-container-low: #111419;
-  --on-primary-container: #C5A059;
+  --on-primary-container: #e8c688;
   --tertiary-fixed: #ffdea5;
-  --surface-bright: #1A1D23;
-  --surface-dim: #e0dac7;
+  --surface-bright: #252B35;
+  --surface-dim: #0B0D10;
   --on-secondary-fixed: #091d2e;
   --secondary-fixed-dim: #b5c8df;
-  --surface-container-high: #efe8d5;
+  --surface-container-high: #1E222A;
   --primary-fixed-dim: #ffb2b8;
-  --on-surface: #1e1c10;
-  --on-error-container: #93000a;
-  --outline-variant: #d8c1c2;
-  --on-secondary: #ffffff;
+  --on-surface: #FDF6E3;
+  --on-error-container: #ffdad6;
+  --outline-variant: #2A303C;
+  --on-secondary: #0F1115;
   --surface-container: #15181E;
-  --secondary: #4e6073;
-  --inverse-primary: #ffb2b8;
+  --secondary: #8B9BB4;
+  --inverse-primary: #561922;
   --surface-tint: #C5A059;
   --tertiary: #C5A059;
-  --surface-container-lowest: #ffffff;
-  --on-tertiary: #ffffff;
-  --error-container: #ffdad6;
-  --secondary-container: #cfe2f9;
-  --outline: #867273;
+  --surface-container-lowest: #0A0C0F;
+  --on-tertiary: #1e1c10;
+  --error-container: #93000a;
+  --secondary-container: #222933;
+  --outline: #4E5666;
   --on-primary-fixed-variant: #753139;
   --on-tertiary-fixed: #261900;
   --on-tertiary-container: #d3ad64;
-  --inverse-surface: #f7f0de;
-  --on-surface-variant: #534343;
-  --on-secondary-fixed-variant: #36485b;
+  --inverse-surface: #FDF6E3;
+  --on-surface-variant: #A8A095;
+  --on-secondary-fixed-variant: #b5c8df;
   --background: #0F1115;
   --tertiary-container: #5b4000;
   --surface: #0F1115;
   --secondary-fixed: #d1e4fb;
   --on-background: #FDF6E3;
-  --on-primary: #ffffff;
-  --inverse-on-surface: #f7f0de;
+  --on-primary: #1e1c10;
+  --inverse-on-surface: #1e1c10;
   --primary-fixed: #ffdadb;
   --on-primary-fixed: #3c0610;
-  --on-secondary-container: #526478;
+  --on-secondary-container: #cfe2f9;
 
-  --ink-black: #1e1c10;
-  --slate-gray: #4e6073;
-  --deep-navy: #091d2e;
+  --ink-black: #FDF6E3;
+  --slate-gray: #8B9BB4;
+  --deep-navy: #15181E;
   --manilla-legal: #0F1115;
-  --oxblood: #722f37;
+  --oxblood: #C5A059;
 
   /* Font Families - Dark Theme */
   --font-body-lg: var(--font-source-serif), "Source Serif 4", Georgia, serif;
@@ -322,6 +322,45 @@ body {
               border-color 350ms cubic-bezier(0.4, 0, 0.2, 1),
               color 350ms cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
+}
+
+/* Ensure inputs, textareas, selects respect dark/light theme surface and text colors */
+input,
+textarea,
+select {
+  color: var(--foreground);
+  background-color: var(--surface-container-lowest);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+  color-scheme: dark;
+  background-color: #0c0f17 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.dark select option {
+  background-color: #0c0f17 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Chrome / Safari / 1Password Autofill dark mode overrides */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark select:-webkit-autofill {
+  -webkit-text-fill-color: #f1f5f9 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #0c0f17 inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  caret-color: #f1f5f9 !important;
 }
 
 /* ─── Animation keyframes ─────────────────────────────────────── */

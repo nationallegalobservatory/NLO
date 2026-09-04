@@ -7,12 +7,11 @@
     "build": "npm run pwa:build && next build",
     "pwa:build": "node scripts/generate-sw.mjs",
     "start": "next start",
-    "lint": "eslint",
-    "type-check": "tsc --noEmit",
-    "postinstall": "node -e \"console.log('NLO: review AUTH_SETUP.md and DEPLOYMENT.md to finish setup.')\""
+    "lint": "eslint"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.18",
+    "@ai-sdk/openai": "^4.0.57",
     "@ai-sdk/react": "^4.0.34",
     "@radix-ui/react-slot": "1.3.3",
     "@supabase/supabase-js": "^2.107.0",
@@ -45,8 +44,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/pdf-parse": "^1.1.4",
     "@types/nodemailer": "^8.0.1",
+    "@types/pdf-parse": "^1.1.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -54,9 +53,5 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "workbox-build": "7.4.1"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
   }
 }

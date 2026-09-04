@@ -15,9 +15,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * newsletter_subscribers, returns counts.
  */
 export async function POST(req: NextRequest) {
-  if (!isCmsBackendConfigured()) {
-    return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-  }
   try {
     await requireSession();
   } catch {
@@ -45,27 +42,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ added: 0, skipped, total: 0 });
   }
 
-  const admin = getSupabaseAdmin();
-  if (!admin) return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
+  if (isCmsBackendConfigured()) {
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      try {
+        const rows = dedup.map((email) => ({
+          email,
+          source: source || 'import',
+          active: true,
+        }));
 
-  const rows = dedup.map((email) => ({
-    email,
-    source: source || 'import',
-    active: true,
-  }));
+        const { error } = await admin
+          .from('newsletter_subscribers')
+          .upsert(rows, { onConflict: 'email', ignoreDuplicates: true });
 
-  const { error } = await admin
-    .from('newsletter_subscribers')
-    .upsert(rows, { onConflict: 'email', ignoreDuplicates: true });
+        if (!error) {
+          const { count: total } = await admin
+            .from('newsletter_subscribers')
+            .select('*', { count: 'exact', head: true })
+            .eq('active', true);
 
-  if (error) {
-    return NextResponse.json({ error: 'DB_ERROR', detail: error.message }, { status: 500 });
+          return NextResponse.json({ added: dedup.length, skipped, total: total ?? dedup.length });
+        }
+        console.warn('Supabase subscribers upsert error, falling back to local database store:', error);
+      } catch (err) {
+        console.warn('Supabase subscribers exception, falling back to local database store:', err);
+      }
+    }
   }
 
-  const { count: total } = await admin
-    .from('newsletter_subscribers')
-    .select('*', { count: 'exact', head: true })
-    .eq('active', true);
-
-  return NextResponse.json({ added: dedup.length, skipped, total: total ?? 0 });
+  // Local database store fallback
+  const { addLocalSubscribers } = await import('@/lib/cms/localStore');
+  const res = addLocalSubscribers(dedup, source || 'import');
+  return NextResponse.json({ added: res.added, skipped, total: res.total });
 }

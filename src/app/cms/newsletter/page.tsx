@@ -4,43 +4,59 @@ import { redirect } from 'next/navigation';
 import { getSupabaseAdmin, isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
 import { SubscriberUpload } from '@/components/cms/SubscriberUpload';
 
+import { getArticles } from '@/lib/content';
+
 export const dynamic = 'force-dynamic';
 
 export default async function CmsNewsletterPage() {
   const session = await readSession();
   if (!session) redirect('/cms/login');
-  if (!isCmsBackendConfigured()) {
-    return (
-      <div className="p-4 sm:p-8 max-w-3xl">
-        <h1 className="text-2xl font-semibold mb-4">Newsletter</h1>
-        <div className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
-          CMS not configured.
-        </div>
-      </div>
-    );
-  }
-  const admin = getSupabaseAdmin();
-  if (!admin) return null;
 
-  const [{ count: activeCount }, { data: recentSends }, { data: articles }] = await Promise.all([
-    admin
-      .from('newsletter_subscribers')
-      .select('*', { count: 'exact', head: true })
-      .eq('active', true),
-    admin
-      .from('cms_send_log')
-      .select(
-        'id, campaign_subject, status, recipient_count, sent_count, failed_count, scheduled_for, finished_at, created_at',
-      )
-      .order('created_at', { ascending: false })
-      .limit(10),
-    admin
-      .from('articles')
-      .select('slug, title, date, type')
-      .eq('cms_status', 'published')
-      .order('date', { ascending: false })
-      .limit(20),
-  ]);
+  let activeCount: number | null = 0;
+  let recentSends: any[] = [];
+  let articles: any[] = [];
+
+  if (isCmsBackendConfigured()) {
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      const [{ count }, { data: sends }, { data: arts }] = await Promise.all([
+        admin
+          .from('newsletter_subscribers')
+          .select('*', { count: 'exact', head: true })
+          .eq('active', true),
+        admin
+          .from('cms_send_log')
+          .select(
+            'id, campaign_subject, status, recipient_count, sent_count, failed_count, scheduled_for, finished_at, created_at',
+          )
+          .order('created_at', { ascending: false })
+          .limit(10),
+        admin
+          .from('articles')
+          .select('slug, title, date, type')
+          .eq('cms_status', 'published')
+          .order('date', { ascending: false })
+          .limit(20),
+      ]);
+      activeCount = count;
+      recentSends = sends ?? [];
+      articles = arts ?? [];
+    }
+  } else {
+    // Local mode: use real subscriber count from local store (zero fake data)
+    const { getLocalSubscribers, getLocalCampaigns } = await import('@/lib/cms/localStore');
+    const localSubs = getLocalSubscribers();
+    activeCount = localSubs.length;
+    recentSends = getLocalCampaigns();
+
+    const localArticles = await getArticles();
+    articles = localArticles.slice(0, 10).map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      date: (a.date as unknown) instanceof Date ? (a.date as unknown as Date).toISOString().slice(0, 10) : String(a.date || ''),
+      type: a.type,
+    }));
+  }
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-5xl space-y-6 md:space-y-8">

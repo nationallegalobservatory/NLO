@@ -104,7 +104,7 @@ export function SettingsClient({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="border border-outline bg-surface-container-lowest px-3 py-2 text-sm"
+                className="border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
               />
               <input
                 type="email"
@@ -112,22 +112,23 @@ export function SettingsClient({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border border-outline bg-surface-container-lowest px-3 py-2 text-sm"
+                className="border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
               />
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as CmsRole)}
-                className="border border-outline bg-surface-container-lowest px-3 py-2 text-sm"
+                className="border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] px-3 py-2 text-sm focus:border-primary focus:outline-none"
               >
-                <option value="owner">Owner</option>
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer (read-only)</option>
+                <option value="owner" className="bg-[#0c0f17] text-[#f1f5f9]">Owner</option>
+                <option value="editor" className="bg-[#0c0f17] text-[#f1f5f9]">Editor</option>
+                <option value="viewer" className="bg-[#0c0f17] text-[#f1f5f9]">Viewer (read-only)</option>
               </select>
             </div>
             <button
               type="submit"
               disabled={busy}
-              className="border border-oxblood bg-oxblood text-white px-3 py-1.5 text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background disabled:opacity-50"
+              style={{ backgroundColor: '#c5a059', color: '#090D14' }}
+              className="border border-[#d4b068] px-4 py-2 text-xs font-technical-ui uppercase tracking-[0.18em] font-bold hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
             >
               {busy ? 'Inviting…' : 'Invite'}
             </button>

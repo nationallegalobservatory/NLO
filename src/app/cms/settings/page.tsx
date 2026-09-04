@@ -8,23 +8,29 @@ export const dynamic = 'force-dynamic';
 export default async function CmsSettingsPage() {
   const session = await readSession();
   if (!session) redirect('/cms/login');
-  if (!isCmsBackendConfigured()) {
-    return (
-      <div className="p-8 max-w-3xl">
-        <h1 className="text-2xl font-semibold mb-4">Settings</h1>
-        <div className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
-          CMS not configured.
-        </div>
-      </div>
-    );
+  let users: any[] = [];
+  if (isCmsBackendConfigured()) {
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      const { data } = await admin
+        .from('cms_users')
+        .select('id, email, name, role, last_login_at, created_at')
+        .order('created_at');
+      users = data ?? [];
+    }
+  } else {
+    // Local / Offline development fallback
+    users = [
+      {
+        id: 'local-owner-1',
+        email: session.email,
+        name: session.name || 'Bhoomija Khanna',
+        role: session.role || 'owner',
+        last_login_at: new Date().toISOString(),
+        created_at: new Date('2026-08-01').toISOString(),
+      },
+    ];
   }
-  const admin = getSupabaseAdmin();
-  if (!admin) return null;
-
-  const { data: users } = await admin
-    .from('cms_users')
-    .select('id, email, name, role, last_login_at, created_at')
-    .order('created_at');
 
   return (
     <SettingsClient

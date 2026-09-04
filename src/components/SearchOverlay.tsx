@@ -71,13 +71,13 @@ export default function SearchOverlay({
 
   // Persist chat history
   useEffect(() => {
-    const saved = localStorage.getItem('nlo-ai-chat-messages');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('nlo-ai-chat-messages');
+      if (saved && saved.trim().startsWith('[')) {
         setMessages(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to load chat history:', e);
       }
+    } catch {
+      localStorage.removeItem('nlo-ai-chat-messages');
     }
   }, [setMessages]);
 
@@ -481,9 +481,12 @@ export default function SearchOverlay({
                 </div>
               )}
               {messages.map((msg) => {
-                          const isUser = (msg.role as string) === 'user';
-                          const textContent = msg.parts?.find((part) => part.type === 'text')?.text ?? '';
-                          return (
+                const isUser = (msg.role as string) === 'user';
+                const textContent =
+                  msg.parts?.map((part: any) => (part.type === 'text' ? part.text : '')).join('') ||
+                  (typeof (msg as any).content === 'string' ? (msg as any).content : '');
+                if (!textContent && !isUser) return null;
+                return (
                 <div
                   key={msg.id}
                   className={`flex ${

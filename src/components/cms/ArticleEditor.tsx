@@ -45,6 +45,9 @@ export function ArticleEditor({
   const [article, setArticle] = useState<Article>(initialArticle);
   const [tab, setTab] = useState<'content' | 'meta' | 'cover' | 'publish'>('content');
   const [busy, setBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiNotice, setAiNotice] = useState<string | null>(null);
+  const [generatedIndex, setGeneratedIndex] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -53,6 +56,62 @@ export function ArticleEditor({
 
   const update = <K extends keyof Article>(key: K, value: Article[K]) =>
     setArticle((prev) => ({ ...prev, [key]: value }));
+
+  const onAutofill = async () => {
+    if (!article.content || article.content.trim().length < 50) {
+      setError('Article body needs at least 50 characters before AI can autofill metadata.');
+      return;
+    }
+    setAiBusy(true);
+    setError(null);
+    setAiNotice(null);
+    try {
+      const res = await fetch('/api/cms/autofill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: article.content,
+          currentTitle: article.title,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error || 'AI Autofill failed.');
+        return;
+      }
+      const { title, abstract, citation, tags, category, index } = json.data;
+      setArticle((prev) => ({
+        ...prev,
+        title: prev.title.trim() ? prev.title : title,
+        abstract: abstract || prev.abstract,
+        citation: citation || prev.citation,
+        tags: tags && tags.length > 0 ? tags : prev.tags,
+        categories:
+          category && !prev.categories.includes(category)
+            ? [...prev.categories, category]
+            : prev.categories,
+      }));
+      if (index) {
+        setGeneratedIndex(index);
+      }
+      setAiNotice('⚡ AI Autofill complete! Abstract, citation, tags, and category updated.');
+    } catch {
+      setError('Network error during AI autofill.');
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
+  const insertIndexIntoBody = () => {
+    if (!generatedIndex) return;
+    const tocBlock = `## Contents\n\n${generatedIndex}\n\n---\n\n`;
+    setArticle((prev) => ({
+      ...prev,
+      content: `${tocBlock}${prev.content}`,
+    }));
+    setGeneratedIndex(null);
+    setAiNotice('Table of Contents inserted into Markdown body.');
+  };
 
   const onSave = async () => {
     setBusy(true);
@@ -100,13 +159,32 @@ export function ArticleEditor({
           <h1 className="text-2xl font-semibold mt-1 truncate">{article.title}</h1>
           <p className="text-xs font-mono text-on-surface-variant mt-1">{article.slug}</p>
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-xs flex-wrap">
           {savedAt && <span className="text-on-surface-variant">Saved {savedAt.toLocaleTimeString()}</span>}
           {isReadOnly && (
             <span className="px-2 py-1 border border-outline-variant font-technical-ui uppercase tracking-[0.16em]">
               Read-only
             </span>
           )}
+          <button
+            type="button"
+            onClick={onAutofill}
+            disabled={aiBusy || isReadOnly}
+            title="Analyze article body with NVIDIA NIM and autofill Title, Abstract, Citation, Tags & Categories"
+            className="border border-primary/60 bg-primary/10 text-primary px-3 py-1.5 font-technical-ui uppercase tracking-[0.18em] hover:bg-primary/20 disabled:opacity-50 inline-flex items-center gap-1.5"
+          >
+            {aiBusy ? (
+              <>
+                <span className="inline-block animate-spin">⟳</span>
+                <span>Analyzing…</span>
+              </>
+            ) : (
+              <>
+                <span>⚡</span>
+                <span>AI Autofill & Index</span>
+              </>
+            )}
+          </button>
           <Link
             href={`/cms/articles/${encodeURIComponent(article.slug)}/preview`}
             target="_blank"
@@ -123,6 +201,21 @@ export function ArticleEditor({
           </button>
         </div>
       </header>
+
+      {aiNotice && (
+        <div className="border border-primary/40 bg-primary/10 px-4 py-2.5 text-xs text-primary mb-4 flex items-center justify-between gap-2 flex-wrap">
+          <span>{aiNotice}</span>
+          {generatedIndex && (
+            <button
+              type="button"
+              onClick={insertIndexIntoBody}
+              className="underline font-semibold hover:opacity-80 ml-auto"
+            >
+              + Insert Table of Contents into Markdown
+            </button>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="border border-error/40 bg-error/10 px-4 py-3 text-sm text-error mb-4">
@@ -158,7 +251,7 @@ export function ArticleEditor({
               value={article.title}
               onChange={(e) => update('title', e.target.value)}
               disabled={isReadOnly}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <label className="block">
@@ -170,7 +263,7 @@ export function ArticleEditor({
               onChange={(e) => update('content', e.target.value)}
               disabled={isReadOnly}
               rows={28}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
             />
           </label>
         </div>
@@ -187,7 +280,7 @@ export function ArticleEditor({
               onChange={(e) => update('abstract', e.target.value)}
               disabled={isReadOnly}
               rows={4}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <label className="block">
@@ -199,7 +292,7 @@ export function ArticleEditor({
               value={article.citation ?? ''}
               onChange={(e) => update('citation', e.target.value)}
               disabled={isReadOnly}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <label className="block">
@@ -219,7 +312,7 @@ export function ArticleEditor({
                 )
               }
               disabled={isReadOnly}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <div>
@@ -264,7 +357,7 @@ export function ArticleEditor({
               value={article.date ?? ''}
               onChange={(e) => update('date', e.target.value)}
               disabled={isReadOnly}
-              className="border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
         </div>
@@ -282,7 +375,7 @@ export function ArticleEditor({
               onChange={(e) => update('coverImage', e.target.value)}
               disabled={isReadOnly}
               placeholder="/images/my-cover.png or https://..."
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <p className="text-xs text-on-surface-variant">
@@ -302,7 +395,7 @@ export function ArticleEditor({
               value={article.cms_status ?? 'published'}
               onChange={(e) => update('cms_status', e.target.value)}
               disabled={isReadOnly}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] px-3 py-2 text-sm focus:border-primary focus:outline-none"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -329,7 +422,7 @@ export function ArticleEditor({
                 )
               }
               disabled={isReadOnly}
-              className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full border border-outline/50 bg-surface-container-lowest dark:bg-[#0c0f17] text-foreground dark:text-[#f1f5f9] px-3 py-2 text-sm focus:border-primary focus:outline-none"
             />
           </label>
           <p className="text-xs text-on-surface-variant">

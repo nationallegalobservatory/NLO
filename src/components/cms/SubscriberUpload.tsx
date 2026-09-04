@@ -49,7 +49,7 @@ export function SubscriberUpload() {
         onChange={(e) => setText(e.target.value)}
         rows={8}
         placeholder="alice@example.com&#10;bob@example.com, carol@example.com"
-        className="w-full border border-outline bg-surface-container-lowest px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
+        className="w-full border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] placeholder:text-on-surface-variant/50 px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
       />
       <div className="flex items-center gap-3">
         <label className="text-xs font-technical-ui uppercase tracking-[0.18em] text-on-surface-variant">
@@ -59,14 +59,15 @@ export function SubscriberUpload() {
           type="text"
           value={source}
           onChange={(e) => setSource(e.target.value)}
-          className="border border-outline bg-surface-container-lowest px-2 py-1 text-sm"
+          className="border border-outline/50 bg-[#0c0f17] text-[#f1f5f9] px-2.5 py-1.5 text-sm font-mono focus:border-primary focus:outline-none"
         />
         <button
           type="submit"
           disabled={busy || !text.trim()}
-          className="ml-auto border border-oxblood bg-oxblood text-white px-3 py-1.5 text-xs font-technical-ui uppercase tracking-[0.18em] hover:bg-on-background disabled:opacity-50"
+          style={{ backgroundColor: '#c5a059', color: '#090D14' }}
+          className="ml-auto border border-[#d4b068] px-4 py-2 text-xs font-technical-ui uppercase tracking-[0.18em] font-bold hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer shadow-sm"
         >
-          {busy ? 'Uploading…' : 'Add subscribers'}
+          {busy ? 'Adding…' : 'Add subscribers'}
         </button>
       </div>
       {error && (

@@ -8,10 +8,16 @@ const supabaseAnonKey =
   '';
 
 export const isSupabaseConfigured = (): boolean => {
+  const isReal =
+    !!supabaseUrl &&
+    !!supabaseAnonKey &&
+    !supabaseUrl.includes('your_project') &&
+    !supabaseUrl.includes('your-supabase-url') &&
+    !supabaseUrl.includes('example.com');
+
   return typeof window !== 'undefined'
-    ? !!(window as Window & { __SUPABASE_CONFIGURED__?: boolean }).__SUPABASE_CONFIGURED__ ||
-        (!!supabaseUrl && !!supabaseAnonKey && supabaseUrl !== 'your-supabase-url')
-    : !!supabaseUrl && !!supabaseAnonKey && supabaseUrl !== 'your-supabase-url';
+    ? !!(window as Window & { __SUPABASE_CONFIGURED__?: boolean }).__SUPABASE_CONFIGURED__ || isReal
+    : isReal;
 };
 
 // Singleton instance

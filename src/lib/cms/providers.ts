@@ -44,13 +44,28 @@ interface ProviderConfig {
 
 function providers(): ProviderConfig[] {
   const list: ProviderConfig[] = [];
+  const primaryModel = process.env.NVIDIA_DEFAULT_MODEL || 'meta/llama-3.2-11b-vision-instruct';
+  const fallbackModel = process.env.NVIDIA_FALLBACK_MODEL || 'mistralai/mistral-large-2-instruct';
+  const reasoningModel = process.env.NVIDIA_REASONING_MODEL || 'meta/llama-3.2-90b-vision-instruct';
 
   if (process.env.NVIDIA_API_KEY) {
     list.push({
-      name: 'nvidia-nim',
+      name: 'nvidia-nim-primary',
       baseUrl: 'https://integrate.api.nvidia.com/v1',
       apiKey: process.env.NVIDIA_API_KEY,
-      defaultModel: process.env.NVIDIA_DEFAULT_MODEL || 'meta/llama-3.1-70b-instruct',
+      defaultModel: primaryModel,
+    });
+    list.push({
+      name: 'nvidia-nim-fallback',
+      baseUrl: 'https://integrate.api.nvidia.com/v1',
+      apiKey: process.env.NVIDIA_API_KEY,
+      defaultModel: fallbackModel,
+    });
+    list.push({
+      name: 'nvidia-nim-reasoning',
+      baseUrl: 'https://integrate.api.nvidia.com/v1',
+      apiKey: process.env.NVIDIA_API_KEY,
+      defaultModel: reasoningModel,
     });
   }
 

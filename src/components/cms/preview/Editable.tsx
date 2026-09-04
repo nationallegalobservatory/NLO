@@ -158,7 +158,7 @@ export function Editable({
           disabled={saving}
           rows={rows}
           className={
-            'w-full border border-primary bg-surface-container-lowest px-3 py-2 text-sm font-mono focus:outline-none ' +
+            'w-full border border-primary bg-surface-container-lowest text-foreground placeholder:text-on-surface-variant/50 px-3 py-2 text-sm font-mono focus:outline-none ' +
             className
           }
         />
@@ -185,7 +185,7 @@ export function Editable({
           }}
           disabled={saving}
           className={
-            'w-full border border-primary bg-surface-container-lowest px-2 py-1 text-sm focus:outline-none ' +
+            'w-full border border-primary bg-surface-container-lowest text-foreground placeholder:text-on-surface-variant/50 px-2 py-1 text-sm focus:outline-none ' +
             className
           }
         />
@@ -252,7 +252,7 @@ function ImageEditable({
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Paste image URL or /public path"
-          className="w-full border border-outline bg-surface-container-lowest px-2 py-1 text-sm font-mono"
+          className="w-full border border-outline/50 bg-surface-container-lowest text-foreground placeholder:text-on-surface-variant/50 px-2 py-1 text-sm font-mono"
         />
         <div className="flex items-center gap-2 flex-wrap">
           <label className="border border-outline-variant bg-surface-container-low px-3 py-1 text-xs font-technical-ui uppercase tracking-[0.18em] cursor-pointer">
@@ -338,7 +338,7 @@ function DateEditable({
           if (e.key === 'Escape') setEditing(false);
         }}
         autoFocus
-        className={'border border-primary bg-surface-container-lowest px-2 py-1 text-sm ' + className}
+        className={'border border-primary bg-surface-container-lowest text-foreground px-2 py-1 text-sm ' + className}
       />
     );
   }
