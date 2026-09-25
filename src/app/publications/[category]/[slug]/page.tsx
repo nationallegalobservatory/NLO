@@ -20,6 +20,7 @@ interface RouteParams {
 
 interface PageProps {
   params: Promise<RouteParams>;
+  searchParams?: Promise<{ early?: string; ref?: string; access?: string; [key: string]: string | undefined }>;
 }
 
 // Generate Dynamic SEO Metadata
@@ -76,6 +77,7 @@ import DynamicReleaseCountdown from '../../../../components/DynamicReleaseCountd
 
 export default async function ArticlePage(props: PageProps) {
   const resolvedParams = await props.params;
+  const resolvedSearchParams = props.searchParams ? await props.searchParams : {};
   const folderMapping: Record<string, 'judgments' | 'policies' | 'research' | 'opinions'> = {
     judgments: 'judgments',
     policies: 'policies',
@@ -98,7 +100,24 @@ export default async function ArticlePage(props: PageProps) {
     redirect('/bhoomija');
   }
 
-  const isEmbargoed = article.publishAt ? new Date(article.publishAt).getTime() > Date.now() : false;
+  // Check embargo status:
+  // Subscribers opening from the release email receive 5 minutes early access
+  // (?early=1 or ?ref=newsletter or ?access=subscriber)
+  const isEarlySubscriber = 
+    resolvedSearchParams.early === '1' || 
+    resolvedSearchParams.ref === 'email' || 
+    resolvedSearchParams.ref === 'newsletter' || 
+    resolvedSearchParams.access === 'subscriber';
+
+  const FIVE_MINUTES_MS = 5 * 60 * 1000;
+  const publishTime = article.publishAt ? new Date(article.publishAt).getTime() : 0;
+  const now = Date.now();
+
+  const isEmbargoed = article.publishAt
+    ? isEarlySubscriber
+      ? now < (publishTime - FIVE_MINUTES_MS)
+      : now < publishTime
+    : false;
 
   if (isEmbargoed) {
     return (
