@@ -1,10 +1,21 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArticleData } from '../lib/markdown';
-import { formatPublicationDate } from '../lib/content';
+import type { ArticleData } from '../lib/markdown';
 import { Calendar, Clock, ArrowUpRight, Pin } from 'lucide-react';
 import AuthorLink from './AuthorLink';
 import Avatar from './Avatar';
+
+function formatPublicationDate(article: Pick<ArticleData, 'date' | 'format' | 'slug'>): string {
+  const date = new Date(article.date);
+  if (Number.isNaN(date.getTime())) {
+    return article.date;
+  }
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
 
 export default function ArticleCard({ article, searchTerm }: { article: ArticleData; searchTerm?: string }) {
   // Map internal database folders to correct URL routes

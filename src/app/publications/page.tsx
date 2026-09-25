@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { AlertCircle, ArrowUpDown, FileText, Landmark, Search, Tag } from 'lucide-react';
 import FilterBar from '../../components/FilterBar';
 import OfflinePublicationsArchive from '@/components/OfflinePublicationsArchive';
+import PublicationsLiveFeed from './PublicationsLiveFeed';
 
 interface SearchParams {
   q?: string;
@@ -41,6 +42,13 @@ export default async function PublicationsPage(props: PageProps) {
   const itemsPerPage = 10;
 
   const rawArticles = await getArticles();
+  const allArticlesWithScheduled = await getArticles(undefined, true);
+  const now = Date.now();
+  const nextScheduledArticle = allArticlesWithScheduled
+    .filter((a) => a.publishAt && new Date(a.publishAt).getTime() > now)
+    .sort((a, b) => new Date(a.publishAt!).getTime() - new Date(b.publishAt!).getTime())[0];
+  const nextScheduledUnlock = nextScheduledArticle?.publishAt || null;
+
   const categories = await getCategories();
 
   let filteredArticles = [...rawArticles];
@@ -286,13 +294,11 @@ export default async function PublicationsPage(props: PageProps) {
               </Link>
             </div>
           ) : (
-            <div className="space-y-5 sm:space-y-10">
-              {paginatedArticles.map((art) => (
-                <div key={art.slug}>
-                  <ArticleCard article={art} searchTerm={query || activeTag || undefined} />
-                </div>
-              ))}
-            </div>
+            <PublicationsLiveFeed
+              initialArticles={paginatedArticles}
+              searchTerm={query || activeTag || undefined}
+              nextScheduledUnlock={nextScheduledUnlock}
+            />
           )}
 
           {totalPages > 1 && (
