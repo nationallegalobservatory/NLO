@@ -7,13 +7,36 @@ export const runtime = 'nodejs';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * POST /api/cms/subscribers
- * body: { text: string, source?: string }
- *
- * Parses newline/comma/semicolon-separated emails, upserts into
- * newsletter_subscribers, returns counts.
- */
+export async function GET() {
+  try {
+    await requireSession();
+  } catch {
+    return NextResponse.json({ error: 'UNAUTHENTICATED' }, { status: 401 });
+  }
+
+  if (isCmsBackendConfigured()) {
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      try {
+        const { data, error } = await admin
+          .from('newsletter_subscribers')
+          .select('email, source, active, subscribed_at')
+          .order('subscribed_at', { ascending: false });
+
+        if (!error && data) {
+          return NextResponse.json({ subscribers: data, total: data.length });
+        }
+      } catch (err) {
+        console.warn('Supabase fetch exception, falling back to local database store:', err);
+      }
+    }
+  }
+
+  const { getLocalSubscribers } = await import('@/lib/cms/localStore');
+  const subs = getLocalSubscribers();
+  return NextResponse.json({ subscribers: subs, total: subs.length });
+}
+
 export async function POST(req: NextRequest) {
   try {
     await requireSession();

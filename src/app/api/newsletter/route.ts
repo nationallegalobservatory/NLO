@@ -18,6 +18,14 @@ export async function POST(request: Request) {
     const result = await subscribeToNewsletter(cleanEmail);
 
     if (result.success) {
+      // Ensure locally persisted in verified subscriber store
+      try {
+        const { addLocalSubscribers } = await import('@/lib/cms/localStore');
+        addLocalSubscribers([cleanEmail], 'website_signup');
+      } catch (localStoreErr) {
+        console.error('Failed to append to local subscribers store:', localStoreErr);
+      }
+
       // Send welcome email to subscriber
       if (process.env.GMAIL_APP_PASSWORD && result.message !== 'You have already subscribed to our newsletter.') {
         try {
