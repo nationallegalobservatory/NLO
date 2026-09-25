@@ -38,6 +38,18 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const article = await getArticleBySlug(folder, resolvedParams.slug);
   if (!article) return {};
 
+  const isEmbargoed = article.publishAt ? new Date(article.publishAt).getTime() > Date.now() : false;
+  if (isEmbargoed) {
+    return {
+      title: 'Editorial Embargo · National Legal Observatory',
+      description: 'This publication is currently under editorial embargo and will be released on 26 September 2026 at 6:00 PM IST.',
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
   const descriptionText = article.abstract || article.caseSummary || article.policyOverview || '';
 
   return {

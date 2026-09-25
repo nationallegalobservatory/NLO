@@ -28,6 +28,25 @@ export async function POST(req: Request) {
       }
     }
 
+    const cleanQuery = userQuery.toLowerCase().trim();
+    const isSeptemberReviewQuery =
+      cleanQuery.includes('balaji') ||
+      cleanQuery.includes('formalin') ||
+      (cleanQuery.includes('september') && (cleanQuery.includes('review') || cleanQuery.includes('issue') || cleanQuery.includes('2026') || cleanQuery.includes('paper'))) ||
+      (cleanQuery.includes('issue 4') && (cleanQuery.includes('review') || cleanQuery.includes('monthly') || cleanQuery.includes('nlo')));
+
+    if (isSeptemberReviewQuery && Date.now() < new Date('2026-09-26T18:00:00+05:30').getTime()) {
+      return new Response(
+        `0:"Please return at 6:00 PM on 26th September; we'll have that relevant information available at that time."\n`,
+        {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-Vercel-AI-Data-Stream': 'v1',
+          },
+        }
+      );
+    }
+
     // Query NLO Vector / Semantic Database with strict scope gate
     const searchResult = await searchNloKnowledge(userQuery);
     const systemPrompt = buildNloSystemPrompt(searchResult);

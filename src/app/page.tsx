@@ -350,7 +350,9 @@ export default async function Homepage() {
   const allArticles = await getArticles(undefined, true);
   const articleBySlug = new Map(allArticles.map((article) => [article.slug, article]));
 
+  const septemberReviewArticle = articleBySlug.get('monthly-legal-review-september-2026') ?? null;
   const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
+  const activeMonthlyReview = septemberReviewArticle ?? augustReviewArticle ?? null;
   const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;
   const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =
@@ -369,7 +371,7 @@ export default async function Homepage() {
       (a) =>
         a.slug !== featuredArticle?.slug &&
         a.slug !== researchDeskArticle?.slug &&
-        a.slug !== augustReviewArticle?.slug
+        a.slug !== activeMonthlyReview?.slug
     )
     .slice(0, 3);
 
@@ -378,10 +380,10 @@ export default async function Homepage() {
       <HeroSection />
       <EditorialDirective />
 
-      {augustReviewArticle && (
+      {activeMonthlyReview && (
         <DynamicReleaseCountdown
-          article={augustReviewArticle}
-          targetDate="2026-08-27T18:30:00+05:30"
+          article={activeMonthlyReview}
+          targetDate={activeMonthlyReview.publishAt || "2026-09-26T18:00:00+05:30"}
         />
       )}
 

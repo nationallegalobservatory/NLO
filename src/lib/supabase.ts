@@ -11,9 +11,10 @@ export const isSupabaseConfigured = (): boolean => {
   const isReal =
     !!supabaseUrl &&
     !!supabaseAnonKey &&
-    !supabaseUrl.includes('your_project') &&
-    !supabaseUrl.includes('your-supabase-url') &&
-    !supabaseUrl.includes('example.com');
+    !supabaseUrl.toLowerCase().includes('your_project') &&
+    !supabaseUrl.toLowerCase().includes('your-supabase-url') &&
+    !supabaseUrl.toLowerCase().includes('example.com') &&
+    !supabaseAnonKey.startsWith('ey...');
 
   return typeof window !== 'undefined'
     ? !!(window as Window & { __SUPABASE_CONFIGURED__?: boolean }).__SUPABASE_CONFIGURED__ || isReal

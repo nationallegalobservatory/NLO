@@ -363,7 +363,11 @@ export default function BhoomijaCVClient() {
         <div className="bk-about-grid">
           <div className="bk-about-photo-col">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Avatar src="/images/bhoomija-avatar.png" alt="Bhoomija Khanna" className="bk-about-photo" />
+            <img
+              src="/images/bhoomija-about-portrait.jpg"
+              alt="Bhoomija Khanna — Founder & Research Director, NLO"
+              className="bk-about-photo"
+            />
           </div>
           <div className="bk-about-text-col">
             <h2 className="bk-about-heading">Hi, I&apos;m Bhoomija.</h2>

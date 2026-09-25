@@ -810,10 +810,16 @@
   width: 100%;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  object-position: center 15%;
-  border-radius: 4px;
-  filter: sepia(14%) contrast(1.04) brightness(0.97);
-  box-shadow: 6px 6px 0 rgba(125, 25, 25, 0.12);
+  object-position: center top;
+  border-radius: 8px;
+  border: 1px solid rgba(125, 25, 25, 0.15);
+  box-shadow: 8px 8px 0 rgba(125, 25, 25, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bk-about-photo:hover {
+  transform: translateY(-2px);
+  box-shadow: 10px 10px 0 rgba(125, 25, 25, 0.14);
 }
 
 .bk-about-text-col {

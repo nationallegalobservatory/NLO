@@ -579,6 +579,29 @@ export async function GET(request: Request) {
     const articles = await getArticles();
     const authors = await getAuthors();
     const cleanQuery = query.toLowerCase().trim();
+
+    // Embargo guard for unreleased Monthly Review (Vol 1 Issue 4 / September 2026)
+    const isSeptemberReviewQuery =
+      cleanQuery.includes('balaji') ||
+      cleanQuery.includes('formalin') ||
+      (cleanQuery.includes('september') && (cleanQuery.includes('review') || cleanQuery.includes('issue') || cleanQuery.includes('2026') || cleanQuery.includes('paper'))) ||
+      (cleanQuery.includes('issue 4') && (cleanQuery.includes('review') || cleanQuery.includes('monthly') || cleanQuery.includes('nlo')));
+
+    if (isSeptemberReviewQuery && Date.now() < new Date('2026-09-26T18:00:00+05:30').getTime()) {
+      const embargoNotice = "Please return at 6:00 PM on 26th September; we'll have that relevant information available at that time.";
+      return NextResponse.json({
+        aiResponse: embargoNotice,
+        aiError: null,
+        results: [],
+        sources: {
+          nloArticles: [],
+          profiles: [],
+          citations: [],
+          webPages: [],
+        },
+      });
+    }
+
     const filtered = buildSearchResults(cleanQuery, articles);
     const authorResults = buildAuthorResults(cleanQuery, authors);
     const referenceResults = buildReferenceResults(cleanQuery, articles);

@@ -3,34 +3,56 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Lock, Sparkles, ArrowRight, ArrowUpRight, Scale, ShieldCheck, FileText, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Clock, Lock, ArrowRight, ArrowUpRight, CheckCircle2, ShieldAlert } from 'lucide-react';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from './Avatar';
 import AuthorLink from './AuthorLink';
 
 interface DynamicReleaseCountdownProps {
   article: ArticleData;
-  targetDate?: string; // ISO string e.g. "2026-08-27T00:00:00+05:30" or "5s-demo"
+  targetDate?: string; // ISO string e.g. "2026-09-26T18:00:00+05:30"
   demoDurationSeconds?: number;
 }
 
 export default function DynamicReleaseCountdown({
   article,
-  targetDate = '2026-08-27T18:30:00+05:30',
+  targetDate,
   demoDurationSeconds = 0,
 }: DynamicReleaseCountdownProps) {
+  const effectiveTargetDate = targetDate || article.publishAt || '2026-09-26T18:00:00+05:30';
+  const targetTime = new Date(effectiveTargetDate).getTime();
   const [mounted, setMounted] = useState(false);
-  const [isLive, setIsLive] = useState(false);
-  const [countdownKey, setCountdownKey] = useState(0);
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    totalSeconds: 0,
+  
+  // Calculate initial time left synchronously so SSR renders the countdown mode directly
+  const [isLive, setIsLive] = useState(() => {
+    return Date.now() >= targetTime;
   });
-
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const distance = Math.max(0, targetTime - Date.now());
+    return {
+      days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      totalSeconds: Math.floor(distance / 1000),
+    };
+  });
   const href = `/publications/research/${article.slug}`;
+
+  // Extract issue/volume display if available
+  const issueMatch = article.title.match(/Issue\s*(\d+)/i);
+  const issueNumber = issueMatch ? issueMatch[1] : '4';
+  const volMatch = article.title.match(/Vol\.?\s*(\d+)/i);
+  const volNumber = volMatch ? volMatch[1] : '1';
+
+  // Format month and year from publishAt or date
+  const targetObj = new Date(effectiveTargetDate);
+  const formattedTargetDate = !isNaN(targetObj.getTime())
+    ? targetObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    : '26 September 2026';
+  const formattedMonthYear = !isNaN(targetObj.getTime())
+    ? targetObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : 'September 2026';
 
   useEffect(() => {
     setMounted(true);
@@ -39,7 +61,7 @@ export default function DynamicReleaseCountdown({
     if (demoDurationSeconds > 0) {
       target = Date.now() + demoDurationSeconds * 1000;
     } else {
-      target = new Date(targetDate).getTime();
+      target = new Date(effectiveTargetDate).getTime();
     }
 
     const updateTimer = () => {
@@ -69,7 +91,7 @@ export default function DynamicReleaseCountdown({
     const interval = setInterval(updateTimer, 250);
 
     return () => clearInterval(interval);
-  }, [targetDate, demoDurationSeconds, countdownKey]);
+  }, [effectiveTargetDate, demoDurationSeconds]);
 
   return (
     <section id="monthly-review" className="space-y-6 scroll-mt-24">
@@ -83,7 +105,9 @@ export default function DynamicReleaseCountdown({
               }`}
             />
             <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-oxblood dark:text-primary">
-              {isLive ? 'Live Dispatch · August 2026' : 'Upcoming Release · 27 August 2026, 6:30 PM'}
+              {isLive
+                ? `Live Dispatch · ${formattedMonthYear}`
+                : `Upcoming Release · ${formattedTargetDate}, 6:00 PM IST`}
             </p>
           </div>
           <h2 className="font-serif text-2xl font-bold text-on-background dark:text-on-background sm:text-3xl lg:text-4xl">
@@ -105,31 +129,35 @@ export default function DynamicReleaseCountdown({
       {/* Main Interactive Card */}
       <div className="relative overflow-hidden rounded-xl border border-oxblood/30 bg-surface-container-lowest p-6 shadow-sm dark:border-primary/25 dark:bg-surface-container sm:p-10">
         <AnimatePresence mode="wait">
-          {!isLive && mounted ? (
+          {!isLive ? (
             /* ─────────────────────────────────────────────────────────────
-               SEALED EMBARGOED COUNTDOWN MODE (Runs till 27 August 2026, 6:30 PM)
+               SEALED EMBARGOED COUNTDOWN MODE (Runs till 26 Sept 2026, 6:00 PM IST)
                ───────────────────────────────────────────────────────────── */
             <motion.div
               key="countdown-mode"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5 }}
+              exit={{
+                opacity: 0,
+                y: 40,
+                clipPath: 'inset(100% 0 0 0)',
+                transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+              }}
               className="flex flex-col items-center justify-center text-center space-y-8 py-4 sm:py-8"
             >
               {/* Embargo Badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-oxblood/30 bg-oxblood/5 px-4 py-1.5 font-technical-ui text-xs font-bold uppercase tracking-[0.24em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
                 <Lock className="h-3.5 w-3.5" />
-                <span>Editorial Embargo · Release 27 August 2026 at 6:30 PM IST</span>
+                <span>Editorial Embargo · Release 26 September 2026 at 6:00 PM IST</span>
               </div>
 
               {/* Title & Subtitle */}
               <div className="space-y-3 max-w-2xl">
                 <h3 className="font-serif text-3xl font-bold leading-tight text-on-background sm:text-4xl lg:text-5xl">
-                  Monthly Legal Review — Vol. 1 | Issue 3
+                  Monthly Legal Review — Vol. {volNumber} | Issue {issueNumber}
                 </h3>
                 <p className="font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
-                  Primary-source analysis, constitutional dispatches, and legislative tracker under active editorial embargo. Contents will unlock automatically at 6:30 PM IST.
+                  Primary-source analysis, constitutional dispatches, and legislative tracker under active editorial embargo. Contents will unlock automatically at 6:00 PM IST without requiring a page refresh.
                 </p>
               </div>
 
@@ -185,18 +213,22 @@ export default function DynamicReleaseCountdown({
               {/* Status footer */}
               <div className="flex items-center gap-2 font-technical-ui text-[11px] font-semibold tracking-wider text-on-surface-variant dark:text-on-background/60">
                 <ShieldAlert className="h-4 w-4 text-oxblood dark:text-primary" />
-                <span>Live synchronizer active · Auto-unveils 27 August 2026 at 6:30 PM IST without refresh</span>
+                <span>Live synchronizer active · Auto-unveils 26 September 2026 at 6:00 PM IST without refresh</span>
               </div>
             </motion.div>
           ) : (
             /* ─────────────────────────────────────────────────────────────
-               LIVE UNLOCKED MODE (Automatically appears once timer hits 0)
+               LIVE UNLOCKED MODE (Dynamically wipes down and reveals without reload)
                ───────────────────────────────────────────────────────────── */
             <motion.div
               key="live-mode"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              initial={{ opacity: 0, y: -30, clipPath: 'inset(0 0 100% 0)' }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                clipPath: 'inset(0 0 0% 0)',
+                transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
+              }}
               className="space-y-6"
             >
               <div className="grid gap-8 lg:grid-cols-12 items-start">
@@ -207,10 +239,10 @@ export default function DynamicReleaseCountdown({
                       Live Issue
                     </span>
                     <span className="rounded-sm bg-oxblood/10 px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-oxblood dark:bg-primary/15 dark:text-primary">
-                      Vol. 1 · Issue 3
+                      Vol. {volNumber} · Issue {issueNumber}
                     </span>
                     <span className="font-technical-ui text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant dark:text-on-background/50">
-                      August 2026
+                      {formattedMonthYear}
                     </span>
                     <span className="flex items-center gap-1 font-technical-ui text-[11px] text-on-surface-variant dark:text-on-background/50 ml-auto sm:ml-0">
                       <Clock className="h-3.5 w-3.5 text-oxblood dark:text-primary" />
@@ -226,26 +258,26 @@ export default function DynamicReleaseCountdown({
 
                   <p className="font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
                     {article.abstract ||
-                      'The August 2026 Monthly Legal Review from the National Legal Observatory covers the Supreme Court’s landmark institutional governance ruling in Jojari River, defamation quashing under S.196 CrPC, and the Monsoon Session recap.'}
+                      'The September 2026 Monthly Legal Review from the National Legal Observatory covers the Supreme Court’s landmark proportionality ruling in Balaji Formalin (2026 INSC 1009), POCSO presumption, and seven-judge cess reference.'}
                   </p>
 
                   {/* 4 Topic Highlights */}
                   <div className="grid gap-2.5 sm:grid-cols-2 pt-2 text-xs font-serif text-on-surface-variant dark:text-on-background/70 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
                     <div className="flex items-start gap-2">
                       <span className="text-oxblood dark:text-primary font-bold">01</span>
-                      <span><strong>Judgment of the Month:</strong> Jojari River Contamination (2026 INSC 812)</span>
+                      <span><strong>Judgment of the Month:</strong> Balaji Formalin (2026 INSC 1009)</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-oxblood dark:text-primary font-bold">02</span>
-                      <span><strong>Constitutional Watch:</strong> Rahul Gandhi Defamation &amp; Bar Councils</span>
+                      <span><strong>Constitutional Watch:</strong> POCSO Presumption &amp; Cess Reference</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-oxblood dark:text-primary font-bold">03</span>
-                      <span><strong>Legislative Tracker:</strong> Monsoon Session Recap (12 Bills)</span>
+                      <span><strong>Legislative Tracker:</strong> Supreme Court Strength at 38</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-oxblood dark:text-primary font-bold">05</span>
-                      <span><strong>Editor&apos;s Note:</strong> The Bench as Administrator</span>
+                      <span><strong>Editor&apos;s Note:</strong> Proportionality&apos;s Quiet Takeover</span>
                     </div>
                   </div>
                 </div>
@@ -276,7 +308,7 @@ export default function DynamicReleaseCountdown({
                       href={href}
                       className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-oxblood bg-oxblood px-6 py-3.5 font-technical-ui text-xs font-bold uppercase tracking-[0.2em] text-white transition hover:bg-on-background dark:border-primary dark:bg-primary dark:text-background dark:hover:bg-tertiary-fixed shadow-xs"
                     >
-                      Read Full Issue 3
+                      Read Full Issue {issueNumber}
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
                   </div>
