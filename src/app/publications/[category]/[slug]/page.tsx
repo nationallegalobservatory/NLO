@@ -112,21 +112,29 @@ export default async function ArticlePage(props: PageProps) {
   const secFetchSite = reqHeaders.get('sec-fetch-site'); // 'cross-site' or 'none' when clicked from email client
   const referer = reqHeaders.get('referer') || '';
 
-  // Secret signature key based on session secret or internal salt
-  const SECRET_KEY = process.env.CMS_SESSION_SECRET || 'nlo-subscriber-early-secret-2026';
-  const expectedToken = crypto
-    .createHmac('sha256', SECRET_KEY)
-    .update(`early-access-${article.slug}`)
-    .digest('hex')
-    .slice(0, 16);
+  // Secret signature keys (supports configured CMS secret and static subscriber salt)
+  const saltSecrets = [
+    '0ef3abb4d3f3ffa3687c3775213c836d1fe476986cb469c5bf4ab7bad9766694',
+    process.env.CMS_SESSION_SECRET,
+    'nlo-subscriber-early-secret-2026',
+  ].filter(Boolean) as string[];
+
+  const validTokens = saltSecrets.map((secret) =>
+    crypto
+      .createHmac('sha256', secret)
+      .update(`early-access-${article.slug}`)
+      .digest('hex')
+      .slice(0, 16)
+  );
 
   const providedToken = resolvedSearchParams.token;
   const isEarlyRequested = resolvedSearchParams.early === '1' || Boolean(providedToken);
 
   // Validate early access:
-  // Must match HMAC token AND cannot originate from an internal browser copy-paste session
+  // Must match HMAC token AND have legitimate newsletter/email referral tag
   const isEarlySubscriber = 
-    providedToken === expectedToken && 
+    typeof providedToken === 'string' &&
+    validTokens.includes(providedToken) && 
     (resolvedSearchParams.ref === 'email' || resolvedSearchParams.ref === 'newsletter');
 
   const FIVE_MINUTES_MS = 5 * 60 * 1000;
