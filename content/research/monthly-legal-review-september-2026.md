@@ -45,21 +45,21 @@ coverImage: ""
 
 ### M/s Balaji Formalin Pvt. Ltd. & Anr. v. Union of India & Anr.
 
-*2026 INSC 1009 | Writ Petition (Civil) No. 893 of 2019 with connected matters | Decided: September 18, 2026 | Bench: Justice J.B. Pardiwala and Justice K. Vinod Chandran* [[1]](https://www.verdictum.in/supreme-court/2026-insc-1009-balaji-formalin-pvt-v-union-of-india-1622297)
+*2026 INSC 1009 | Writ Petition (Civil) No. 893 of 2019 with connected matters | Decided: September 18, 2026 | Bench: Justice J.B. Pardiwala and Justice K. Vinod Chandran*
 
 #### Background
 
 For fourteen years, anyone in Maharashtra who wanted to sell methanol to a buyer without a Form A drug-manufacturing licence had to mix it first with a foul bitterant and a visible dye. Rules 18A and 18B of the Maharashtra Poisons Rules, 1972 were built on a simple theory: make methanol impossible to mistake for drinking alcohol, and hooch deaths stop.
 
-They didn't stop. Bhavnagar in Gujarat lost 13 lives to a hooch tragedy. Sagar in Madhya Pradesh lost 15. The Supreme Court used those numbers as its opening frame. [[2]](https://www.scobserver.in/supreme-court-observer-law-reports-scolr/validity-of-maharashtras-methanol-regulation/)
+They didn't stop. Bhavnagar in Gujarat lost 13 lives to a hooch tragedy. Sagar in Madhya Pradesh lost 15. The Supreme Court used those numbers as its opening frame.
 
-Balaji Formalin and a group of connected chemical manufacturers challenged the Rules. Their methanol goes into paraformaldehyde, pharmaceutical intermediates, paints, and dyes. Denaturing it with colourant and bitterant, they argued, ruins the product for every one of those legitimate uses, while Form A itself records nothing about end-use, so it cannot even distinguish a legitimate industrial buyer from anyone else. [[3]](https://rawlaw.in/maharashtra-orders-bitterant-and-colourant-in-methanol-to-prevent-hooch-deaths-supreme-court-strikes-down-rules-as-arbitrary-and-disproportionate/)
+Balaji Formalin and a group of connected chemical manufacturers challenged the Rules. Their methanol goes into paraformaldehyde, pharmaceutical intermediates, paints, and dyes. Denaturing it with colourant and bitterant, they argued, ruins the product for every one of those legitimate uses, while Form A itself records nothing about end-use, so it cannot even distinguish a legitimate industrial buyer from anyone else.
 
 #### What the Court Held
 
-The Bench applied the four-part proportionality framework from *K.S. Puttaswamy (Privacy-9 J.) v. Union of India*, (2017) 10 SCC 1, the test built to review invasions of the right to privacy. Legitimate aim: yes, preventing methanol-laced deaths is unquestionably a valid state purpose. Suitability: no. The Court found the additive requirement cannot, even in theory, reach methanol that is stolen, diverted, or smuggled before it ever passes through a licensed point of sale, and the Parthasarthy Committee's own findings located the real causes of hooch tragedies there: illegal diversion, unlicensed channels, enforcement corruption, and methanol's price advantage over legal liquor. [[4]](https://theprint.in/india/sc-suggests-multi-department-strategy-to-prevent-hooch-tragedies/3046638/)
+The Bench applied the four-part proportionality framework from *K.S. Puttaswamy (Privacy-9 J.) v. Union of India*, (2017) 10 SCC 1, the test built to review invasions of the right to privacy. Legitimate aim: yes, preventing methanol-laced deaths is unquestionably a valid state purpose. Suitability: no. The Court found the additive requirement cannot, even in theory, reach methanol that is stolen, diverted, or smuggled before it ever passes through a licensed point of sale, and the Parthasarthy Committee's own findings located the real causes of hooch tragedies there: illegal diversion, unlicensed channels, enforcement corruption, and methanol's price advantage over legal liquor.
 
-Rules 18A and 18B were struck down as violative of Articles 14 and 19(1)(g). [[5]](https://www.intolegalworld.com/post/manifestly-arbitrary-supreme-court-strikes-down-maharashtra-s-14-year-methanol-denaturing-rule-that)
+Rules 18A and 18B were struck down as violative of Articles 14 and 19(1)(g).
 
 > *"Forced temperance is no solution for alcoholism."*  
 > — (2026 INSC 1009)
@@ -78,11 +78,11 @@ This is a chemical-safety regulation decided with the analytical machinery built
 
 #### 1. Reverse Burden and the POCSO Presumption
 
-*Deepak in JC v. State Govt. of NCT of Delhi | 2026 INSC 1008 | Decided: September 17, 2026 | Bench: Justice Prashant Kumar Mishra and Justice N.V. Anjaria* [[6]](https://www.livelaw.in/supreme-court/presumption-of-guilt-under-pocso-act-not-absolute-supreme-court-acquits-man-550578)
+*Deepak in JC v. State Govt. of NCT of Delhi | 2026 INSC 1008 | Decided: September 17, 2026 | Bench: Justice Prashant Kumar Mishra and Justice N.V. Anjaria*
 
-The appellant had served most of a ten-year sentence under Section 6 of the POCSO Act and Section 363 IPC for allegedly taking a two-and-a-half-year-old girl to a park without her mother's knowledge. The medical and forensic evidence did not support penetrative assault. The complainant's account and the private doctor's account of the timeline did not match. The defence traced the complaint to a prior neighbourhood dispute over water. [[7]](https://www.scconline.com/blog/post/2026/09/19/pocso-presumptions-rebuttable-sc-penetrative-sexual-assault-convict-acquitted/)
+The appellant had served most of a ten-year sentence under Section 6 of the POCSO Act and Section 363 IPC for allegedly taking a two-and-a-half-year-old girl to a park without her mother's knowledge. The medical and forensic evidence did not support penetrative assault. The complainant's account and the private doctor's account of the timeline did not match. The defence traced the complaint to a prior neighbourhood dispute over water.
 
-The Supreme Court acquitted him, holding that the reverse-burden presumptions under Sections 29 and 30 of the POCSO Act are rebuttable, not automatic. They shift the burden to the accused only after the prosecution has established the foundational facts of the offence. They do not excuse the prosecution from proving its case, and they do not entitle a court to treat an improbable or internally inconsistent prosecution story as proven merely because a presumption statute exists. [[8]](https://theindianlawyer.in/supreme-court-on-section-29-of-pocso-presumption-of-guilt-cannot-replace-proof/)
+The Supreme Court acquitted him, holding that the reverse-burden presumptions under Sections 29 and 30 of the POCSO Act are rebuttable, not automatic. They shift the burden to the accused only after the prosecution has established the foundational facts of the offence. They do not excuse the prosecution from proving its case, and they do not entitle a court to treat an improbable or internally inconsistent prosecution story as proven merely because a presumption statute exists.
 
 ##### Why This Matters
 
@@ -90,7 +90,7 @@ POCSO's presumption clauses exist because child sexual abuse is hard to prove an
 
 #### 2. The Cess Reference: Seven Judges, Twenty-Seven Years
 
-*In Re: States' Power to Levy Additional Sales Tax and Cess | Reference under Article 143 (1999) | Reserved: September 22, 2026 | Seven-judge Constitution Bench headed by Chief Justice Surya Kant* [[9]](https://www.business-standard.com/amp/companies/news/sc-reserves-verdict-on-states-power-to-impose-additional-tax-surcharge-126092201306_1.html)
+*In Re: States' Power to Levy Additional Sales Tax and Cess | Reference under Article 143 (1999) | Reserved: September 22, 2026 | Seven-judge Constitution Bench headed by Chief Justice Surya Kant*
 
 A reference sent to the Supreme Court in 1999 finally reached judgment stage this month. The question: can a state legislature impose an additional tax, surcharge, or cess on sales or purchases already taxed under existing sales or purchase tax law? The seven-judge Bench reserved its verdict on September 22 after hearing arguments on the scope of state fiscal power in a landscape now dominated by GST.
 
@@ -102,17 +102,17 @@ The stakes are structural. GST occupied most of the field states used to tax ind
 
 ### Parliament in Recess: The Monsoon Session's Aftermath Still Defines September
 
-Parliament's Monsoon Session ran from July 20 to August 13, 2026, and both Houses have been in recess since. [[10]](https://www.livelaw.in/news-updates/monsoon-session-parliament-2026-12-bills-passed-lok-sabha-rajya-sabha-545997) Three threads from that session carried directly into this month. [[11]](https://www.scconline.com/blog/post/2026/08/21/parliament-monsoon-session-2026-key-acts-bills/) [[12]](https://www.business-standard.com/amp/india-news/parliament-monsoon-session-12-bills-introduced-11-passed-33-hrs-spent-126081300890_1.html)
+Parliament's Monsoon Session ran from July 20 to August 13, 2026, and both Houses have been in recess since. Three threads from that session carried directly into this month.
 
 #### 1. The Supreme Court Gets Four More Judges
 
-*Supreme Court (Number of Judges) Amendment Act, 2026 | Presidential assent: August 2026 | Source: LawBeat, Business Standard* [[13]](https://lawbeat.in/top-stories/rajya-sabha-passes-bill-to-increase-supreme-court-judge-strength-from-34-to-38-1619488) [[20]](https://www.scobserver.in/journal/cabinet-clears-bill-to-expand-supreme-court-strength-to-38-judges/)
+*Supreme Court (Number of Judges) Amendment Act, 2026 | Presidential assent: August 2026 | Source: LawBeat, Business Standard*
 
 Parliament converted May's ordinance into permanent law, raising the Supreme Court's sanctioned strength from 34 to 38 judges, including the Chief Justice—the first increase since 2019. The stated aim is reducing the Court's pendency, which stood above 90,000 cases earlier this year. Working strength, notably, still trails sanctioned strength, so the practical effect depends on how quickly the remaining vacancies are filled.
 
 #### 2. Two New Acts, Quietly in Force
 
-*Tribunals Reforms Act, 2026 and Bankers' Books Evidence Act, 2026 | Presidential assent: August 13, 2026* [[14]](https://openthemagazine.com/india/government-to-push-7-bills-in-monsoon-session-focus-on-legacy-laws)
+*Tribunals Reforms Act, 2026 and Bankers' Books Evidence Act, 2026 | Presidential assent: August 13, 2026*
 
 Both Acts received assent on the session's last day. The Tribunals Reforms Act restructures tribunal appointments and creates a National Tribunals Commission aimed at improving independence and uniformity across India's tribunal system. The Bankers' Books Evidence Act modernises an 1891-era evidentiary framework to formally recognise electronic and digital banking records in court. Neither made headlines outside specialist circles. Both will matter the next time a tribunal appointment or a bank record is contested.
 
@@ -130,13 +130,13 @@ The Bill, which would cut the maximum jail term for FCRA violations from five ye
 
 #### Robocalls Get a Legal Definition
 
-*Telecom Commercial Communications Customer Preference (Third Amendment) Regulations, 2026 | Notified: September 18, 2026 | Source: TRAI* [[15]](https://blitzindiamedia.com/news/india-government-policy-updates-september-2026/)
+*Telecom Commercial Communications Customer Preference (Third Amendment) Regulations, 2026 | Notified: September 18, 2026 | Source: TRAI*
 
 For the first time, Indian telecom regulation names the machine-dialled call. TRAI's amendment defines an application-to-person call as a voice call initiated by an application, software system, or automated platform without direct human dialling, covering autodiallers, robo-calls, and AI-voice technology. Any entity placing such calls must now declare its calling-line identities to its telecom provider in advance; an undeclared A2P call is automatically treated as unsolicited commercial communication. The amendment also lets a terminating access provider levy a termination charge of up to five paise a minute on the originating provider for A2P traffic, small enough to be invisible to a bank sending a one-off alert, large enough to bite an operation dialling at scale.
 
 #### The Clock Gets a Legal Source
 
-*Legal Metrology (Indian Standard Time) Rules, 2026 | Notified: August 27, 2026 | 180-day compliance window running through late February 2027* [[16]](https://www.legacyias.com/current-affairs-01-september-2026/)
+*Legal Metrology (Indian Standard Time) Rules, 2026 | Notified: August 27, 2026 | 180-day compliance window running through late February 2027*
 
 India has used IST for decades without a legal mandate requiring every commercial and official system—banking, telecom, railways, power grids, court record-keeping—to synchronise to a single authoritative domestic time source. Many currently rely on foreign satellite timing instead. The new Rules, framed under the Legal Metrology Act, 2009, close that gap, with a 180-day window for systems to migrate. The compliance clock started running in late August and is now well into its first month. NLO will be watching which sectors are ready when it runs out.
 
@@ -154,7 +154,7 @@ The four-part proportionality test—legitimate aim, suitability, necessity, bal
 
 *Balaji Formalin* applies exactly that framework to a Maharashtra Poisons Rule about how methanol gets sold to a chemical company. There is nothing wrong with testing a licensing rule for proportionality. Courts have done versions of this since *Omkumar v. Union of India* (2000), and the reasonable-restrictions language of Article 19(6) always invited some balancing exercise. What has changed is the rigor and evidentiary burden that now travels with the label. A court applying the full four-prong *Puttaswamy* test does not just ask whether a restriction is reasonable. It asks the state to produce a record showing it considered less restrictive alternatives, and to show, with something more than assertion, that the chosen measure actually works.
 
-That is a genuinely higher bar, and it is not obviously the right one for every case it will now be dragged into. Scholars who have tracked the doctrine's uneven use—in the FCRA challenge, in internet-shutdown litigation, in Aadhaar—have flagged the same risk from different directions: a standard flexible enough to justify almost any outcome a bench prefers, without the guardrails that would make its use predictable. [[17]](https://lawandotherthings.com/confused-and-confusing-proportionality-in-the-supreme-courts-fcra-judgment/) [[18]](https://ohrh.law.ox.ac.uk/proportionality-in-theory-not-practice-internet-rights-in-indian-courts/) [[19]](https://indconlawphil.wordpress.com/category/constitutional-interpretation/proportionality/) Applied inconsistently, proportionality review stops being a legal test and starts being a vocabulary. Judges reach for it when they want to strike something down and reach for ordinary reasonableness review when they don't, and litigants have no reliable way to predict which one they will get.
+That is a genuinely higher bar, and it is not obviously the right one for every case it will now be dragged into. Scholars who have tracked the doctrine's uneven use—in the FCRA challenge, in internet-shutdown litigation, in Aadhaar—have flagged the same risk from different directions: a standard flexible enough to justify almost any outcome a bench prefers, without the guardrails that would make its use predictable. Applied inconsistently, proportionality review stops being a legal test and starts being a vocabulary. Judges reach for it when they want to strike something down and reach for ordinary reasonableness review when they don't, and litigants have no reliable way to predict which one they will get.
 
 None of this makes *Balaji Formalin* wrong. The Parthasarthy Committee's own findings support the Court's conclusion that Rule 18A never touched the actual causes of hooch deaths. But a court that borrows privacy law's most demanding tool for an ordinary commercial regulation case should say, explicitly, why that tool belongs there, and not just that it does. *Balaji Formalin* doesn't. It applies *Puttaswamy*'s four prongs as though the question of which standard governs Article 19(1)(g) review had already been settled. It has not.
 
