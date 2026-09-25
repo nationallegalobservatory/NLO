@@ -12,6 +12,7 @@ import Avatar from '../../../../components/Avatar';
 import { Calendar, Clock, User, ArrowLeft, FileText } from 'lucide-react';
 import CiteSection from './CiteSection';
 import CopyLinkButton from '../../../../components/CopyLinkButton';
+import PrintPDFButton from '../../../../components/PrintPDFButton';
 import OfflineArticleReader from '@/components/OfflineArticleReader';
 import { headers } from 'next/headers';
 import crypto from 'crypto';
@@ -141,8 +142,10 @@ export default async function ArticlePage(props: PageProps) {
   const publishTime = article.publishAt ? new Date(article.publishAt).getTime() : 0;
   const now = Date.now();
 
+  const isPreviewRequested = resolvedSearchParams.preview === '1' || resolvedSearchParams.preview === 'true';
+
   // If a user tries to access early with invalid or missing tokens, show the Not Available page
-  if (isEarlyRequested && !isEarlySubscriber && article.publishAt && now < publishTime) {
+  if (isEarlyRequested && !isEarlySubscriber && !isPreviewRequested && article.publishAt && now < publishTime) {
     return (
       <div className="mx-auto max-w-xl py-20 px-4 text-center space-y-6">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50">
@@ -169,7 +172,7 @@ export default async function ArticlePage(props: PageProps) {
     );
   }
 
-  const isEmbargoed = article.publishAt
+  const isEmbargoed = article.publishAt && !isPreviewRequested
     ? isEarlySubscriber
       ? now < (publishTime - FIVE_MINUTES_MS)
       : now < publishTime
@@ -244,15 +247,18 @@ export default async function ArticlePage(props: PageProps) {
         </h1>
 
         {/* Metadata row */}
-        <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-500 dark:text-slate-400 pt-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
-          <div className="flex items-center space-x-1.5">
-            <Calendar className="w-4 h-4 text-indigo-500" />
-            <span>{formattedDate}</span>
+        <div className="flex flex-wrap items-center justify-between gap-y-2 gap-x-6 text-xs text-slate-500 dark:text-slate-400 pt-2 border-b border-slate-200/50 dark:border-slate-800 pb-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <div className="flex items-center space-x-1.5">
+              <Calendar className="w-4 h-4 text-indigo-500" />
+              <span>{formattedDate}</span>
+            </div>
+            <div className="flex items-center space-x-1.5">
+              <Clock className="w-4 h-4 text-indigo-500" />
+              <span>{article.readingTime}</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-1.5">
-            <Clock className="w-4 h-4 text-indigo-500" />
-            <span>{article.readingTime}</span>
-          </div>
+          <PrintPDFButton />
         </div>
       </header>
 
