@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Lock, ArrowRight, ArrowUpRight, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Clock, Lock, ArrowRight, ArrowUpRight, CheckCircle2, ShieldAlert, Mail, Check, Loader2 } from 'lucide-react';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from './Avatar';
 import AuthorLink from './AuthorLink';
@@ -38,6 +38,44 @@ export default function DynamicReleaseCountdown({
     };
   });
   const href = `/publications/research/${article.slug}`;
+
+  // Early access newsletter registration states
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [registerStatus, setRegisterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
+
+  const handleRegisterNewsletter = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput || !emailInput.includes('@')) {
+      setRegisterStatus('error');
+      setStatusMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setRegisterStatus('loading');
+    setStatusMessage('');
+
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailInput }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setRegisterStatus('success');
+        setStatusMessage('Registered! You are now subscribed to the NLO newsletter dispatch.');
+        setEmailInput('');
+      } else {
+        setRegisterStatus('error');
+        setStatusMessage(data.message || 'Unable to register at this moment. Please try again.');
+      }
+    } catch {
+      setRegisterStatus('error');
+      setStatusMessage('Network error. Please try again.');
+    }
+  };
 
   // Extract issue/volume display if available
   const issueMatch = article.title.match(/Issue\s*(\d+)/i);
@@ -207,6 +245,63 @@ export default function DynamicReleaseCountdown({
                       Secs
                     </span>
                   </div>
+                </div>
+
+                {/* ─────────────────────────────────────────────────────────────
+                    REGISTER FOR EARLY ACCESS SPOT
+                    Allows readers to click and submit email for newsletter updates
+                    ───────────────────────────────────────────────────────────── */}
+                <div className="mt-6 pt-5 border-t border-outline-variant/30 dark:border-primary/15">
+                  {!showRegisterForm ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowRegisterForm(true)}
+                      className="inline-flex items-center gap-2 rounded-md border border-oxblood/40 bg-oxblood/10 px-4 py-2 font-technical-ui text-xs font-bold uppercase tracking-[0.16em] text-oxblood transition hover:bg-oxblood hover:text-white dark:border-primary/40 dark:bg-primary/15 dark:text-primary dark:hover:bg-primary dark:hover:text-background cursor-pointer"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      Register for Early Access
+                    </button>
+                  ) : (
+                    <form onSubmit={handleRegisterNewsletter} className="w-full max-w-md mx-auto space-y-3">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="email"
+                            value={emailInput}
+                            onChange={(e) => setEmailInput(e.target.value)}
+                            placeholder="Enter email for newsletter..."
+                            disabled={registerStatus === 'loading' || registerStatus === 'success'}
+                            className="w-full rounded-md border border-outline-variant/60 bg-surface-container-lowest px-3.5 py-2 font-technical-ui text-xs text-on-background placeholder:text-on-surface-variant/60 focus:border-oxblood focus:outline-hidden dark:border-primary/30 dark:bg-surface-container dark:text-on-background dark:focus:border-primary"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={registerStatus === 'loading' || registerStatus === 'success'}
+                          className="inline-flex items-center justify-center gap-1.5 rounded-md bg-oxblood px-4 py-2 font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-on-background disabled:opacity-50 dark:bg-primary dark:text-background dark:hover:bg-tertiary-fixed cursor-pointer"
+                        >
+                          {registerStatus === 'loading' ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : registerStatus === 'success' ? (
+                            <Check className="h-3.5 w-3.5" />
+                          ) : (
+                            'Subscribe'
+                          )}
+                        </button>
+                      </div>
+
+                      {statusMessage && (
+                        <p
+                          className={`font-technical-ui text-[11px] leading-tight ${
+                            registerStatus === 'success'
+                              ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                              : 'text-red-600 dark:text-red-400'
+                          }`}
+                        >
+                          {statusMessage}
+                        </p>
+                      )}
+                    </form>
+                  )}
                 </div>
               </div>
 
