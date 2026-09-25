@@ -195,7 +195,7 @@ export default function DynamicReleaseCountdown({
                   Monthly Legal Review — Vol. {volNumber} | Issue {issueNumber}
                 </h3>
                 <p className="font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
-                  Primary-source analysis, constitutional dispatches, and legislative tracker under active editorial embargo. Contents will unlock automatically at 6:00 PM IST without requiring a page refresh.
+                  Primary-source analysis, constitutional dispatches, and legislative tracker under active editorial embargo. Contents will unlock automatically at 6:00 PM IST.
                 </p>
               </div>
 
@@ -308,7 +308,7 @@ export default function DynamicReleaseCountdown({
               {/* Status footer */}
               <div className="flex items-center gap-2 font-technical-ui text-[11px] font-semibold tracking-wider text-on-surface-variant dark:text-on-background/60">
                 <ShieldAlert className="h-4 w-4 text-oxblood dark:text-primary" />
-                <span>Live synchronizer active · Auto-unveils 26 September 2026 at 6:00 PM IST without refresh</span>
+                <span>Live synchronizer active · Auto-unveils 26 September 2026 at 6:00 PM IST</span>
               </div>
             </motion.div>
           ) : (
