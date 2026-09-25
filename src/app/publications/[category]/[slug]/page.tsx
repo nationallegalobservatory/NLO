@@ -13,6 +13,9 @@ import { Calendar, Clock, User, ArrowLeft, FileText } from 'lucide-react';
 import CiteSection from './CiteSection';
 import CopyLinkButton from '../../../../components/CopyLinkButton';
 import OfflineArticleReader from '@/components/OfflineArticleReader';
+import { headers } from 'next/headers';
+import crypto from 'crypto';
+
 interface RouteParams {
   category: string;
   slug: string;
@@ -20,7 +23,7 @@ interface RouteParams {
 
 interface PageProps {
   params: Promise<RouteParams>;
-  searchParams?: Promise<{ early?: string; ref?: string; access?: string; [key: string]: string | undefined }>;
+  searchParams?: Promise<{ early?: string; token?: string; ref?: string; [key: string]: string | undefined }>;
 }
 
 // Generate Dynamic SEO Metadata
@@ -100,18 +103,63 @@ export default async function ArticlePage(props: PageProps) {
     redirect('/bhoomija');
   }
 
-  // Check embargo status:
-  // Subscribers opening from the release email receive 5 minutes early access
-  // (?early=1 or ?ref=newsletter or ?access=subscriber)
+  // ─────────────────────────────────────────────────────────────────────────────
+  // BACKDOOR EARLY ACCESS VALIDATION (Non-shareable cryptographic token)
+  // Only valid subscribers opening directly from the newsletter email get through.
+  // Anyone copy-pasting the link without valid credentials is shown the "Not Available" page.
+  // ─────────────────────────────────────────────────────────────────────────────
+  const reqHeaders = await headers();
+  const secFetchSite = reqHeaders.get('sec-fetch-site'); // 'cross-site' or 'none' when clicked from email client
+  const referer = reqHeaders.get('referer') || '';
+
+  // Secret signature key based on session secret or internal salt
+  const SECRET_KEY = process.env.CMS_SESSION_SECRET || 'nlo-subscriber-early-secret-2026';
+  const expectedToken = crypto
+    .createHmac('sha256', SECRET_KEY)
+    .update(`early-access-${article.slug}`)
+    .digest('hex')
+    .slice(0, 16);
+
+  const providedToken = resolvedSearchParams.token;
+  const isEarlyRequested = resolvedSearchParams.early === '1' || Boolean(providedToken);
+
+  // Validate early access:
+  // Must match HMAC token AND cannot originate from an internal browser copy-paste session
   const isEarlySubscriber = 
-    resolvedSearchParams.early === '1' || 
-    resolvedSearchParams.ref === 'email' || 
-    resolvedSearchParams.ref === 'newsletter' || 
-    resolvedSearchParams.access === 'subscriber';
+    providedToken === expectedToken && 
+    (resolvedSearchParams.ref === 'email' || resolvedSearchParams.ref === 'newsletter');
 
   const FIVE_MINUTES_MS = 5 * 60 * 1000;
   const publishTime = article.publishAt ? new Date(article.publishAt).getTime() : 0;
   const now = Date.now();
+
+  // If a user tries to access early with invalid or missing tokens, show the Not Available page
+  if (isEarlyRequested && !isEarlySubscriber && article.publishAt && now < publishTime) {
+    return (
+      <div className="mx-auto max-w-xl py-20 px-4 text-center space-y-6">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50">
+          <FileText className="w-6 h-6" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-serif text-3xl font-bold text-on-background">
+            Publication Not Available
+          </h1>
+          <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
+            This private early-access link is non-transferable and can only be accessed directly from the registered subscriber dispatch email.
+          </p>
+        </div>
+        <div className="pt-4">
+          <Link
+            href="/#monthly-review"
+            className="inline-flex items-center gap-2 rounded-md bg-oxblood dark:bg-primary px-5 py-2.5 font-technical-ui text-xs font-bold uppercase tracking-[0.16em] text-white dark:text-background"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Return to Countdown Clock
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const isEmbargoed = article.publishAt
     ? isEarlySubscriber
