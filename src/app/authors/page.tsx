@@ -105,7 +105,7 @@ export default function AuthorsPage() {
                   </p>
                 </div>
                 <p className="font-body-md text-sm leading-7 text-on-surface-variant dark:text-on-background/65">
-                  High-agency product builder entering 3rd year of CSE at GTB4CEC. Expert in database automation, voice production, and AI operations.
+                  Highly Skilled product builder entering 3rd year of B-Tech CSE at GTB4CEC. Expert in Frontend automation, voice production, and AI operations.
                 </p>
               </div>
             </div>

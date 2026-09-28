@@ -16,6 +16,7 @@ tags:
   - Political Communication
 abstract: "A socio-legal analysis of gendered rhetoric, political exclusion, and patriarchal propaganda in Indian democratic institutions. This study questions how the concept of womanhood has been strategically instrumentalized as part of contemporary Indian political propaganda, and how the state actively creates ontological insecurity to consolidate majoritarian authority."
 coverImage: "/images/propaganda.jpg"
+draft: true
 references:
   - "Ahmad, N. B. (2021). 'Blood, Sweat, Tears': A Muslim woman law professor's view on degenerative racism, misogyny, and (internal) Islamophobia. FIU Law Review, 16(1), 13–74."
   - "Awais, M., & Al Gharaibeh, F. (2026). Justice or tradition? Cross-national media framing of honor killings. Women's Studies International Forum, 114, 103219."

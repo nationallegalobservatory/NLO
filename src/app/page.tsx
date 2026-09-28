@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, BookOpen, Clock, Laptop, Landmark, Mail, Scale, Users, Calendar, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, BookOpen, Clock, Laptop, Landmark, Mail, Scale, Users, Calendar } from 'lucide-react';
 import { getArticles } from '../lib/content';
 import type { ArticleData } from '../lib/markdown';
 import Avatar from '../components/Avatar';
@@ -62,8 +62,7 @@ function HeroSection() {
   return (
     <section className="relative overflow-hidden border-b border-outline-variant/40 bg-transparent px-4 py-12 text-center dark:border-primary/15 sm:px-8 sm:py-20">
       <div className="mx-auto flex max-w-[1120px] flex-col items-center justify-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-oxblood/20 bg-oxblood/5 px-3.5 py-1 font-technical-ui text-[11px] font-bold uppercase tracking-[0.28em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
-          <Sparkles className="h-3.5 w-3.5" />
+        <span className="inline-flex items-center rounded-xs border border-oxblood/20 bg-oxblood/5 px-3.5 py-1 font-technical-ui text-[11px] font-bold uppercase tracking-[0.28em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
           Independent Legal Research
         </span>
 
@@ -71,7 +70,7 @@ function HeroSection() {
           National Legal Observatory
         </h1>
 
-        <div className="mt-8 h-1 w-20 rounded-full bg-gradient-to-r from-transparent via-[#D3AC2B] to-transparent" />
+        <div className="mt-8 h-1 w-20 rounded-xs bg-gradient-to-r from-transparent via-[#D3AC2B] to-transparent" />
 
         <p className="mt-8 max-w-3xl font-serif text-lg italic leading-relaxed text-on-surface-variant dark:text-on-background/80 sm:text-2xl">
           {"“The National Legal Observatory is an attempt to address an observation gap.”"}
@@ -353,6 +352,14 @@ export default async function Homepage() {
   const septemberReviewArticle = articleBySlug.get('monthly-legal-review-september-2026') ?? null;
   const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
   const activeMonthlyReview = septemberReviewArticle ?? augustReviewArticle ?? null;
+
+  // Check if there is an active future embargo (such as the 30 September release)
+  const now = Date.now();
+  const upcomingEmbargoArticle = allArticles.find(
+    (a) => a.publishAt && new Date(a.publishAt).getTime() > now
+  ) ?? null;
+
+  const countdownArticle = upcomingEmbargoArticle ?? activeMonthlyReview;
   const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;
   const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =
@@ -371,7 +378,8 @@ export default async function Homepage() {
       (a) =>
         a.slug !== featuredArticle?.slug &&
         a.slug !== researchDeskArticle?.slug &&
-        a.slug !== activeMonthlyReview?.slug
+        a.slug !== activeMonthlyReview?.slug &&
+        a.slug !== upcomingEmbargoArticle?.slug
     )
     .slice(0, 3);
 
@@ -380,10 +388,10 @@ export default async function Homepage() {
       <HeroSection />
       <EditorialDirective />
 
-      {activeMonthlyReview && (
+      {countdownArticle && (
         <DynamicReleaseCountdown
-          article={activeMonthlyReview}
-          targetDate={activeMonthlyReview.publishAt || "2026-09-26T18:00:00+05:30"}
+          article={countdownArticle}
+          targetDate={countdownArticle.publishAt || "2026-09-30T18:00:00+05:30"}
         />
       )}
 

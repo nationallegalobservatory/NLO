@@ -133,8 +133,8 @@ export default function UpcomingResearchTeaser({ publishAt, article }: UpcomingR
           <div className="relative space-y-6">
             {/* Label */}
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-700/30">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs text-[10px] font-bold uppercase tracking-widest bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-700/30">
+                <span className="w-1.5 h-1.5 rounded-xs bg-amber-500 dark:bg-amber-400" />
                 Research Launch
               </span>
             </div>
@@ -267,7 +267,7 @@ export default function UpcomingResearchTeaser({ publishAt, article }: UpcomingR
           <div className="space-y-5">
             {/* Labels */}
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-700/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs text-[10px] font-bold uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-700/30">
                 Now Live • {article.publication}
               </span>
               <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider">

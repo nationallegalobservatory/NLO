@@ -215,62 +215,31 @@ export default async function PublicationsPage(props: PageProps) {
           </div>
         </div>
 
-        {/* Chips only for PC view */}
-        <div className="hidden lg:flex mt-8 flex-wrap items-center gap-3 border-t border-outline-variant/30 pt-5 font-technical-ui text-xs dark:border-primary/15">
-          <span className="font-bold uppercase tracking-[0.18em] text-on-background dark:text-on-background">
-            Filters:
-          </span>
-          {categories.slice(0, 4).map((cat) => (
-            <Link
-              key={cat.slug}
-              href={getHref({ category: category === cat.slug ? undefined : cat.slug, page: '1' })}
-              className={chipClass(category === cat.slug)}
-            >
-              {cat.name}
-            </Link>
-          ))}
-          {(query || category || activeType || activeTag || author || year || readTime) && (
-            <Link href={getHref({}, true)} className="ml-auto font-bold uppercase tracking-[0.18em] text-oxblood hover:text-on-background dark:text-primary dark:hover:text-on-background">
-              Clear Filters
-            </Link>
-          )}
+        {/* Horizontal Scrolling Dropdown Filter Bar with smooth scrolling & drop-down menus */}
+        <div className="mt-8">
+          <FilterBar
+            categories={categories}
+            authors={allAuthors}
+            years={allYears}
+            totalItems={totalItems}
+          />
         </div>
       </header>
 
-      {/* Modern Horizontal Scrolling Dropdown Filter Bar — Mobile/Portrait Only */}
-      <div className="lg:hidden mt-6">
-        <FilterBar
-          categories={categories}
-          authors={allAuthors}
-          years={allYears}
-          totalItems={totalItems}
-        />
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-8 sm:mt-12 sm:gap-12 lg:grid-cols-12">
+      <div className="mt-8 grid grid-cols-1 gap-8 sm:mt-10 sm:gap-12 lg:grid-cols-12">
         <section className="lg:col-span-8">
-          {/* Mobile indicator showing matches, but sort bar stays for desktop */}
-          <div className="mb-10 flex flex-col gap-4 border-b border-outline-variant/35 pb-5 dark:border-primary/20 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-8 flex flex-col gap-4 border-b border-outline-variant/35 pb-4 dark:border-primary/20 sm:flex-row sm:items-center sm:justify-between">
             <div className="font-technical-ui text-xs uppercase tracking-[0.18em] text-on-surface-variant dark:text-on-background/50">
-              Showing <span className="font-bold text-on-background dark:text-on-background">{filteredArticles.length}</span> publications
+              Showing <span className="font-bold text-on-background dark:text-on-background">{paginatedArticles.length}</span> of <span className="font-bold text-on-background dark:text-on-background">{filteredArticles.length}</span> publications
             </div>
-
-            {/* Desktop Sort Chips */}
-            <div className="hidden lg:flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 font-technical-ui text-xs uppercase tracking-[0.14em] text-on-surface-variant dark:text-on-background/50">
-                <ArrowUpDown className="h-3.5 w-3.5 text-oxblood dark:text-primary" />
-                Sort
-              </div>
-              {sortOptions.map((option) => (
-                <Link
-                  key={option.slug}
-                  href={getHref({ sort: option.slug, page: '1' })}
-                  className={chipClass(sort === option.slug)}
-                >
-                  {option.name}
-                </Link>
-              ))}
-            </div>
+            {activeFilterCount > 0 && (
+              <Link
+                href={getHref({}, true)}
+                className="font-technical-ui text-xs font-bold uppercase tracking-[0.16em] text-oxblood hover:text-on-background dark:text-primary dark:hover:text-on-background"
+              >
+                Reset All Filters
+              </Link>
+            )}
           </div>
 
           {paginatedArticles.length === 0 ? (

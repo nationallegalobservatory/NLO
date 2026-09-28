@@ -77,17 +77,21 @@ export default function DynamicReleaseCountdown({
     }
   };
 
-  // Extract issue/volume display if available
+  // Check if article is a monthly review
+  const isMonthlyReview = article.format === 'monthly-report' || /Monthly Legal Review/i.test(article.title);
   const issueMatch = article.title.match(/Issue\s*(\d+)/i);
-  const issueNumber = issueMatch ? issueMatch[1] : '4';
+  const issueNumber = issueMatch ? issueMatch[1] : '';
   const volMatch = article.title.match(/Vol\.?\s*(\d+)/i);
-  const volNumber = volMatch ? volMatch[1] : '1';
+  const volNumber = volMatch ? volMatch[1] : '';
 
   // Format month and year from publishAt or date
   const targetObj = new Date(effectiveTargetDate);
   const formattedTargetDate = !isNaN(targetObj.getTime())
     ? targetObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-    : '26 September 2026';
+    : '30 September 2026';
+  const formattedTargetTime = !isNaN(targetObj.getTime())
+    ? targetObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata', hour12: true }) + ' IST'
+    : '6:30 PM IST';
   const formattedMonthYear = !isNaN(targetObj.getTime())
     ? targetObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : 'September 2026';
@@ -132,24 +136,17 @@ export default function DynamicReleaseCountdown({
   }, [effectiveTargetDate, demoDurationSeconds]);
 
   return (
-    <section id="monthly-review" className="space-y-6 scroll-mt-24">
+    <section id="embargo-countdown" className="space-y-6 scroll-mt-24">
       {/* Header bar with Live/Upcoming indicator */}
       <div className="flex items-end justify-between gap-4 border-b border-outline-variant/50 pb-3 dark:border-primary/20">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2">
-            <span
-              className={`h-2.5 w-2.5 rounded-full ${
-                isLive ? 'bg-emerald-500 animate-ping' : 'bg-oxblood dark:bg-primary animate-pulse'
-              }`}
-            />
-            <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-oxblood dark:text-primary">
-              {isLive
-                ? `Live Dispatch · ${formattedMonthYear}`
-                : `Upcoming Release · ${formattedTargetDate}, 6:00 PM IST`}
-            </p>
-          </div>
+          <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.28em] text-oxblood dark:text-primary">
+            {isLive
+              ? `Live Dispatch · ${formattedMonthYear}`
+              : `Upcoming Release · ${formattedTargetDate}, ${formattedTargetTime}`}
+          </p>
           <h2 className="font-serif text-2xl font-bold text-on-background dark:text-on-background sm:text-3xl lg:text-4xl">
-            Monthly Legal Review
+            {isMonthlyReview ? 'Monthly Legal Review' : 'Forthcoming Research Dispatch'}
           </h2>
         </div>
 
@@ -158,7 +155,7 @@ export default function DynamicReleaseCountdown({
             href="/publications?type=research"
             className="inline-flex items-center gap-2 font-technical-ui text-xs font-bold uppercase tracking-[0.18em] text-oxblood transition hover:text-on-background dark:text-primary dark:hover:text-on-background"
           >
-            All Reviews
+            All Research
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -169,7 +166,7 @@ export default function DynamicReleaseCountdown({
         <AnimatePresence mode="wait">
           {!isLive ? (
             /* ─────────────────────────────────────────────────────────────
-               SEALED EMBARGOED COUNTDOWN MODE (Runs till 26 Sept 2026, 6:00 PM IST)
+               SEALED EMBARGOED COUNTDOWN MODE
                ───────────────────────────────────────────────────────────── */
             <motion.div
               key="countdown-mode"
@@ -184,18 +181,19 @@ export default function DynamicReleaseCountdown({
               className="flex flex-col items-center justify-center text-center space-y-8 py-4 sm:py-8"
             >
               {/* Embargo Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-oxblood/30 bg-oxblood/5 px-4 py-1.5 font-technical-ui text-xs font-bold uppercase tracking-[0.24em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
+              <div className="inline-flex items-center gap-2 rounded-xs border border-oxblood/30 bg-oxblood/5 px-4 py-1.5 font-technical-ui text-xs font-bold uppercase tracking-[0.24em] text-oxblood dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
                 <Lock className="h-3.5 w-3.5" />
-                <span>Editorial Embargo · Release 26 September 2026 at 6:00 PM IST</span>
+                <span>Editorial Embargo · Release {formattedTargetDate} at {formattedTargetTime}</span>
               </div>
 
               {/* Title & Subtitle */}
               <div className="space-y-3 max-w-2xl">
                 <h3 className="font-serif text-3xl font-bold leading-tight text-on-background sm:text-4xl lg:text-5xl">
-                  Monthly Legal Review — Vol. {volNumber} | Issue {issueNumber}
+                  {article.title}
                 </h3>
                 <p className="font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
-                  Primary-source analysis, constitutional dispatches, and legislative tracker under active editorial embargo. Contents will unlock automatically at 6:00 PM IST.
+                  {article.abstract ||
+                    'Primary-source analysis, constitutional dispatches, and comparative jurisprudence under active editorial embargo. Contents will unlock automatically at the scheduled launch time.'}
                 </p>
               </div>
 
@@ -238,7 +236,7 @@ export default function DynamicReleaseCountdown({
 
                   {/* Seconds */}
                   <div className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-surface-container-lowest border border-outline-variant/30 dark:bg-surface-container dark:border-primary/20">
-                    <span className="font-technical-ui text-3xl sm:text-5xl font-extrabold text-oxblood dark:text-primary animate-pulse">
+                    <span className="font-technical-ui text-3xl sm:text-5xl font-extrabold text-oxblood dark:text-primary">
                       {timeLeft.seconds.toString().padStart(2, '0')}
                     </span>
                     <span className="font-technical-ui text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mt-2">
@@ -308,7 +306,7 @@ export default function DynamicReleaseCountdown({
               {/* Status footer */}
               <div className="flex items-center gap-2 font-technical-ui text-[11px] font-semibold tracking-wider text-on-surface-variant dark:text-on-background/60">
                 <ShieldAlert className="h-4 w-4 text-oxblood dark:text-primary" />
-                <span>Live synchronizer active · Auto-unveils 26 September 2026 at 6:00 PM IST</span>
+                <span>Live synchronizer active · Auto-unveils {formattedTargetDate} at {formattedTargetTime}</span>
               </div>
             </motion.div>
           ) : (
@@ -329,13 +327,15 @@ export default function DynamicReleaseCountdown({
               <div className="grid gap-8 lg:grid-cols-12 items-start">
                 <div className="lg:col-span-8 space-y-4">
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-1.5 rounded-sm bg-emerald-700 px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-white dark:bg-emerald-600">
+                    <span className="inline-flex items-center gap-1.5 rounded-xs bg-emerald-700 px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-white dark:bg-emerald-600">
                       <CheckCircle2 className="h-3 w-3" />
-                      Live Issue
+                      Live Release
                     </span>
-                    <span className="rounded-sm bg-oxblood/10 px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-oxblood dark:bg-primary/15 dark:text-primary">
-                      Vol. {volNumber} · Issue {issueNumber}
-                    </span>
+                    {isMonthlyReview && (
+                      <span className="rounded-xs bg-oxblood/10 px-2.5 py-0.5 font-technical-ui text-[10px] font-bold uppercase tracking-[0.18em] text-oxblood dark:bg-primary/15 dark:text-primary">
+                        Vol. {volNumber} · Issue {issueNumber}
+                      </span>
+                    )}
                     <span className="font-technical-ui text-[11px] font-semibold uppercase tracking-[0.18em] text-on-surface-variant dark:text-on-background/50">
                       {formattedMonthYear}
                     </span>
@@ -352,29 +352,38 @@ export default function DynamicReleaseCountdown({
                   </h3>
 
                   <p className="font-body-md text-sm leading-relaxed text-on-surface-variant dark:text-on-background/75 sm:text-base">
-                    {article.abstract ||
-                      'The September 2026 Monthly Legal Review from the National Legal Observatory covers the Supreme Court’s landmark proportionality ruling in Balaji Formalin (2026 INSC 1009), POCSO presumption, and seven-judge cess reference.'}
+                    {article.abstract}
                   </p>
 
-                  {/* 4 Topic Highlights */}
-                  <div className="grid gap-2.5 sm:grid-cols-2 pt-2 text-xs font-serif text-on-surface-variant dark:text-on-background/70 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
-                    <div className="flex items-start gap-2">
-                      <span className="text-oxblood dark:text-primary font-bold">01</span>
-                      <span><strong>Judgment of the Month:</strong> Balaji Formalin (2026 INSC 1009)</span>
+                  {/* Highlights */}
+                  {isMonthlyReview ? (
+                    <div className="grid gap-2.5 sm:grid-cols-2 pt-2 text-xs font-serif text-on-surface-variant dark:text-on-background/70 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
+                      <div className="flex items-start gap-2">
+                        <span className="text-oxblood dark:text-primary font-bold">01</span>
+                        <span><strong>Judgment of the Month:</strong> Balaji Formalin (2026 INSC 1009)</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-oxblood dark:text-primary font-bold">02</span>
+                        <span><strong>Constitutional Watch:</strong> POCSO Presumption &amp; Cess Reference</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-oxblood dark:text-primary font-bold">03</span>
+                        <span><strong>Legislative Tracker:</strong> Supreme Court Strength at 38</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-oxblood dark:text-primary font-bold">05</span>
+                        <span><strong>Editor&apos;s Note:</strong> Proportionality&apos;s Quiet Takeover</span>
+                      </div>
                     </div>
-                    <div className="flex items-start gap-2">
-                      <span className="text-oxblood dark:text-primary font-bold">02</span>
-                      <span><strong>Constitutional Watch:</strong> POCSO Presumption &amp; Cess Reference</span>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 pt-3 border-t border-outline-variant/30 dark:border-primary/15">
+                      {article.tags?.slice(0, 5).map((t) => (
+                        <span key={t} className="rounded-xs border border-outline-variant/40 bg-surface-container-low px-2 py-0.5 font-technical-ui text-[10px] uppercase tracking-wider text-on-surface-variant dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70">
+                          {t}
+                        </span>
+                      ))}
                     </div>
-                    <div className="flex items-start gap-2">
-                      <span className="text-oxblood dark:text-primary font-bold">03</span>
-                      <span><strong>Legislative Tracker:</strong> Supreme Court Strength at 38</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span className="text-oxblood dark:text-primary font-bold">05</span>
-                      <span><strong>Editor&apos;s Note:</strong> Proportionality&apos;s Quiet Takeover</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="lg:col-span-4 flex flex-col items-start lg:items-end justify-between h-full space-y-6 lg:border-l lg:border-outline-variant/30 lg:pl-8 dark:lg:border-primary/15">

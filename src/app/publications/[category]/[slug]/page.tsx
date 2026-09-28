@@ -45,9 +45,12 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
   const isEmbargoed = article.publishAt ? new Date(article.publishAt).getTime() > Date.now() : false;
   if (isEmbargoed) {
+    const embargoDateStr = article.publishAt 
+      ? new Date(article.publishAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) + ' IST'
+      : 'scheduled release';
     return {
-      title: 'Editorial Embargo · National Legal Observatory',
-      description: 'This publication is currently under editorial embargo and will be released on 26 September 2026 at 6:00 PM IST.',
+      title: `${article.title} (Under Embargo) · National Legal Observatory`,
+      description: `This publication is currently under editorial embargo and will be released on ${embargoDateStr}.`,
       robots: {
         index: false,
         follow: false,
@@ -99,6 +102,12 @@ export default async function ArticlePage(props: PageProps) {
     return notFound();
   }
 
+  const isPreviewRequested = resolvedSearchParams.preview === '1' || resolvedSearchParams.preview === 'true';
+
+  if (article.draft && !isPreviewRequested) {
+    return notFound();
+  }
+
   // Private articles are only accessible from Bhoomija's profile reader
   if (article.private) {
     redirect('/bhoomija');
@@ -141,8 +150,6 @@ export default async function ArticlePage(props: PageProps) {
   const FIVE_MINUTES_MS = 5 * 60 * 1000;
   const publishTime = article.publishAt ? new Date(article.publishAt).getTime() : 0;
   const now = Date.now();
-
-  const isPreviewRequested = resolvedSearchParams.preview === '1' || resolvedSearchParams.preview === 'true';
 
   // If a user tries to access early with invalid or missing tokens, show the Not Available page
   if (isEarlyRequested && !isEarlySubscriber && !isPreviewRequested && article.publishAt && now < publishTime) {
@@ -226,7 +233,7 @@ export default async function ArticlePage(props: PageProps) {
       {/* Article Header block */}
       <header className="space-y-4 max-w-4xl">
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="px-2.5 py-0.5 rounded-full font-bold bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 uppercase tracking-widest text-[9px]">
+          <span className="px-2.5 py-0.5 rounded-xs font-bold bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 uppercase tracking-widest text-[9px]">
             {article.type}
           </span>
           {article.categories.map((cat) => (

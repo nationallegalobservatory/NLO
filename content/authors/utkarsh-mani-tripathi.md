@@ -3,7 +3,7 @@ slug: "utkarsh-mani-tripathi"
 name: "Utkarsh Mani Tripathi"
 role: "Full Stack Product Builder & Tech Lead"
 avatar: "/utkarsh-avatar.svg"
-bio: "Utkarsh Mani Tripathi builds the digital systems that power the National Legal Observatory. He focuses on product engineering, database automation, and reliable publishing workflows."
+bio: "Highly Skilled product builder entering 3rd year of B-Tech CSE at GTB4CEC. Expert in Frontend automation, voice production, and AI operations."
 socialLinks:
   website: "https://utkarshmanitripathi.vercel.app"
 ---

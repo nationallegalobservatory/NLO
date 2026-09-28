@@ -6,8 +6,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import MobileBottomNav from '../components/MobileBottomNav';
 import PWAProvider from '../components/PWAProvider';
-import SyncStatusDock from '../components/SyncStatusDock';
-// removed ChatBox
+import InstallPromptButton from '../components/InstallPromptButton';
+import FullscreenController from '../components/FullscreenController';
 
 // Initialize fonts
 const inter = Inter({
@@ -114,7 +114,8 @@ export default function RootLayout({
               </main>
               <Footer />
               <MobileBottomNav />
-              <SyncStatusDock />
+              <InstallPromptButton />
+              <FullscreenController />
             </div>
           </PWAProvider>
         </ThemeProvider>

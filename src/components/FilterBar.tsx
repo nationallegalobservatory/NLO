@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronDown, Search, X, Check, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Search, X, Check, SlidersHorizontal } from 'lucide-react';
 
 interface FilterBarProps {
   categories: { slug: string; name: string }[];
@@ -33,6 +33,33 @@ export default function FilterBar({ categories, authors, years, totalItems }: Fi
   // Dropdown open states
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Horizontal scroll arrows state
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 4);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [categories, authors, years]);
+
+  const scrollHorizontally = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -220 : 220;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(checkScroll, 200);
+    }
+  };
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -185,264 +212,322 @@ export default function FilterBar({ categories, authors, years, totalItems }: Fi
         </div>
       </div>
 
-      {/* Amazon-style Scrollable Dropdown Bar */}
+      {/* Scrollable Dropdown Bar with Left/Right Buttons & Scrollable Menus */}
       <div className="relative border-y border-outline-variant/45 py-2.5 dark:border-primary/15">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
-          
-          {/* Active indicator / Icon */}
-          <div className="flex items-center gap-1.5 shrink-0 px-2 font-technical-ui text-[10px] font-bold uppercase tracking-[0.15em] text-oxblood dark:text-primary border-r border-outline-variant/45 dark:border-primary/15 mr-1">
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            <span>Filter</span>
-          </div>
+        {/* Horizontal Navigation Controls */}
+        <div className="relative flex items-center">
+          {/* Scroll Left Button */}
+          <button
+            type="button"
+            onClick={() => scrollHorizontally('left')}
+            className={`hidden md:flex absolute left-0 z-20 h-7 w-7 items-center justify-center border border-outline-variant/70 bg-surface shadow-sm transition-opacity hover:border-oxblood hover:text-oxblood dark:border-primary/25 dark:bg-surface-container-low dark:text-primary dark:hover:border-primary ${
+              canScrollLeft ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+            aria-label="Scroll filters left"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
 
-          {/* 1. Format Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('format')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeType
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getFormatLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'format' ? 'rotate-180' : ''}`} />
-            </button>
+          {/* Left Fade Gradient Mask */}
+          {canScrollLeft && (
+            <div className="hidden md:block pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10" />
+          )}
 
-            {openDropdown === 'format' && (
-              <div className="absolute left-0 mt-2 z-30 min-w-[200px] border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container">
-                <button
-                  onClick={() => {
-                    updateUrl({ type: null });
-                    setOpenDropdown(null);
-                  }}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                >
-                  <span className={!activeType ? 'font-bold text-oxblood dark:text-primary' : ''}>All Formats</span>
-                  {!activeType && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                </button>
-                {formatFilters.map((fmt) => (
+          {/* Scrollable Container */}
+          <div
+            ref={scrollContainerRef}
+            onScroll={checkScroll}
+            className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory scroll-smooth w-full px-1"
+          >
+            {/* Filter Label / Icon */}
+            <div className="flex items-center gap-1.5 shrink-0 px-2 font-technical-ui text-[10px] font-bold uppercase tracking-[0.15em] text-oxblood dark:text-primary border-r border-outline-variant/45 dark:border-primary/15 mr-1">
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              <span>Filters</span>
+            </div>
+
+            {/* 1. Format Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('format')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeType
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getFormatLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'format' ? 'rotate-180' : ''}`} />
+              </button>
+
+              {openDropdown === 'format' && (
+                <div className="absolute left-0 top-full mt-1.5 z-40 min-w-[210px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
                   <button
-                    key={fmt.slug}
+                    type="button"
                     onClick={() => {
-                      updateUrl({ type: fmt.slug });
+                      updateUrl({ type: null });
                       setOpenDropdown(null);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
                   >
-                    <span className={activeType === fmt.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{fmt.name}</span>
-                    {activeType === fmt.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    <span className={!activeType ? 'font-bold text-oxblood dark:text-primary' : ''}>All Formats</span>
+                    {!activeType && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {formatFilters.map((fmt) => (
+                    <button
+                      key={fmt.slug}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ type: fmt.slug });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeType === fmt.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{fmt.name}</span>
+                      {activeType === fmt.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* 2. Category Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('category')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeCategory
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getCategoryLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'category' ? 'rotate-180' : ''}`} />
-            </button>
+            {/* 2. Category Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('category')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeCategory
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getCategoryLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'category' ? 'rotate-180' : ''}`} />
+              </button>
 
-            {openDropdown === 'category' && (
-              <div className="absolute left-0 mt-2 z-30 min-w-[240px] max-h-[300px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container animate-fade-in">
-                <button
-                  onClick={() => {
-                    updateUrl({ category: null });
-                    setOpenDropdown(null);
-                  }}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                >
-                  <span className={!activeCategory ? 'font-bold text-oxblood dark:text-primary' : ''}>All Categories</span>
-                  {!activeCategory && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                </button>
-                {categories.map((cat) => (
+              {openDropdown === 'category' && (
+                <div className="absolute left-0 top-full mt-1.5 z-40 min-w-[240px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
                   <button
-                    key={cat.slug}
+                    type="button"
                     onClick={() => {
-                      updateUrl({ category: cat.slug });
+                      updateUrl({ category: null });
                       setOpenDropdown(null);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
                   >
-                    <span className={activeCategory === cat.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{cat.name}</span>
-                    {activeCategory === cat.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    <span className={!activeCategory ? 'font-bold text-oxblood dark:text-primary' : ''}>All Categories</span>
+                    {!activeCategory && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.slug}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ category: cat.slug });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeCategory === cat.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{cat.name}</span>
+                      {activeCategory === cat.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* 3. Author Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('author')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeAuthor
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getAuthorLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'author' ? 'rotate-180' : ''}`} />
-            </button>
+            {/* 3. Author Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('author')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeAuthor
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getAuthorLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'author' ? 'rotate-180' : ''}`} />
+              </button>
 
-            {openDropdown === 'author' && (
-              <div className="absolute left-0 mt-2 z-30 min-w-[200px] max-h-[300px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container">
-                <button
-                  onClick={() => {
-                    updateUrl({ author: null });
-                    setOpenDropdown(null);
-                  }}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                >
-                  <span className={!activeAuthor ? 'font-bold text-oxblood dark:text-primary' : ''}>All Authors</span>
-                  {!activeAuthor && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                </button>
-                {authors.map(([slug, name]) => (
+              {openDropdown === 'author' && (
+                <div className="absolute left-0 top-full mt-1.5 z-40 min-w-[220px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
                   <button
-                    key={slug}
+                    type="button"
                     onClick={() => {
-                      updateUrl({ author: slug });
+                      updateUrl({ author: null });
                       setOpenDropdown(null);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
                   >
-                    <span className={activeAuthor === slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{name}</span>
-                    {activeAuthor === slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    <span className={!activeAuthor ? 'font-bold text-oxblood dark:text-primary' : ''}>All Authors</span>
+                    {!activeAuthor && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {authors.map(([slug, name]) => (
+                    <button
+                      key={slug}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ author: slug });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeAuthor === slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{name}</span>
+                      {activeAuthor === slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* 4. Year Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('year')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeYear
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getYearLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'year' ? 'rotate-180' : ''}`} />
-            </button>
+            {/* 4. Year Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('year')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeYear
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getYearLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'year' ? 'rotate-180' : ''}`} />
+              </button>
 
-            {openDropdown === 'year' && (
-              <div className="absolute left-0 mt-2 z-30 min-w-[120px] border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container">
-                <button
-                  onClick={() => {
-                    updateUrl({ year: null });
-                    setOpenDropdown(null);
-                  }}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                >
-                  <span className={!activeYear ? 'font-bold text-oxblood dark:text-primary' : ''}>All Years</span>
-                  {!activeYear && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                </button>
-                {years.map((y) => (
+              {openDropdown === 'year' && (
+                <div className="absolute left-0 top-full mt-1.5 z-40 min-w-[140px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
                   <button
-                    key={y}
+                    type="button"
                     onClick={() => {
-                      updateUrl({ year: y });
+                      updateUrl({ year: null });
                       setOpenDropdown(null);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
                   >
-                    <span className={activeYear === y ? 'font-bold text-oxblood dark:text-primary' : ''}>{y}</span>
-                    {activeYear === y && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    <span className={!activeYear ? 'font-bold text-oxblood dark:text-primary' : ''}>All Years</span>
+                    {!activeYear && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {years.map((y) => (
+                    <button
+                      key={y}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ year: y });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeYear === y ? 'font-bold text-oxblood dark:text-primary' : ''}>{y}</span>
+                      {activeYear === y && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* 5. Read Time Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('readTime')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeReadTime
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getReadTimeLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'readTime' ? 'rotate-180' : ''}`} />
-            </button>
+            {/* 5. Read Time Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('readTime')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeReadTime
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getReadTimeLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'readTime' ? 'rotate-180' : ''}`} />
+              </button>
 
-            {openDropdown === 'readTime' && (
-              <div className="absolute left-0 mt-2 z-30 min-w-[180px] border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container">
-                <button
-                  onClick={() => {
-                    updateUrl({ readTime: null });
-                    setOpenDropdown(null);
-                  }}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                >
-                  <span className={!activeReadTime ? 'font-bold text-oxblood dark:text-primary' : ''}>Any Length</span>
-                  {!activeReadTime && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                </button>
-                {readTimeFilters.map((item) => (
+              {openDropdown === 'readTime' && (
+                <div className="absolute left-0 top-full mt-1.5 z-40 min-w-[190px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
                   <button
-                    key={item.slug}
+                    type="button"
                     onClick={() => {
-                      updateUrl({ readTime: item.slug });
+                      updateUrl({ readTime: null });
                       setOpenDropdown(null);
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
                   >
-                    <span className={activeReadTime === item.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{item.name}</span>
-                    {activeReadTime === item.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    <span className={!activeReadTime ? 'font-bold text-oxblood dark:text-primary' : ''}>Any Length</span>
+                    {!activeReadTime && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
                   </button>
-                ))}
-              </div>
-            )}
+                  {readTimeFilters.map((item) => (
+                    <button
+                      key={item.slug}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ readTime: item.slug });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeReadTime === item.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{item.name}</span>
+                      {activeReadTime === item.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 6. Sort Dropdown */}
+            <div className="relative shrink-0 snap-start">
+              <button
+                type="button"
+                onClick={() => toggleDropdown('sort')}
+                className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-xs font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
+                  activeSort !== 'date'
+                    ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
+                    : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
+                }`}
+              >
+                <span>{getSortLabel()}</span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'sort' ? 'rotate-180' : ''}`} />
+              </button>
+
+              {openDropdown === 'sort' && (
+                <div className="absolute right-0 top-full mt-1.5 z-40 min-w-[160px] max-h-[260px] overflow-y-auto border border-outline-variant bg-surface-container-lowest p-1 shadow-xl dark:border-primary/25 dark:bg-surface-container rounded-xs">
+                  {sortOptions.map((opt) => (
+                    <button
+                      key={opt.slug}
+                      type="button"
+                      onClick={() => {
+                        updateUrl({ sort: opt.slug });
+                        setOpenDropdown(null);
+                      }}
+                      className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/10 transition-colors"
+                    >
+                      <span className={activeSort === opt.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{opt.name}</span>
+                      {activeSort === opt.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
 
-          {/* 6. Sort Dropdown */}
-          <div className="relative shrink-0 snap-start">
-            <button
-              onClick={() => toggleDropdown('sort')}
-              className={`flex items-center gap-1 border px-3.5 py-1.5 rounded-full font-technical-ui text-[11px] font-bold uppercase tracking-[0.12em] transition-all ${
-                activeSort !== 'date'
-                  ? 'border-oxblood bg-oxblood text-white dark:border-primary dark:bg-primary dark:text-background'
-                  : 'border-outline-variant/70 bg-surface hover:border-oxblood dark:border-primary/20 dark:bg-surface-container-low dark:text-on-background/70 dark:hover:border-primary'
-              }`}
-            >
-              <span>{getSortLabel()}</span>
-              <ChevronDown className={`h-3 w-3 transition-transform ${openDropdown === 'sort' ? 'rotate-180' : ''}`} />
-            </button>
+          {/* Right Fade Gradient Mask */}
+          {canScrollRight && (
+            <div className="hidden md:block pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10" />
+          )}
 
-            {openDropdown === 'sort' && (
-              <div className="absolute right-0 mt-2 z-30 min-w-[150px] border border-outline-variant bg-surface-container-lowest p-1 shadow-lg dark:border-primary/20 dark:bg-surface-container">
-                {sortOptions.map((opt) => (
-                  <button
-                    key={opt.slug}
-                    onClick={() => {
-                      updateUrl({ sort: opt.slug });
-                      setOpenDropdown(null);
-                    }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left font-technical-ui text-xs hover:bg-oxblood/5 dark:hover:bg-primary/5"
-                  >
-                    <span className={activeSort === opt.slug ? 'font-bold text-oxblood dark:text-primary' : ''}>{opt.name}</span>
-                    {activeSort === opt.slug && <Check className="h-3.5 w-3.5 text-oxblood dark:text-primary" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
+          {/* Scroll Right Button */}
+          <button
+            type="button"
+            onClick={() => scrollHorizontally('right')}
+            className={`hidden md:flex absolute right-0 z-20 h-7 w-7 items-center justify-center border border-outline-variant/70 bg-surface shadow-sm transition-opacity hover:border-oxblood hover:text-oxblood dark:border-primary/25 dark:bg-surface-container-low dark:text-primary dark:hover:border-primary ${
+              canScrollRight ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+            }`}
+            aria-label="Scroll filters right"
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </div>

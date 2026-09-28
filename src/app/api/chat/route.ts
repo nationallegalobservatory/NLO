@@ -35,6 +35,46 @@ export async function POST(req: Request) {
       (cleanQuery.includes('september') && (cleanQuery.includes('review') || cleanQuery.includes('issue') || cleanQuery.includes('2026') || cleanQuery.includes('paper'))) ||
       (cleanQuery.includes('issue 4') && (cleanQuery.includes('review') || cleanQuery.includes('monthly') || cleanQuery.includes('nlo')));
 
+    // 1. Check for Intent: Newsletter Subscription
+    const isNewsletterQuery =
+      cleanQuery.includes('newsletter') ||
+      cleanQuery.includes('subscribe') ||
+      cleanQuery.includes('email alert') ||
+      cleanQuery.includes('mailing list');
+
+    if (isNewsletterQuery) {
+      return new Response(
+        `0:"You can subscribe directly to the National Legal Observatory newsletter below to receive bi-weekly legal alerts, research dispatches, and early access embargo links:\\n\\n[ACTION:OPEN_NEWSLETTER_POPUP]\\n\\nAlternatively, you can open the subscription dialog at any time."\n`,
+        {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-Vercel-AI-Data-Stream': 'v1',
+          },
+        }
+      );
+    }
+
+    // 2. Check for Intent: PWA / App Installation
+    const isInstallQuery =
+      cleanQuery.includes('install') ||
+      cleanQuery.includes('download app') ||
+      cleanQuery.includes('offline app') ||
+      cleanQuery.includes('pwa') ||
+      cleanQuery.includes('webapp') ||
+      (cleanQuery.includes('offline') && cleanQuery.includes('read'));
+
+    if (isInstallQuery) {
+      return new Response(
+        `0:"The National Legal Observatory can be installed as an offline Progressive Web Application (PWA) on your device. Click below to launch the installation instructions for your browser:\\n\\n[ACTION:OPEN_INSTALL_POPUP]\\n\\nThis allows you to read constitutional research and archived publications without an active internet connection."\n`,
+        {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-Vercel-AI-Data-Stream': 'v1',
+          },
+        }
+      );
+    }
+
     if (isSeptemberReviewQuery && Date.now() < new Date('2026-09-26T18:00:00+05:30').getTime()) {
       return new Response(
         `0:"Please return at 6:00 PM on 26th September; we'll have that relevant information available at that time."\n`,

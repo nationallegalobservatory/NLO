@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Sun, Moon, Menu, X, ChevronDown, BookOpen, Users, Info, Mail, Home, Sparkles, Award, FileText } from 'lucide-react';
+import { Search, Sun, Moon, Menu, X, ChevronDown, BookOpen, Users, Info, Mail, Home, Award, FileText } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 import SearchOverlay from './SearchOverlay';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -165,7 +165,7 @@ export default function Header() {
                       setJumping(link.name);
                       router.push(link.href);
                     }}
-                    className={`relative px-4 py-2 text-sm transition-colors rounded-full focus:outline-none ${
+                    className={`relative px-4 py-2 text-sm transition-colors rounded-xs focus:outline-none ${
                       active || isJumping
                         ? 'text-indigo-700 dark:text-indigo-300 font-semibold'
                         : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white'
@@ -187,7 +187,7 @@ export default function Header() {
                     {active && (
                       <motion.div 
                         layoutId="desktop-nav-pill"
-                        className="absolute inset-0 bg-indigo-50 dark:bg-indigo-900/30 rounded-full"
+                        className="absolute inset-0 bg-indigo-50 dark:bg-indigo-900/30 rounded-xs"
                         transition={{ type: "spring", stiffness: 350, damping: 25 }}
                       />
                     )}

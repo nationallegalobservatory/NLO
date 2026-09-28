@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Search, X, BookOpen, AlertCircle, FileText, Compass, Pin, Sparkles, Loader2, Send } from 'lucide-react';
+import { Search, X, BookOpen, AlertCircle, FileText, Compass, Pin, Bot, Loader2, Send, Mail, Download, ArrowRight } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useChat } from '@ai-sdk/react';
@@ -329,28 +329,54 @@ export default function SearchOverlay({
 
   const backdropVariants = {
     hidden: { opacity: 0, backdropFilter: 'blur(0px)' },
-    visible: { opacity: 1, backdropFilter: 'blur(2px)' },
-    exit: { opacity: 0, backdropFilter: 'blur(0px)' },
+    visible: { 
+      opacity: 1, 
+      backdropFilter: 'blur(8px)',
+      transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const }
+    },
+    exit: { 
+      opacity: 0, 
+      backdropFilter: 'blur(0px)',
+      transition: { duration: 0.22, ease: 'easeInOut' as const }
+    },
   };
 
-  const modalVariants = {
-    hidden: { opacity: 0, y: -20, scale: 0.985 },
+  // Dynamic droplet spring physics: starts as a concentrated droplet at top, descends and expands smoothly into full search interface
+  const dropletModalVariants = {
+    hidden: {
+      opacity: 0,
+      y: -70,
+      scaleX: 0.45,
+      scaleY: 0.25,
+      borderRadius: '48px 48px 64px 64px',
+      filter: 'blur(6px)',
+    },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
+      scaleX: 1,
+      scaleY: 1,
+      borderRadius: isBhoomijaPage ? '0px' : '24px',
+      filter: 'blur(0px)',
       transition: {
         type: 'spring' as const,
-        stiffness: 380,
-        damping: 30,
-        mass: 0.8,
+        stiffness: 280,
+        damping: 24,
+        mass: 0.85,
+        velocity: 4,
       },
     },
     exit: {
       opacity: 0,
-      y: -12,
-      scale: 0.99,
-      transition: { duration: 0.18, ease: 'easeInOut' as const },
+      y: -40,
+      scaleX: 0.6,
+      scaleY: 0.3,
+      borderRadius: '48px',
+      filter: 'blur(4px)',
+      transition: {
+        duration: 0.2,
+        ease: [0.32, 0, 0.67, 0] as const,
+      },
     },
   };
 
@@ -359,17 +385,19 @@ export default function SearchOverlay({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.03,
+        staggerChildren: 0.035,
+        delayChildren: 0.08,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 8 },
+    hidden: { opacity: 0, y: 12, scale: 0.98 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: 'spring' as const, stiffness: 350, damping: 25 },
+      scale: 1,
+      transition: { type: 'spring' as const, stiffness: 380, damping: 26 },
     },
   };
 
@@ -379,11 +407,15 @@ export default function SearchOverlay({
       initial="hidden"
       animate="visible"
       exit="exit"
-      className={`fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 ${backdropBg}`}
+      className={`fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-20 px-3 sm:px-4 ${backdropBg}`}
     >
       <motion.div
-        variants={modalVariants}
-        className={`w-full max-w-2xl ${modalBg} border ${modalBorder} ${modalShape} overflow-hidden ${isBhoomijaPage ? 'backdrop-blur-md' : 'glass-panel'}`}
+        variants={dropletModalVariants}
+        className={`w-full max-w-2xl ${modalBg} border ${modalBorder} ${
+          isBhoomijaPage
+            ? 'rounded-none shadow-[0_24px_80px_rgba(86,25,34,0.3)] dark:shadow-[0_24px_90px_rgba(0,0,0,0.65)] backdrop-blur-md'
+            : 'rounded-2xl sm:rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-xl border-slate-200/80 dark:border-primary/30 ring-1 ring-black/5 dark:ring-white/10'
+        } overflow-hidden origin-top`}
         onKeyDown={handleKeyDown}
       >
         {/* Search Input */}
@@ -415,7 +447,7 @@ export default function SearchOverlay({
                   ? isBhoomijaPage ? 'text-[#7d1919]' : 'text-primary'
                   : 'text-slate-400'
               }`}>
-                {status === 'streaming' || status === 'submitted' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                {status === 'streaming' || status === 'submitted' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />}
                 AI Search
               </span>
               <span className={`text-[11px] sm:hidden inline-flex font-medium items-center gap-1 transition-colors ${
@@ -423,7 +455,7 @@ export default function SearchOverlay({
                   ? isBhoomijaPage ? 'text-[#7d1919]' : 'text-primary'
                   : 'text-slate-400'
               }`}>
-                {status === 'streaming' || status === 'submitted' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                {status === 'streaming' || status === 'submitted' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />}
                 AI
               </span>
               
@@ -506,9 +538,57 @@ export default function SearchOverlay({
                   >
                   <div className="prose dark:prose-invert prose-sm max-w-none text-[13px] leading-relaxed break-words">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {textContent}
+                          {textContent
+                            .replace('[ACTION:OPEN_NEWSLETTER_POPUP]', '')
+                            .replace('[ACTION:OPEN_INSTALL_POPUP]', '')}
                         </ReactMarkdown>
                   </div>
+
+                  {/* Interactive Embedded Trigger Card for Newsletter */}
+                  {textContent.includes('[ACTION:OPEN_NEWSLETTER_POPUP]') && (
+                    <div className="mt-3 pt-3 border-t border-outline-variant/30 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-oxblood dark:text-primary shrink-0" />
+                        <span className="font-technical-ui text-xs font-semibold text-on-background dark:text-on-background">
+                          Newsletter Subscription
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          window.dispatchEvent(new CustomEvent('nlo:open-newsletter-modal'));
+                        }}
+                        className="px-3 py-1.5 border border-oxblood bg-oxblood text-white font-technical-ui text-[11px] font-bold uppercase tracking-wider hover:bg-on-background dark:border-primary dark:bg-primary dark:text-background dark:hover:bg-primary/90 rounded-xs transition-colors flex items-center gap-1 shrink-0"
+                      >
+                        <span>Subscribe Now</span>
+                        <ArrowRight className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Interactive Embedded Trigger Card for App Installation */}
+                  {textContent.includes('[ACTION:OPEN_INSTALL_POPUP]') && (
+                    <div className="mt-3 pt-3 border-t border-outline-variant/30 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <Download className="h-4 w-4 text-oxblood dark:text-primary shrink-0" />
+                        <span className="font-technical-ui text-xs font-semibold text-on-background dark:text-on-background">
+                          Offline WebApp (PWA)
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          window.dispatchEvent(new CustomEvent('nlo:open-install-modal'));
+                        }}
+                        className="px-3 py-1.5 border border-oxblood bg-oxblood text-white font-technical-ui text-[11px] font-bold uppercase tracking-wider hover:bg-on-background dark:border-primary dark:bg-primary dark:text-background dark:hover:bg-primary/90 rounded-xs transition-colors flex items-center gap-1 shrink-0"
+                      >
+                        <span>Install App</span>
+                        <Download className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
                   </div>
                 </div>
               )})}

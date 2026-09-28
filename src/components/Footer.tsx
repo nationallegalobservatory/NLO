@@ -42,7 +42,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 mt-20 transition-colors">
+      <footer id="site-footer" className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 mt-20 transition-colors">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
@@ -156,6 +156,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/copyright" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                  Copyright &amp; Permissions
+                </Link>
+              </li>
+              <li>
                 <a
                   href="mailto:Nationallegalobservatory@gmail.com?subject=[Editorial%20Enquiry]%20National%20Legal%20Observatory"
                   className="hover:text-indigo-600 dark:hover:text-indigo-400 transition block text-left"
@@ -235,10 +240,11 @@ export default function Footer() {
         {/* Bottom copyright section */}
 <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
   <p>&copy; {new Date().getFullYear()} National Legal Observatory Platform. All academic rights reserved.</p>
-  <div className="flex space-x-4">
+  <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
     <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
     <Link href="/terms" className="hover:underline">Terms of Service</Link>
-    <Link href="/citation-permissions" className="hover:underline">Citation Permissions</Link>
+    <Link href="/copyright" className="hover:underline">Copyright &amp; Permissions</Link>
+    <Link href="/citation-permissions" className="hover:underline">Citation Standards</Link>
   </div>
 </div>
       </div>

@@ -60,3 +60,6 @@ subscribers.txt
 # macOS Finder metadata
 ._*
 .DS_Store
+
+# Local agent/IDE configurations
+.agents/
