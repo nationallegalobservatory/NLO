@@ -39,6 +39,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'UNAUTHENTICATED' }, { status: 401 });
   }
 
+  if (session.role === 'viewer') {
+    return NextResponse.json({ error: 'FORBIDDEN', message: 'Viewers cannot send newsletters.' }, { status: 403 });
+  }
+
   const { subject, intro, articleSlugs, scheduleFor } = (await req
     .json()
     .catch(() => ({}))) as {

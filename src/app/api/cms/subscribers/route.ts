@@ -38,10 +38,15 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  let session;
   try {
-    await requireSession();
+    session = await requireSession();
   } catch {
     return NextResponse.json({ error: 'UNAUTHENTICATED' }, { status: 401 });
+  }
+
+  if (session.role === 'viewer') {
+    return NextResponse.json({ error: 'FORBIDDEN', message: 'Viewers cannot import subscribers.' }, { status: 403 });
   }
 
   const { text, source } = (await req.json().catch(() => ({}))) as {

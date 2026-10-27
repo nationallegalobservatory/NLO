@@ -44,3 +44,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
   `https://legal-observatory.vercel.app/about#:~:text=Subscribe%20to%20receive%20bi%2Dweekly%20legal%20alerts%2C%20recent%20publications%2C%20case%20reviews%2C%20and%20editorial%20commentaries%20directly%20in%20your%20inbox.`
 - Uses native scroll-to-text fragment to automatically scroll to the Newsletter Subscription form on the `/about` page and highlight the subscription text.
 
+## 6. Mandatory Trigger: Security Audit & SEO Execution on Every New Upload
+**CRITICAL PROTOCOL FOR ALL AGENTS**: Every time a new publication, report, research article, or document upload is added, edited, or refactored:
+1. **Trigger Security Audit**:
+   - Run isolated regression checks: `node --test tests/security-regression.test.mjs`
+   - Validate security audit ledger: `node /Users/utkarshmanitripathi/.gemini/config/skills/security-audit/validate-coverage-ledger.cjs /Users/utkarshmanitripathi/security-audit-skill/nlo/audit-run/coverage-ledger.json`
+   - Validate findings schema: `node /Users/utkarshmanitripathi/.gemini/config/skills/security-audit/validate-findings.cjs /Users/utkarshmanitripathi/security-audit-skill/nlo/audit-run/findings.json`
+   - Verify path traversal guards (`/^[a-zA-Z0-9_-]+$/`), RBAC checks, and secret isolation.
+2. **Trigger SEO Masterplan Verification**:
+   - Verify canonical URL resolution (`https://legal-observatory.vercel.app`).
+   - Run production compilation check: `npm run build`
+   - Verify XML sitemap status (`http://localhost:3002/sitemap.xml`) to ensure published items are indexed and embargoed items remain hidden until launch.
+   - Verify `robots.txt` compliance and validate JSON-LD structured data (`ScholarlyArticle`, `BreadcrumbList`, `Organization`).
+   - Consult `SEO_MASTERPLAN.md` and the `nlo-upload-guard` skill.
+
+

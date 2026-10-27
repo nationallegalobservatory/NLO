@@ -10,7 +10,7 @@ categories: ["constitutional-law", "technology-law", "criminal-law", "corporate-
 tags: ["Monthly Review", "Supreme Court", "Balaji Formalin", "Proportionality", "POCSO Act", "Reverse Burden", "Cess Reference", "Parliament", "Supreme Court Strength", "TRAI", "A2P", "Legal Metrology", "Indian Standard Time"]
 abstract: "The September 2026 Monthly Legal Review from the National Legal Observatory analyses the Supreme Court's landmark judgment in M/s Balaji Formalin Pvt. Ltd. v. Union of India (2026 INSC 1009) applying Puttaswamy proportionality to industrial trade restrictions, clarification of POCSO's rebuttable presumption in Deepak in JC v. State (2026 INSC 1008), the Seven-Judge Constitution Bench reserving verdict on State additional sales tax and cess powers, legislative implementation of Supreme Court sanctioned strength expansion to 38 judges, TRAI's new A2P robocall regulations, the Legal Metrology Indian Standard Time mandate, and an Editor's Note on proportionality's quiet expansion across commercial jurisprudence."
 citation: "Bhoomija Khanna (ed.), 'Monthly Legal Review — Vol. 1, Issue 4, September 2026', National Legal Observatory (September 2026)."
-coverImage: ""
+coverImage: "/images/monthly_review_september_2026.jpg"
 ---
 
 <div style="text-align:center; margin-bottom: 2rem;">

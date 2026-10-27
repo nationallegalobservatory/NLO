@@ -16,9 +16,26 @@ export async function generateMetadata(props: PageProps) {
   const author = await getAuthorBySlug(resolvedParams.slug);
   if (!author) return {};
 
+  const canonicalUrl = `https://legal-observatory.vercel.app/authors/${author.slug}`;
+
   return {
-    title: `${author.name} Profile`,
+    title: `${author.name} · Contributor Profile · National Legal Observatory`,
     description: author.bio,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title: `${author.name} · National Legal Observatory`,
+      description: author.bio,
+      url: canonicalUrl,
+      type: 'profile',
+      images: [
+        {
+          url: author.avatar || '/icon.png',
+          alt: author.name,
+        },
+      ],
+    },
   };
 }
 

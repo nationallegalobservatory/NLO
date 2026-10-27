@@ -4,8 +4,17 @@ import { ArrowRight, Cpu, ExternalLink, Shield } from 'lucide-react';
 import Avatar from '../../components/Avatar';
 
 export const metadata = {
-  title: 'Observatory Contributors',
-  description: 'Meet the legal scholars and technology builders behind the National Legal Observatory.',
+  title: 'Observatory Contributors · National Legal Observatory',
+  description: 'Meet the legal scholars, constitutional researchers, and technology builders behind the National Legal Observatory.',
+  alternates: {
+    canonical: 'https://legal-observatory.vercel.app/authors',
+  },
+  openGraph: {
+    title: 'Observatory Contributors · National Legal Observatory',
+    description: 'Meet the legal scholars, constitutional researchers, and technology builders behind the National Legal Observatory.',
+    url: 'https://legal-observatory.vercel.app/authors',
+    type: 'website',
+  },
 };
 
 export default function AuthorsPage() {

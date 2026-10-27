@@ -11,20 +11,39 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, subject, message } = await request.json();
+    const { name, email, subject, message } = await request.json().catch(() => ({}));
 
-    if (!name || !email || !message) {
+    if (!name || !email || !message || typeof name !== 'string' || typeof email !== 'string' || typeof message !== 'string') {
       return NextResponse.json(
         { success: false, message: 'Missing required fields (name, email, message).' },
         { status: 400 }
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email) || email.length > 254) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid email address format.' },
+        { status: 400 }
+      );
+    }
+
+    if (name.length > 100 || message.length > 5000) {
+      return NextResponse.json(
+        { success: false, message: 'Input exceeds maximum allowed length.' },
+        { status: 400 }
+      );
+    }
+
+    // Strip carriage returns and line feeds from headers to eliminate email header injection
+    const cleanSubject = String(subject || 'General Inquiry').replace(/[\r\n]+/g, ' ').slice(0, 100);
+    const cleanName = name.replace(/[\r\n]+/g, ' ').slice(0, 100);
+
     // Send email via Nodemailer
     const result = await sendEmail({
       to: 'nationallegalobservatory@gmail.com',
-      replyTo: email,
-      subject: `NLO Query: ${subject.toUpperCase()} - ${name}`,
+      replyTo: email.trim(),
+      subject: `NLO Query: ${cleanSubject.toUpperCase()} - ${cleanName}`,
       html: `
         <h3>New Inquiry from National Legal Observatory Portal</h3>
         <p><strong>Name:</strong> ${name}</p>

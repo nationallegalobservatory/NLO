@@ -11,7 +11,7 @@ tags: ["Constitutional Law", "Article 21", "Right to Dignity", "Posthumous Right
 abstract: "A comparative and constitutional study of Indian, common law, civil law, and international approaches to the legal personality, property, and dignity of the deceased. This study examines who holds rights over a human corpse, civil and criminal liability for wrongs against the dead, whether bodily remains can constitute property, and whether the dead can meaningfully be said to suffer harm."
 citation: "Bhoomija Khanna, 'The Law of the Dead: Rights, Ownership, and Liability Beyond the Grave', National Legal Observatory (September 2026)."
 readingTime: "18 min read"
-coverImage: ""
+coverImage: "/images/the_law_of_the_dead_cover.jpg"
 draft: false
 references:
   - "Constitution of India, 1950, art. 21."

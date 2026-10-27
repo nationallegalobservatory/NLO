@@ -63,3 +63,4 @@ subscribers.txt
 
 # Local agent/IDE configurations
 .agents/
+artifacts/

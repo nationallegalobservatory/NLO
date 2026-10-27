@@ -59,22 +59,39 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 
   const descriptionText = article.abstract || article.caseSummary || article.policyOverview || '';
+  const canonicalUrl = `https://legal-observatory.vercel.app/publications/${folder}/${article.slug}`;
+  const ogImageUrl = article.coverImage || '/icon.png';
+  const authorName = article.authorDetails?.name || 'Bhoomija Khanna';
 
   return {
-    title: article.title,
+    title: `${article.title} · National Legal Observatory`,
     description: descriptionText.slice(0, 160),
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: article.title,
       description: descriptionText.slice(0, 160),
+      url: canonicalUrl,
+      siteName: 'National Legal Observatory',
       type: 'article',
       publishedTime: article.date,
-      authors: [article.authorDetails?.name || 'Observatory Scholar'],
+      authors: [authorName],
       tags: article.tags,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
       description: descriptionText.slice(0, 160),
+      images: [ogImageUrl],
     },
   };
 }
@@ -141,10 +158,21 @@ export default async function ArticlePage(props: PageProps) {
   const isEarlyRequested = resolvedSearchParams.early === '1' || Boolean(providedToken);
 
   // Validate early access:
-  // Must match HMAC token AND have legitimate newsletter/email referral tag
+  // Must match HMAC token in constant time AND have legitimate newsletter/email referral tag
+  const matchesAnyValidToken = (token: string): boolean => {
+    const tokenBuf = Buffer.from(token);
+    for (const valid of validTokens) {
+      const validBuf = Buffer.from(valid);
+      if (tokenBuf.length === validBuf.length && crypto.timingSafeEqual(tokenBuf, validBuf)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const isEarlySubscriber = 
     typeof providedToken === 'string' &&
-    validTokens.includes(providedToken) && 
+    matchesAnyValidToken(providedToken) && 
     (resolvedSearchParams.ref === 'email' || resolvedSearchParams.ref === 'newsletter');
 
   const FIVE_MINUTES_MS = 5 * 60 * 1000;
@@ -196,8 +224,94 @@ export default async function ArticlePage(props: PageProps) {
   const related = await getRelatedArticles(article, 3);
   const formattedDate = formatPublicationDate(article);
 
+  const articleCanonicalUrl = `https://legal-observatory.vercel.app/publications/${resolvedParams.category}/${article.slug}`;
+  const authorName = article.authorDetails?.name || 'Bhoomija Khanna';
+  const authorUrl = article.authorDetails?.slug === 'bhoomija-khanna' || article.author === 'bhoomija-khanna'
+    ? 'https://legal-observatory.vercel.app/bhoomija'
+    : `https://legal-observatory.vercel.app/authors/${article.author}`;
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'ScholarlyArticle',
+        '@id': `${articleCanonicalUrl}#article`,
+        isPartOf: {
+          '@type': 'Periodical',
+          name: 'National Legal Observatory Publications',
+          issn: 'Applied Academic',
+          url: 'https://legal-observatory.vercel.app/publications',
+        },
+        headline: article.title,
+        description: article.abstract || article.caseSummary || article.policyOverview || '',
+        url: articleCanonicalUrl,
+        datePublished: article.date,
+        dateModified: article.date,
+        inLanguage: 'en-IN',
+        mainEntityOfPage: articleCanonicalUrl,
+        author: {
+          '@type': 'Person',
+          name: authorName,
+          url: authorUrl,
+          jobTitle: article.authorDetails?.role || 'Legal Researcher & Editorial Director',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'National Legal Observatory',
+          url: 'https://legal-observatory.vercel.app',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://legal-observatory.vercel.app/icon.png',
+          },
+        },
+        keywords: [...(article.categories || []), ...(article.tags || [])].join(', '),
+        image: article.coverImage
+          ? `https://legal-observatory.vercel.app${article.coverImage.startsWith('/') ? '' : '/'}${article.coverImage}`
+          : 'https://legal-observatory.vercel.app/icon.png',
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: 'https://legal-observatory.vercel.app',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Publications',
+            item: 'https://legal-observatory.vercel.app/publications',
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1),
+            item: `https://legal-observatory.vercel.app/publications?type=${
+              resolvedParams.category === 'judgments' ? 'judgment' :
+              resolvedParams.category === 'policies' ? 'policy' :
+              resolvedParams.category === 'opinions' ? 'opinion' :
+              'research'
+            }`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 4,
+            name: article.title,
+            item: articleCanonicalUrl,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="space-y-10 py-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <OfflineArticleReader slug={resolvedParams.slug} category={resolvedParams.category} />
       {/* Reading Progress Indicator */}
       <ReadingProgressBar />

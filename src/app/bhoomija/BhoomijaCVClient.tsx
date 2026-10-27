@@ -68,6 +68,7 @@ const PUBLICATIONS = [
     title: 'Monthly Legal Review — Vol. 1 | Issue 5 | October 2026',
     desc: 'Covering the Supreme Court landmark ruling in Just Rights for Children Alliance v. S. Harish (2026 INSC 1149), children\'s fundamental right to the internet under Article 21, Delhi-NCR safety war rooms, and Permanent Constitution Bench calls.',
     href: '/publications/research/monthly-legal-review-october-2026',
+    image: '/images/monthly_review_october_2026.jpg',
     tag: 'NLO Monthly Review · October 2026',
     readOnline: true,
     comingSoon: false,
@@ -77,7 +78,8 @@ const PUBLICATIONS = [
     title: 'The Law of the Dead: Rights, Ownership, and Liability Beyond the Grave',
     desc: 'A comparative and constitutional inquiry into posthumous legal personality, corporeal quasi-property, Article 21 rights of the deceased, and antemortem harm theories.',
     href: '/publications/research/the-law-of-the-dead',
-    tag: 'Embargoed · Unlocks 30 Sep 2026, 6:00 PM',
+    image: '/images/the_law_of_the_dead_cover.jpg',
+    tag: 'NLO Research Desk · September 2026',
     readOnline: true,
     comingSoon: false,
   },
@@ -86,7 +88,18 @@ const PUBLICATIONS = [
     title: 'Monthly Legal Review — Vol. 1 | Issue 4 | September 2026',
     desc: 'Covering the Supreme Court landmark proportionality ruling in Balaji Formalin (2026 INSC 1009), POCSO presumption, and seven-judge mineral cess bench.',
     href: '/publications/research/monthly-legal-review-september-2026',
+    image: '/images/monthly_review_september_2026.jpg',
     tag: 'NLO Monthly Review · September 2026',
+    readOnline: true,
+    comingSoon: false,
+  },
+  {
+    type: 'Monthly Review',
+    title: 'Monthly Legal Review — Vol. 1 | Issue 3 | August 2026',
+    desc: 'Covering the Supreme Court Jojari river basin governance order (2026 INSC 812), Section 196 CrPC defamation ruling, Bar Council gender representation, and Monsoon Session 2026 recap.',
+    href: '/publications/research/monthly-legal-review-august-2026',
+    image: '/images/monthly_review_august_2026.jpg',
+    tag: 'NLO Monthly Review · August 2026',
     readOnline: true,
     comingSoon: false,
   },
@@ -95,6 +108,7 @@ const PUBLICATIONS = [
     title: 'Monthly Legal Review — Vol. 1 | Issue 2 | July 2026',
     desc: 'Covering the Supreme Court ruling on AI-hallucinated citations (Pooja Ramesh Singh), Compassionate Release for Elderly Prisoners, Court Live-Stream Ban, and Monsoon Session 2026.',
     href: '/publications/research/monthly-legal-review-july-2026',
+    image: '/images/weaponization/cover.png',
     tag: 'NLO Monthly Review · July 2026',
     readOnline: true,
     comingSoon: false,
@@ -104,6 +118,7 @@ const PUBLICATIONS = [
     title: 'Monthly Legal Review — Vol. 1 | Issue 1 | June 2026',
     desc: 'The inaugural Monthly Legal Review covering Supreme Court AI Regulations, Online Gaming Ruling, and Delimitation Battles.',
     href: '/publications/research/monthly-legal-review-june-2026',
+    image: '/images/monthly_review_june_2026.jpg',
     tag: 'NLO Monthly Review · June 2026',
     readOnline: true,
     comingSoon: false,
@@ -113,6 +128,7 @@ const PUBLICATIONS = [
     title: 'Manufacturing Consent: How Political Narratives Are Engineered in India',
     desc: 'Examines the mechanisms through which political consent is manufactured in India — from historical propaganda techniques to modern algorithmic amplification.',
     href: '/publications/research/manufacturing-consent',
+    image: '/images/manufacturing.png',
     tag: 'NLO Research Desk · June 2026',
     readOnline: true,
     comingSoon: false,
@@ -122,6 +138,7 @@ const PUBLICATIONS = [
     title: 'Digital Self-Defence Handbook',
     desc: 'Practical guidance on navigating digital safety, privacy, and self-defence in online spaces, authored and published by Bhoomija Khanna.',
     href: 'https://media.licdn.com/dms/document/media/v2/D561FAQGL95AefM2ugw/feedshare-document-sanitized-pdf/B56Z6i.cRrJsA8-/0/1780850740601?e=1782990000&v=beta&t=QP1vhu-bMBBqCRfHDG9fcUc1E3Rb5Kqiit0Lve9GTWU',
+    image: '/images/digital-self-defence.png',
     tag: 'NLO · 2025',
     readOnline: true,
     comingSoon: false,
@@ -131,6 +148,7 @@ const PUBLICATIONS = [
     title: 'Why India Needs Independent Legal Observation',
     desc: 'The founding note of the National Legal Observatory — the case for independent, primary-source constitutional analysis outside institutional constraints.',
     href: '/about',
+    image: '/images/founding_note.jpg',
     tag: 'NLO · June 2026',
     readOnline: true,
     comingSoon: false,
@@ -542,7 +560,12 @@ export default function BhoomijaCVClient() {
             {PUBLICATIONS.map((pub, i) => {
               const cardContent = (
                 <>
-                  <div className={`bk-pub-card-bg bk-pub-bg-${i + 1}`} />
+                  <div
+                    className="bk-pub-card-bg"
+                    style={{
+                      backgroundImage: `linear-gradient(to bottom, rgba(10, 2, 2, 0.45), rgba(5, 1, 1, 0.85)), url('${pub.image}')`,
+                    }}
+                  />
                   <div className="bk-pub-card-overlay">
                     <p className="bk-pub-card-type">{pub.type}</p>
                     <h3 className="bk-pub-card-title">{pub.title}</h3>

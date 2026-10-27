@@ -4,8 +4,17 @@ import Link from 'next/link';
 import Avatar from '../../components/Avatar';
 
 export const metadata = {
-  title: 'About the Observatory',
-  description: 'Independent Legal Research & Observation in India.',
+  title: 'About the Observatory · National Legal Observatory',
+  description: 'Independent legal research platform tracking constitutional developments, public policy shifts, and judicial precedents in India without paywalls.',
+  alternates: {
+    canonical: 'https://legal-observatory.vercel.app/about',
+  },
+  openGraph: {
+    title: 'About the Observatory · National Legal Observatory',
+    description: 'Independent legal research platform tracking constitutional developments, public policy shifts, and judicial precedents in India without paywalls.',
+    url: 'https://legal-observatory.vercel.app/about',
+    type: 'website',
+  },
 };
 
 export default function AboutPage() {

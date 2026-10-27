@@ -113,6 +113,9 @@ export function getFolderForType(type: string): string {
 }
 
 export function findArticleFilePath(slug: string): { filePath: string; folder: string } | null {
+  if (!slug || typeof slug !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(slug)) {
+    return null;
+  }
   const folders = ['judgments', 'policies', 'research', 'opinions'];
   for (const folder of folders) {
     const candidate = path.join(process.cwd(), 'content', folder, `${slug}.md`);
@@ -139,13 +142,17 @@ export function saveLocalArticle(data: {
   cms_status?: string;
   content: string;
 }): { slug: string; filePath: string } {
+  const cleanSlug = String(data.slug || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  if (!cleanSlug) {
+    throw new Error('Invalid slug');
+  }
   const folder = getFolderForType(data.type);
   const targetDir = path.join(process.cwd(), 'content', folder);
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
   }
 
-  const filePath = path.join(targetDir, `${data.slug}.md`);
+  const filePath = path.join(targetDir, `${cleanSlug}.md`);
 
   const frontmatter: Record<string, unknown> = {
     slug: data.slug,

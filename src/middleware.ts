@@ -11,12 +11,18 @@ const PUBLIC_CMS_PATHS = new Set([
   '/api/cms/auth/dev-login',
 ]);
 
+const isDevLoginAllowed = process.env.NODE_ENV !== 'production' || Boolean(process.env.ENABLE_DEV_LOGIN);
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Only guard /cms/* and /api/cms/*
   if (!pathname.startsWith('/cms') && !pathname.startsWith('/api/cms')) {
     return NextResponse.next();
+  }
+
+  if (pathname === '/api/cms/auth/dev-login' && !isDevLoginAllowed) {
+    return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
   }
 
   if (PUBLIC_CMS_PATHS.has(pathname)) {

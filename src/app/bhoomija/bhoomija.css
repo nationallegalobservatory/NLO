@@ -1459,80 +1459,35 @@
   border-radius: 100px;
 }
 
-/* Background patterns for cards without real images */
-.bk-pub-bg-1 {
-  background-image: linear-gradient(to bottom, rgba(10, 2, 2, 0.45), rgba(5, 1, 1, 0.85)), url('/images/monthly_review_june_2026.jpg');
-  background-size: cover;
-  background-position: center;
-}
-.bk-pub-bg-2 {
-  background-image: linear-gradient(to bottom, rgba(10, 2, 2, 0.45), rgba(5, 1, 1, 0.85)), url('/images/manufacturing.png');
-  background-size: cover;
-  background-position: center;
-}
-.bk-pub-bg-3 {
-  background-image: linear-gradient(to bottom, rgba(20, 4, 4, 0.15), rgba(10, 2, 2, 0.35)), url('/images/propaganda.jpg');
-  background-size: cover;
-  background-position: center;
-}
-.bk-pub-bg-4 {
-  background-image: linear-gradient(to bottom, rgba(20, 4, 4, 0.15), rgba(10, 2, 2, 0.35)), url('/images/digital-self-defence.png');
-  background-size: cover;
-  background-position: center top;
-}
-.bk-pub-bg-5 {
-  background-image: linear-gradient(to bottom, rgba(20, 4, 4, 0.15), rgba(10, 2, 2, 0.35)), url('/images/founding_note.jpg');
+/* Background styling for publication cards */
+.bk-pub-card-bg {
   background-size: cover;
   background-position: center;
 }
 
-/* Force pure white text on cards 1, 2, 3, 4, and 5 for high contrast and design precision */
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-type,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-type,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-type,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-type,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-type {
+/* Force pure high-contrast white text across all publication card overlays */
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-type {
   color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-title,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-title,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-title,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-title,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-title {
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-title {
   color: #ffffff !important;
 }
 
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-desc,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-desc,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-desc,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-desc,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-desc {
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-desc {
   color: #ffffff !important;
 }
 
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-tag,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-tag,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-tag,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-tag,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-tag {
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-tag {
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-link,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-link,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-link,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-link,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-link {
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-link {
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.85) !important;
 }
 
-.bk-pub-bg-1 + .bk-pub-card-overlay .bk-pub-card-coming-soon,
-.bk-pub-bg-2 + .bk-pub-card-overlay .bk-pub-card-coming-soon,
-.bk-pub-bg-3 + .bk-pub-card-overlay .bk-pub-card-coming-soon,
-.bk-pub-bg-4 + .bk-pub-card-overlay .bk-pub-card-coming-soon,
-.bk-pub-bg-5 + .bk-pub-card-overlay .bk-pub-card-coming-soon {
+.bk-pub-card-bg + .bk-pub-card-overlay .bk-pub-card-coming-soon {
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.5) !important;
 }

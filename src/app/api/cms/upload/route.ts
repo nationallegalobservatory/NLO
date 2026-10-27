@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
 
   const lower = file.name.toLowerCase();
   const extOk = ACCEPTED_EXTS.some((e) => lower.endsWith(e));
-  if (!extOk && !ACCEPTED_MIMES.has(file.type)) {
+  const mimeOk = !file.type || ACCEPTED_MIMES.has(file.type);
+  if (!extOk || !mimeOk) {
     return NextResponse.json(
       { error: 'UNSUPPORTED_TYPE', accepted: [...ACCEPTED_EXTS, ...ACCEPTED_MIMES] },
       { status: 415 },

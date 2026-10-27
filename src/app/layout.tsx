@@ -41,17 +41,26 @@ export const metadata: Metadata = {
   },
   description:
     'A professional academic legal journal and policy think tank focused on constitutional reviews, data surveillance analysis, and climate litigation frontiers.',
-  metadataBase: new URL('https://legal-observatory.org'),
+  metadataBase: new URL('https://legal-observatory.vercel.app'),
+  alternates: {
+    canonical: '/',
+  },
   manifest: '/manifest.webmanifest',
   keywords: [
-    'Legal Review',
-    'Constitutional Law',
-    'Judicial Judgments',
-    'Policy Commentary',
-    'Technology Regulation',
-    'Human Rights Research',
+    'National Legal Observatory',
+    'NLO',
+    'Bhoomija Khanna',
+    'Independent Legal Research',
+    'Constitutional Law India',
+    'Supreme Court Judgments Review',
+    'Judicial Review Analysis',
+    'Technology Law and Policy',
+    'Human Rights Jurisprudence',
+    'Monthly Legal Review',
   ],
-  authors: [{ name: 'National Legal Observatory Editorial Board' }],
+  authors: [{ name: 'Bhoomija Khanna', url: 'https://legal-observatory.vercel.app/bhoomija' }],
+  creator: 'Bhoomija Khanna',
+  publisher: 'National Legal Observatory',
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',
@@ -59,10 +68,10 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    url: 'https://legal-observatory.org',
-    title: 'National Legal Observatory Platform',
-    description: 'Independent Legal Research.',
+    locale: 'en_IN',
+    url: 'https://legal-observatory.vercel.app',
+    title: 'National Legal Observatory | Independent Legal Research & Observation',
+    description: 'Independent legal research and primary-source constitutional analysis in India.',
     siteName: 'National Legal Observatory',
     images: [
       {
@@ -98,12 +107,69 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteJsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://legal-observatory.vercel.app/#organization',
+        name: 'National Legal Observatory',
+        alternateName: ['NLO', 'The National Legal Observatory'],
+        url: 'https://legal-observatory.vercel.app',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://legal-observatory.vercel.app/icon.png',
+        },
+        founder: {
+          '@type': 'Person',
+          '@id': 'https://legal-observatory.vercel.app/bhoomija#person',
+          name: 'Bhoomija Khanna',
+          jobTitle: 'Founder & Research Director',
+          url: 'https://legal-observatory.vercel.app/bhoomija',
+          sameAs: [
+            'https://linkedin.com/in/bhoomija-khanna-268995368',
+            'https://www.instagram.com/national.legal.observatory',
+          ],
+        },
+        sameAs: [
+          'https://www.instagram.com/national.legal.observatory',
+          'https://linkedin.com/in/bhoomija-khanna-268995368',
+        ],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://legal-observatory.vercel.app/#website',
+        url: 'https://legal-observatory.vercel.app',
+        name: 'National Legal Observatory',
+        description: 'Independent legal research and primary-source constitutional observation in India.',
+        publisher: {
+          '@id': 'https://legal-observatory.vercel.app/#organization',
+        },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://legal-observatory.vercel.app/publications?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+        inLanguage: 'en-IN',
+      },
+    ],
+  };
+
   return (
     <html
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${sourceSerif.variable} ${jetBrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col transition-colors duration-300">
         <ThemeProvider>
           <PWAProvider>

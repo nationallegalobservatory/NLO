@@ -8,7 +8,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const email = body.email;
 
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!email || typeof email !== 'string' || email.length > 254 || !emailRegex.test(email.trim())) {
       return NextResponse.json({ success: false, message: 'Please provide a valid email address.' }, { status: 400 });
     }
 

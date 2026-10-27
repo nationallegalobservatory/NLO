@@ -10,7 +10,7 @@ categories: ["environmental-law", "constitutional-law", "public-policy", "crimin
 tags: ["Monthly Review", "Supreme Court", "Jojari River", "Environmental Law", "Rahul Gandhi", "Bar Council of India", "Women Representation", "Child Protection", "NEET Protests", "Monsoon Session", "Mediation Act", "Advocates Act"]
 abstract: "The August 2026 Monthly Legal Review from the National Legal Observatory covers the Supreme Court's landmark institutional governance ruling in In Re: 2 Million Lives At Risk, Contamination in Jojari River, Rajasthan (2026 INSC 812), the quashing of criminal defamation proceedings against Rahul Gandhi under Section 196 CrPC, mandatory co-option of two women to every State Bar Council, judicial framing of hospital emergency protocols in child sexual assault cases, NEET protest FIRs and CBT testing reforms, the conclusion of Parliament's Monsoon Session with twelve passed Bills, status of the FCRA Bill and Delimitation, corporate counsel representation on the Draft Advocates Amendment Bill, expansion of national mediation infrastructure, and an Editor's Note on the judiciary stepping into the executive vacuum."
 citation: "Bhoomija Khanna (ed.), 'Monthly Legal Review — Vol. 1, Issue 3, August 2026', National Legal Observatory (August 2026)."
-coverImage: ""
+coverImage: "/images/monthly_review_august_2026.jpg"
 ---
 
 <div style="text-align:center; margin-bottom: 2rem;">

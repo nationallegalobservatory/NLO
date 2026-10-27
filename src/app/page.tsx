@@ -7,6 +7,23 @@ import Avatar from '../components/Avatar';
 import AuthorLink from '../components/AuthorLink';
 import DynamicReleaseCountdown from '../components/DynamicReleaseCountdown';
 import { CountdownWrapper } from './CountdownWrapper';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'National Legal Observatory | Independent Legal Research & Observation',
+  description:
+    'Independent legal research platform tracking constitutional developments, Supreme Court judgments, public policy shifts, and technology regulation in India.',
+  alternates: {
+    canonical: 'https://legal-observatory.vercel.app',
+  },
+  openGraph: {
+    title: 'National Legal Observatory | Independent Legal Research & Observation',
+    description:
+      'Independent legal research platform tracking constitutional developments, Supreme Court judgments, public policy shifts, and technology regulation in India.',
+    url: 'https://legal-observatory.vercel.app',
+    type: 'website',
+  },
+};
 
 function getPublicationPath(article: Pick<ArticleData, 'type' | 'slug'>) {
   const folder =

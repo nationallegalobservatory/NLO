@@ -9,8 +9,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const testerEmail = searchParams.get('email');
 
-  // We don't enforce CRON_SECRET here so you can easily test from the browser.
-  // In production, you might still want to protect it.
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   if (!testerEmail) {
     return NextResponse.json({ error: 'Please provide an email parameter, e.g., ?email=tester@example.com' }, { status: 400 });
