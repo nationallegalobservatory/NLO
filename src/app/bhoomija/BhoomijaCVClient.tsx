@@ -64,6 +64,15 @@ const EXPERIENCE = [
 
 const PUBLICATIONS = [
   {
+    type: 'Monthly Review',
+    title: 'Monthly Legal Review — Vol. 1 | Issue 5 | October 2026',
+    desc: 'Covering the Supreme Court landmark ruling in Just Rights for Children Alliance v. S. Harish (2026 INSC 1149), children\'s fundamental right to the internet under Article 21, Delhi-NCR safety war rooms, and Permanent Constitution Bench calls.',
+    href: '/publications/research/monthly-legal-review-october-2026',
+    tag: 'NLO Monthly Review · October 2026',
+    readOnline: true,
+    comingSoon: false,
+  },
+  {
     type: 'Research Article',
     title: 'The Law of the Dead: Rights, Ownership, and Liability Beyond the Grave',
     desc: 'A comparative and constitutional inquiry into posthumous legal personality, corporeal quasi-property, Article 21 rights of the deceased, and antemortem harm theories.',

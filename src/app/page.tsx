@@ -349,9 +349,10 @@ export default async function Homepage() {
   const allArticles = await getArticles(undefined, true);
   const articleBySlug = new Map(allArticles.map((article) => [article.slug, article]));
 
+  const octoberReviewArticle = articleBySlug.get('monthly-legal-review-october-2026') ?? null;
   const septemberReviewArticle = articleBySlug.get('monthly-legal-review-september-2026') ?? null;
   const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
-  const activeMonthlyReview = septemberReviewArticle ?? augustReviewArticle ?? null;
+  const activeMonthlyReview = octoberReviewArticle ?? septemberReviewArticle ?? augustReviewArticle ?? null;
 
   // Check if there is an active future embargo (such as the 30 September release)
   const now = Date.now();
