@@ -372,13 +372,18 @@ export default async function Homepage() {
   const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
   const activeMonthlyReview = novemberReviewArticle ?? octoberReviewArticle ?? septemberReviewArticle ?? augustReviewArticle ?? null;
 
-  // Check if there is an active future embargo (such as the 30 September release)
+  // Check if there is an active future embargo
   const now = Date.now();
+  // The flagship Monthly Legal Review always owns the homepage countdown clock
+  const isMonthlyReviewEmbargoed = Boolean(
+    activeMonthlyReview?.publishAt && new Date(activeMonthlyReview.publishAt).getTime() > now
+  );
+
   const upcomingEmbargoArticle = allArticles
     .filter((a) => a.publishAt && new Date(a.publishAt).getTime() > now)
     .sort((a, b) => new Date(a.publishAt!).getTime() - new Date(b.publishAt!).getTime())[0] ?? null;
 
-  const countdownArticle = upcomingEmbargoArticle ?? activeMonthlyReview;
+  const countdownArticle = isMonthlyReviewEmbargoed ? activeMonthlyReview : (upcomingEmbargoArticle ?? activeMonthlyReview);
   const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;
   const weaponizationArticle = articleBySlug.get('the-weaponization-of-human-rights') ?? null;
   const featuredArticle =

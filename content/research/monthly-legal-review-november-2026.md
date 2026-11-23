@@ -201,5 +201,5 @@ That is the weakness in all of this. A Court can write a number into an order. I
 
 ## PUBLICATION NOTICE
 
-*© 2026 National Legal Observatory | legal-observatory.vercel.app | Vol. 1 Issue 6*  
+*© 2026 National Legal Observatory | thenlo.vercel.app | Vol. 1 Issue 6*  
 *Reproduction for non-commercial purposes permitted with attribution.*
