@@ -263,7 +263,7 @@ sequenceDiagram
 
 ## 7. Data model and SQL migration
 
-Create `supabase/cms/003_single_tenant_cms.sql`. It is idempotent and safe to run after `001_cms_users.sql` and `002_cms_auth_gate.sql`.
+Create `supabase/cms/003_single_tenant_cms.sql`. It is idempotent and safe to run after `001_cms_users.sql` and `002_cms_auth_gate.sql`. Deploy it together with the matching application code: the previous routes still reference `magic_link_token`, and the previous audit helper writes the old raw-PII columns.
 
 ```sql
 -- NLO CMS single-tenant hardening migration
@@ -467,7 +467,7 @@ begin
   v_window_start := to_timestamp(
     floor(extract(epoch from v_now) / p_window_seconds) * p_window_seconds
   );
-  v_window_end := v_window_start + make_interval(secs => p_window_seconds);
+  v_window_end := v_window_start + (p_window_seconds * interval '1 second');
 
   insert into public.cms_auth_rate_limits (
     bucket, identifier_hash, window_start, attempt_count, updated_at
@@ -524,6 +524,8 @@ grant all on public.cms_send_log to service_role;
 -- Remove any older permissive CMS policies, then install deny-all policies.
 drop policy if exists "cms_users_self_read" on public.cms_users;
 drop policy if exists "cms_users_no_public_write" on public.cms_users;
+drop policy if exists "cms_users_zero_anon_read" on public.cms_users;
+drop policy if exists "cms_users_zero_anon_write" on public.cms_users;
 drop policy if exists "cms_uploads_owner_read" on public.cms_uploads;
 drop policy if exists "cms_uploads_no_anon_write" on public.cms_uploads;
 drop policy if exists "cms_send_log_no_public_read" on public.cms_send_log;
@@ -592,6 +594,7 @@ set name = excluded.name,
 - `magic_link_token_hash` stores `sha256(rawToken)` as 64-char lowercase hex.
 - `cms_auth_rate_limits` uses fixed 15-minute windows keyed by HMAC-hashed IP/email, not raw identifiers.
 - `cms_auth_audit_logs` is append-only by convention; the application must never update or delete rows.
+- Legacy `failed_login_attempts`/`lockout_until` columns may remain for compatibility, but they are not authoritative; distributed rate limiting lives in `cms_auth_rate_limits`.
 - The `cms_users_single_owner_email` check constraint makes the database itself reject any non-owner account.
 - `FOR ALL USING (false) WITH CHECK (false)` denies row access for RLS-subject roles. `anon` and `authenticated` are also revoked table privileges as defense in depth. `service_role` bypasses RLS and is the only intended data path.
 
@@ -683,6 +686,9 @@ interface SessionPayload {
 function getSessionSecret(): string | null {
   const secret = process.env.CMS_SESSION_SECRET;
   if (!secret || secret.length < SESSION_SECRET_MIN_LENGTH) return null;
+  if (/replace|change[-_ ]?me|example|your[-_ ]?secret|placeholder/i.test(secret)) {
+    return null;
+  }
   return secret;
 }
 
@@ -1525,6 +1531,7 @@ import {
   applySessionCookie,
   signSessionToken,
 } from '@/lib/cms/session';
+import { CMS_OWNER_EMAIL, CMS_OWNER_NAME } from '@/lib/cms/sessionToken';
 import { safeCmsNextPath } from '@/lib/cms/authSecurity';
 
 export const dynamic = 'force-dynamic';
@@ -1534,13 +1541,16 @@ function devLoginAllowed(): boolean {
   return process.env.NODE_ENV !== 'production' && process.env.ENABLE_DEV_LOGIN === 'true';
 }
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   if (!devLoginAllowed()) {
     return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
   }
-  const body = await req.json().catch(() => ({}));
-  const next = safeCmsNextPath((body as { next?: string }).next);
-  return devLoginResponse(req, next);
+  const response = NextResponse.json({
+    ok: true,
+    user: { email: CMS_OWNER_EMAIL, name: CMS_OWNER_NAME, role: 'owner' },
+  });
+  applySessionCookie(response, mintDevSessionToken());
+  return response;
 }
 
 export async function GET(req: NextRequest) {
@@ -1548,17 +1558,31 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
   }
   const next = safeCmsNextPath(req.nextUrl.searchParams.get('next'));
-  return devLoginResponse(req, next);
+  const response = NextResponse.redirect(new URL(next, req.url));
+  applySessionCookie(response, mintDevSessionToken());
+  return response;
 }
 
-function devLoginResponse(req: NextRequest, next: string): NextResponse {
-  const token = signSessionToken({
-    name: 'Bhoomija Khanna',
+function mintDevSessionToken(): string {
+  return signSessionToken({
+    name: CMS_OWNER_NAME,
     nonce: randomBytes(18).toString('base64url'),
   });
-  const response = NextResponse.redirect(new URL(next, req.url));
-  applySessionCookie(response, token);
-  return response;
+}
+```
+
+### 9.9b `/api/cms/auth/invite` — permanently disabled
+
+Delete this route. If it must remain temporarily for compatibility, return `410` unconditionally:
+
+```ts
+import { NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+export async function POST() {
+  return NextResponse.json({ error: 'GONE' }, { status: 410 });
 }
 ```
 
@@ -1624,7 +1648,7 @@ export default async function ProtectedCmsPage() {
 | Session theft | Stolen cookie reused | `httpOnly`, `secure`, `sameSite=strict`, 14-day TTL, HMAC signature, owner-only payload, nonce | Inspect Set-Cookie; tamper payload → 401 |
 | Session forgery | Forge cookie without secret | HMAC-SHA256 over exact payload segment; missing/weak `CMS_SESSION_SECRET` fails closed | Sign with wrong secret → rejected |
 | Wrong-user session | Valid token for non-owner email | `verifySessionToken` requires `email === CMS_OWNER_EMAIL` and `role === 'owner'`; DB check constraint prevents non-owner users | Inject cookie with other email → rejected/cleared |
-| CSRF | Cross-site POST to CMS APIs/logout | `sameSite=strict` cookie; JSON content-type; proxy perimeter; mutating handlers re-check session | Cross-site form POST does not carry cookie |
+| CSRF | Cross-site POST to CMS APIs/logout | `sameSite=strict` cookie; proxy Origin allowlist for mutating `/api/cms/*`; JSON content-type; mutating handlers re-check session | Cross-site form POST does not carry cookie; forged Origin → 403 |
 | Open redirect | `next=https://evil.com` after callback/login | `safeCmsNextPath` allows only `/cms/*`, rejects `://`, `\\`, `/cms/login` | Callback with external next redirects to `/cms/dashboard` |
 | Host-header poisoning | Magic link generated from attacker-controlled Host | Link origin is fixed `CMS_PUBLIC_ORIGIN`, never `req.nextUrl.origin` | Request with `Host: evil.com`; email link still uses legal-observatory.vercel.app |
 | Email token leakage | Token in logs, referrer, analytics | Token only in email URL path to `/api/cms/auth/callback`; audit stores hash only; no token logging | Inspect logs/audit; no raw token present |
@@ -1680,10 +1704,11 @@ export default async function ProtectedCmsPage() {
 9. Rewrite `src/app/api/cms/auth/callback/route.ts`.
 10. Rewrite `src/app/api/cms/auth/logout/route.ts`.
 11. Harden or delete `src/app/api/cms/auth/dev-login/route.ts`.
-12. Delete or disable `src/app/api/cms/auth/invite/route.ts`; remove team invite UI from Settings.
-13. Update every protected `/api/cms/*` handler to call `requireSession()` and remove role branches.
-14. Update every protected `/cms/*` page to call `readSession()`/`requireSession()` before data access.
-15. Remove silent local-store fallbacks for CMS mutations unless `NODE_ENV==='development'` and an explicit local flag is set.
+12. Update `src/app/cms/login/page.tsx` + `src/components/cms/LoginForm.tsx`: pass a server-computed `devLoginEnabled={process.env.NODE_ENV !== 'production' && process.env.ENABLE_DEV_LOGIN === 'true'}` prop, hide Dev Quick Sign-In unless true, and do not send email/name/role.
+13. Delete or disable `src/app/api/cms/auth/invite/route.ts`; remove team invite UI from Settings.
+14. Update every protected `/api/cms/*` handler to call `requireSession()` and remove role branches.
+15. Update every protected `/cms/*` page to call `readSession()`/`requireSession()` before data access.
+16. Remove silent local-store fallbacks for CMS mutations unless `NODE_ENV==='development'` and an explicit local flag is set.
 
 ### Phase 4 — Tests
 
@@ -1786,7 +1811,7 @@ Expected:
 3. Deploy preview and run acceptance matrix.
 4. Deploy production.
 5. Request owner magic link and verify end-to-end login.
-6. Monitor `cms_auth_audit_logs` for `magic_email_failed`, `callback_replay`, `session_rejected`, `magic_rate_limited`.
+6. Monitor `cms_auth_audit_logs` for `magic_email_failed`, `magic_token_update_failed`, `callback_replay`, `session_rejected`, `magic_rate_limited`.
 
 ### 14.2 Rollback
 
@@ -1805,10 +1830,17 @@ order by count(*) desc;
 
 select event_type, created_at, metadata
 from public.cms_auth_audit_logs
-where event_type in ('magic_email_failed', 'callback_replay', 'session_rejected', 'magic_rate_limited')
+where event_type in ('magic_email_failed', 'magic_token_update_failed', 'callback_replay', 'session_rejected', 'magic_rate_limited')
 order by created_at desc
 limit 50;
 ```
+
+### 14.4 Residual risks
+
+- The session cookie is stateless HMAC; a stolen cookie remains valid until `exp` unless `CMS_SESSION_SECRET` is rotated. The 14-day TTL is a product requirement; compensate with `httpOnly`, `secure`, `sameSite=strict`, owner-only payload, audit logging, and prompt secret rotation on suspected theft.
+- Fixed-window rate limiting can allow up to `2x limit - 1` attempts across a window boundary. The 256-bit token space and 15-minute TTL make this acceptable for magic links; do not reuse this limiter for password guessing.
+- Magic-link email delivery depends on Resend/SMTP. Provider compromise or misdirected DNS can expose the link; keep `CMS_PUBLIC_ORIGIN` exact, use a verified sender domain, and monitor `magic_email_failed`.
+- `CMS_PUBLIC_ORIGIN` must remain `https://legal-observatory.vercel.app` in production. Any change requires a deliberate config review because it controls where magic-link tokens are sent.
 
 ---
 
@@ -1828,6 +1860,7 @@ limit 50;
 | `src/app/api/cms/auth/magic/route.ts` | Rewrite | Rate-limited anti-enumeration magic issuer |
 | `src/app/api/cms/auth/callback/route.ts` | Rewrite | Atomic token consume + session cookie |
 | `src/app/api/cms/auth/logout/route.ts` | Rewrite | Strict cookie clearing |
+| `src/components/cms/LoginForm.tsx` | Update | Accept server-provided `devLoginEnabled` prop; hide Dev Quick Sign-In unless true; stop sending arbitrary email/name/role |
 | `src/app/api/cms/auth/dev-login/route.ts` | Harden/delete | Dev-only fixed owner login |
 | `src/app/api/cms/auth/invite/route.ts` | Delete/disable | No multi-user invites |
 | `src/app/api/cms/**` protected handlers | Update | Re-check `requireSession()`, remove role branches |

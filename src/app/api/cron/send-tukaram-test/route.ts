@@ -59,7 +59,7 @@ export async function GET(request: Request) {
           </div>
 
           <div style="text-align: center; margin: 28px 0;">
-            <a href="https://legal-observatory.vercel.app/publications/research/tukaram-v-maharashtra-nlo-judgment-review"
+            <a href="https://thenlo.vercel.app/publications/research/tukaram-v-maharashtra-nlo-judgment-review"
                style="display: inline-block; background: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;">
               Read the Full Review →
             </a>
@@ -69,7 +69,7 @@ export async function GET(request: Request) {
 
           <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0 0 12px 0; line-height: 1.6;">
             You received this email because you subscribed to the National Legal Observatory newsletter.<br />
-            <a href="https://legal-observatory.vercel.app" style="color: #6366f1; text-decoration: none;">legal-observatory.vercel.app</a>
+            <a href="https://thenlo.vercel.app" style="color: #6366f1; text-decoration: none;">thenlo.vercel.app</a>
           </p>
           
           <div style="text-align: center;">

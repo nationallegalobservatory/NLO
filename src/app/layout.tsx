@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
   description:
     'A professional academic legal journal and policy think tank focused on constitutional reviews, data surveillance analysis, and climate litigation frontiers.',
-  metadataBase: new URL('https://legal-observatory.vercel.app'),
+  metadataBase: new URL('https://thenlo.vercel.app'),
   alternates: {
     canonical: '/',
   },
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     'Human Rights Jurisprudence',
     'Monthly Legal Review',
   ],
-  authors: [{ name: 'Bhoomija Khanna', url: 'https://legal-observatory.vercel.app/bhoomija' }],
+  authors: [{ name: 'Bhoomija Khanna', url: 'https://thenlo.vercel.app/bhoomija' }],
   creator: 'Bhoomija Khanna',
   publisher: 'National Legal Observatory',
   icons: {
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://legal-observatory.vercel.app',
+    url: 'https://thenlo.vercel.app',
     title: 'National Legal Observatory | Independent Legal Research & Observation',
     description: 'Independent legal research and primary-source constitutional analysis in India.',
     siteName: 'National Legal Observatory',
@@ -119,20 +119,20 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': 'https://legal-observatory.vercel.app/#organization',
+        '@id': 'https://thenlo.vercel.app/#organization',
         name: 'National Legal Observatory',
         alternateName: ['NLO', 'The National Legal Observatory'],
-        url: 'https://legal-observatory.vercel.app',
+        url: 'https://thenlo.vercel.app',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://legal-observatory.vercel.app/icon.png',
+          url: 'https://thenlo.vercel.app/icon.png',
         },
         founder: {
           '@type': 'Person',
-          '@id': 'https://legal-observatory.vercel.app/bhoomija#person',
+          '@id': 'https://thenlo.vercel.app/bhoomija#person',
           name: 'Bhoomija Khanna',
           jobTitle: 'Founder & Research Director',
-          url: 'https://legal-observatory.vercel.app/bhoomija',
+          url: 'https://thenlo.vercel.app/bhoomija',
           sameAs: [
             'https://linkedin.com/in/bhoomija-khanna-268995368',
             'https://www.instagram.com/national.legal.observatory',
@@ -145,18 +145,18 @@ export default function RootLayout({
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://legal-observatory.vercel.app/#website',
-        url: 'https://legal-observatory.vercel.app',
+        '@id': 'https://thenlo.vercel.app/#website',
+        url: 'https://thenlo.vercel.app',
         name: 'National Legal Observatory',
         description: 'Independent legal research and primary-source constitutional observation in India.',
         publisher: {
-          '@id': 'https://legal-observatory.vercel.app/#organization',
+          '@id': 'https://thenlo.vercel.app/#organization',
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: 'https://legal-observatory.vercel.app/publications?q={search_term_string}',
+            urlTemplate: 'https://thenlo.vercel.app/publications?q={search_term_string}',
           },
           'query-input': 'required name=search_term_string',
         },

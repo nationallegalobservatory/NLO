@@ -16,7 +16,7 @@ export async function generateMetadata(props: PageProps) {
   const author = await getAuthorBySlug(resolvedParams.slug);
   if (!author) return {};
 
-  const canonicalUrl = `https://legal-observatory.vercel.app/authors/${author.slug}`;
+  const canonicalUrl = `https://thenlo.vercel.app/authors/${author.slug}`;
 
   return {
     title: `${author.name} · Contributor Profile · National Legal Observatory`,

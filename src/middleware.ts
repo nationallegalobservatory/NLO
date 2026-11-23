@@ -18,7 +18,16 @@ const isDevLoginAllowed =
 
 const ALLOWED_ORIGINS = new Set(
   [
+    'https://thenlo.vercel.app',
     'https://legal-observatory.vercel.app',
+    'https://nationallegalobservatory.vercel.app',
+    'https://legalobservatory.vercel.app',
+    'https://nlo-india.vercel.app',
+    'https://nlobservatory.vercel.app',
+    'https://nlo-legal.vercel.app',
+    'https://nlo-research.vercel.app',
+    'https://nlo-law.vercel.app',
+    'https://national-legal-observatory.vercel.app',
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.NODE_ENV !== 'production' ? 'http://localhost:3002' : null,
     process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : null,

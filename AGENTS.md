@@ -7,8 +7,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # National Legal Observatory (NLO) Rules & Conventions (Knowledge Base for OpenClaw & Autonomous Agents)
 
 ## 1. Domain & Environment Routing
-- **Active Production Domain**: Always use `https://legal-observatory.vercel.app`.
-- **Never use placeholders or unconfigured domains**: `thenlo.org` is not configured. All email dispatches, external shares, and metadata links must strictly target `https://legal-observatory.vercel.app`.
+- **Active Production & Canonical Domain**: Always use `https://thenlo.vercel.app`.
+- **Secondary Domain Aliases (Edge 308 Redirects)**: All secondary domains (`legal-observatory.vercel.app`, `nationallegalobservatory.vercel.app`, `legalobservatory.vercel.app`, `nlo-india.vercel.app`, `nlobservatory.vercel.app`, `nlo-legal.vercel.app`, `nlo-research.vercel.app`, `nlo-law.vercel.app`, `national-legal-observatory.vercel.app`) permanently 308-redirect to `https://thenlo.vercel.app`.
+- **Never use placeholders or unconfigured domains**: `thenlo.org` is not configured. All email dispatches, external shares, and metadata links must strictly target `https://thenlo.vercel.app`.
 - **Local Dev Server**: Runs on port `3002` (`http://localhost:3002`).
 
 ## 2. Monthly Review Release Cadence & Embargo Protocol
@@ -23,7 +24,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## 3. 5-Minute Subscriber Early Access Backdoor Link
 - **Mechanism**:
   - The release email sent to registered subscribers contains a cryptographic early-access backdoor link:
-    `https://legal-observatory.vercel.app/publications/research/<slug>?token=<HMAC_TOKEN>&ref=email`
+    `https://thenlo.vercel.app/publications/research/<slug>?token=<HMAC_TOKEN>&ref=email`
   - Tokens are calculated using HMAC-SHA256 over `early-access-<slug>` with `CMS_SESSION_SECRET` or fallback static salt.
   - Unlocks the article **5 minutes before the public embargo clock** ($[T_{\text{publish}} - 5\text{m}, T_{\text{publish}}]$).
 - **Anti Copy-Paste & Tamper Protection**:
@@ -41,7 +42,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## 5. Referral & WhatsApp Deep-Linking
 - WhatsApp share buttons in emails and UI must link to:
-  `https://legal-observatory.vercel.app/about#:~:text=Subscribe%20to%20receive%20bi%2Dweekly%20legal%20alerts%2C%20recent%20publications%2C%20case%20reviews%2C%20and%20editorial%20commentaries%20directly%20in%20your%20inbox.`
+  `https://thenlo.vercel.app/about#:~:text=Subscribe%20to%20receive%20bi%2Dweekly%20legal%20alerts%2C%20recent%20publications%2C%20case%20reviews%2C%20and%20editorial%20commentaries%20directly%20in%20your%20inbox.`
 - Uses native scroll-to-text fragment to automatically scroll to the Newsletter Subscription form on the `/about` page and highlight the subscription text.
 
 ## 6. Mandatory Trigger: Security Audit & SEO Execution on Every New Upload
@@ -52,7 +53,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
    - Validate findings schema: `node /Users/utkarshmanitripathi/.gemini/config/skills/security-audit/validate-findings.cjs /Users/utkarshmanitripathi/security-audit-skill/nlo/audit-run/findings.json`
    - Verify path traversal guards (`/^[a-zA-Z0-9_-]+$/`), RBAC checks, and secret isolation.
 2. **Trigger SEO Masterplan Verification**:
-   - Verify canonical URL resolution (`https://legal-observatory.vercel.app`).
+   - Verify canonical URL resolution (`https://thenlo.vercel.app`).
    - Run production compilation check: `npm run build`
    - Verify XML sitemap status (`http://localhost:3002/sitemap.xml`) to ensure published items are indexed and embargoed items remain hidden until launch.
    - Verify `robots.txt` compliance and validate JSON-LD structured data (`ScholarlyArticle`, `BreadcrumbList`, `Organization`).

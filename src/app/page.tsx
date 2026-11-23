@@ -14,13 +14,13 @@ export const metadata: Metadata = {
   description:
     'Independent legal research platform tracking constitutional developments, Supreme Court judgments, public policy shifts, and technology regulation in India.',
   alternates: {
-    canonical: 'https://legal-observatory.vercel.app',
+    canonical: 'https://thenlo.vercel.app',
   },
   openGraph: {
     title: 'National Legal Observatory | Independent Legal Research & Observation',
     description:
       'Independent legal research platform tracking constitutional developments, Supreme Court judgments, public policy shifts, and technology regulation in India.',
-    url: 'https://legal-observatory.vercel.app',
+    url: 'https://thenlo.vercel.app',
     type: 'website',
   },
 };

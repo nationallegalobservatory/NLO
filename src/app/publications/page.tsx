@@ -28,13 +28,13 @@ export const metadata = {
   description:
     'Complete repository of independent legal research papers, Monthly Legal Reviews, landmark Supreme Court case reviews, and constitutional commentaries.',
   alternates: {
-    canonical: 'https://legal-observatory.vercel.app/publications',
+    canonical: 'https://thenlo.vercel.app/publications',
   },
   openGraph: {
     title: 'Publications Archive · National Legal Observatory',
     description:
       'Complete repository of independent legal research papers, Monthly Legal Reviews, landmark Supreme Court case reviews, and constitutional commentaries.',
-    url: 'https://legal-observatory.vercel.app/publications',
+    url: 'https://thenlo.vercel.app/publications',
     type: 'website',
   },
 };

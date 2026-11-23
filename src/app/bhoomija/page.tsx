@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     'Academic portfolio, legal research credentials, and verified publications of Bhoomija Khanna — Founder & Research Director of the National Legal Observatory.',
   alternates: {
-    canonical: 'https://legal-observatory.vercel.app/bhoomija',
+    canonical: 'https://thenlo.vercel.app/bhoomija',
   },
   openGraph: {
     title: 'Bhoomija Khanna | Founder & Research Director · National Legal Observatory',
     description:
       'Academic portfolio, legal research credentials, and verified publications of Bhoomija Khanna — Founder & Research Director of the National Legal Observatory.',
-    url: 'https://legal-observatory.vercel.app/bhoomija',
+    url: 'https://thenlo.vercel.app/bhoomija',
     type: 'profile',
     siteName: 'National Legal Observatory',
     images: [
@@ -36,16 +36,16 @@ export default function BhoomijaCVPage() {
   const personJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    '@id': 'https://legal-observatory.vercel.app/bhoomija#person',
+    '@id': 'https://thenlo.vercel.app/bhoomija#person',
     name: 'Bhoomija Khanna',
     jobTitle: 'Founder & Research Director',
     worksFor: {
       '@type': 'Organization',
       name: 'National Legal Observatory',
-      url: 'https://legal-observatory.vercel.app',
+      url: 'https://thenlo.vercel.app',
     },
-    url: 'https://legal-observatory.vercel.app/bhoomija',
-    image: 'https://legal-observatory.vercel.app/images/bhoomija-avatar.png',
+    url: 'https://thenlo.vercel.app/bhoomija',
+    image: 'https://thenlo.vercel.app/images/bhoomija-avatar.png',
     sameAs: [
       'https://linkedin.com/in/bhoomija-khanna-268995368',
       'https://www.instagram.com/national.legal.observatory',

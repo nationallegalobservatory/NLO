@@ -59,7 +59,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   }
 
   const descriptionText = article.abstract || article.caseSummary || article.policyOverview || '';
-  const canonicalUrl = `https://legal-observatory.vercel.app/publications/${folder}/${article.slug}`;
+  const canonicalUrl = `https://thenlo.vercel.app/publications/${folder}/${article.slug}`;
   const ogImageUrl = article.coverImage || '/icon.png';
   const authorName = article.authorDetails?.name || 'Bhoomija Khanna';
 
@@ -224,11 +224,11 @@ export default async function ArticlePage(props: PageProps) {
   const related = await getRelatedArticles(article, 3);
   const formattedDate = formatPublicationDate(article);
 
-  const articleCanonicalUrl = `https://legal-observatory.vercel.app/publications/${resolvedParams.category}/${article.slug}`;
+  const articleCanonicalUrl = `https://thenlo.vercel.app/publications/${resolvedParams.category}/${article.slug}`;
   const authorName = article.authorDetails?.name || 'Bhoomija Khanna';
   const authorUrl = article.authorDetails?.slug === 'bhoomija-khanna' || article.author === 'bhoomija-khanna'
-    ? 'https://legal-observatory.vercel.app/bhoomija'
-    : `https://legal-observatory.vercel.app/authors/${article.author}`;
+    ? 'https://thenlo.vercel.app/bhoomija'
+    : `https://thenlo.vercel.app/authors/${article.author}`;
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -240,7 +240,7 @@ export default async function ArticlePage(props: PageProps) {
           '@type': 'Periodical',
           name: 'National Legal Observatory Publications',
           issn: 'Applied Academic',
-          url: 'https://legal-observatory.vercel.app/publications',
+          url: 'https://thenlo.vercel.app/publications',
         },
         headline: article.title,
         description: article.abstract || article.caseSummary || article.policyOverview || '',
@@ -258,16 +258,16 @@ export default async function ArticlePage(props: PageProps) {
         publisher: {
           '@type': 'Organization',
           name: 'National Legal Observatory',
-          url: 'https://legal-observatory.vercel.app',
+          url: 'https://thenlo.vercel.app',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://legal-observatory.vercel.app/icon.png',
+            url: 'https://thenlo.vercel.app/icon.png',
           },
         },
         keywords: [...(article.categories || []), ...(article.tags || [])].join(', '),
         image: article.coverImage
-          ? `https://legal-observatory.vercel.app${article.coverImage.startsWith('/') ? '' : '/'}${article.coverImage}`
-          : 'https://legal-observatory.vercel.app/icon.png',
+          ? `https://thenlo.vercel.app${article.coverImage.startsWith('/') ? '' : '/'}${article.coverImage}`
+          : 'https://thenlo.vercel.app/icon.png',
       },
       {
         '@type': 'BreadcrumbList',
@@ -276,19 +276,19 @@ export default async function ArticlePage(props: PageProps) {
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://legal-observatory.vercel.app',
+            item: 'https://thenlo.vercel.app',
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Publications',
-            item: 'https://legal-observatory.vercel.app/publications',
+            item: 'https://thenlo.vercel.app/publications',
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: resolvedParams.category.charAt(0).toUpperCase() + resolvedParams.category.slice(1),
-            item: `https://legal-observatory.vercel.app/publications?type=${
+            item: `https://thenlo.vercel.app/publications?type=${
               resolvedParams.category === 'judgments' ? 'judgment' :
               resolvedParams.category === 'policies' ? 'policy' :
               resolvedParams.category === 'opinions' ? 'opinion' :

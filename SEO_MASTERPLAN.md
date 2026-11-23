@@ -1,10 +1,11 @@
 # National Legal Observatory (NLO) — SEO Masterplan & Technical Blueprint
 
-**Target Production Domain**: `https://legal-observatory.vercel.app`  
+**Target Production Domain**: `https://thenlo.vercel.app`  
+**Secondary Domain Aliases**: `https://legal-observatory.vercel.app`, `https://nationallegalobservatory.vercel.app`, etc. (308 Permanent Edge Redirects to `https://thenlo.vercel.app`)  
 **Organisation**: National Legal Observatory (NLO)  
 **Founder & Research Director**: Bhoomija Khanna  
-**Audit Date**: October 27, 2026  
-**Implementation Status**: High-Value Technical & Structural Improvements Implemented & Verified Locally  
+**Audit Date**: October 27, 2026 (Updated November 23, 2026)  
+**Implementation Status**: Canonical Domain Transitioned to `thenlo.vercel.app` & 308 Edge Redirects Active Across All 9 Domain Aliases  
 
 ---
 
@@ -14,8 +15,9 @@ The **National Legal Observatory (NLO)** is an independent, non-partisan legal r
 
 ### 1.1 Canonical Domain Resolution
 Prior to this masterplan, internal links and metadata references contained fragmented hostnames (e.g. `https://legal-observatory.org`, `thenlo.org`, and `https://legal-observatory.vercel.app`).
-- **Authoritative Canonical Origin**: `https://legal-observatory.vercel.app`
-- **Resolution**: All `metadataBase`, XML sitemaps, robots configurations, Open Graph URLs, and JSON-LD structured identities have been standardized strictly to `https://legal-observatory.vercel.app`.
+- **Authoritative Canonical Origin**: `https://thenlo.vercel.app`
+- **Resolution**: All `metadataBase`, XML sitemaps, robots configurations, Open Graph URLs, and JSON-LD structured identities have been standardized strictly to `https://thenlo.vercel.app`.
+- **Secondary Domain Consolidation**: All 9 alternate Vercel subdomains (`legal-observatory.vercel.app`, `nationallegalobservatory.vercel.app`, `legalobservatory.vercel.app`, `nlo-india.vercel.app`, `nlobservatory.vercel.app`, `nlo-legal.vercel.app`, `nlo-research.vercel.app`, `nlo-law.vercel.app`, `national-legal-observatory.vercel.app`) are configured with HTTP 308 edge redirects directly pointing to `https://thenlo.vercel.app`, preserving and consolidating all search rankings and PageRank equity into the primary canonical domain.
 - **Enforcement**: No placeholder or unconfigured external domains are permitted.
 
 ---
@@ -25,10 +27,10 @@ Prior to this masterplan, internal links and metadata references contained fragm
 ### 2.1 Technical SEO & Crawlability Audit
 | Audit Area | Pre-Implementation State | Implemented State | Impact |
 |---|---|---|---|
-| **`robots.txt`** | Missing (returned 404) | Implemented dynamic handler at `/src/app/robots.ts` with explicit rules for search crawlers, AI agents (`GPTBot`, `Google-Extended`), disallow paths (`/cms/`, `/api/`, `/_next/`, `/bhoomija/research/`), and linked sitemap | High |
+| **`robots.txt`** | Missing (returned 404) | Implemented dynamic handler at `/src/app/robots.ts` with explicit rules for search crawlers, AI agents (`GPTBot`, `Google-Extended`), disallow paths (`/cms/`, `/api/`, `/_next/`, `/bhoomija/research/`), and linked sitemap pointing to `https://thenlo.vercel.app/sitemap.xml` | High |
 | **XML Sitemap** | Missing (returned 404) | Implemented dynamic handler at `/src/app/sitemap.ts` auto-indexing all 10 core routes, 11 published research articles, and verified author profiles with accurate `lastmod`, `changefreq`, and priority scoring | High |
-| **`metadataBase`** | Configured to unverified `legal-observatory.org` | Standardized to `https://legal-observatory.vercel.app` in `src/app/layout.tsx` | Critical |
-| **Canonical URLs** | Missing on homepage, publication pages, about, and authors | Explicit self-referencing canonical tags injected across all static and dynamic routes (`/`, `/about`, `/publications`, `/authors`, `/bhoomija`, `/publications/[category]/[slug]`) | High |
+| **`metadataBase`** | Configured to unverified `legal-observatory.org` | Standardized to `https://thenlo.vercel.app` in `src/app/layout.tsx` | Critical |
+| **Canonical URLs** | Missing on homepage, publication pages, about, and authors | Explicit self-referencing canonical tags injected across all static and dynamic routes (`/`, `/about`, `/publications`, `/authors`, `/bhoomija`, `/publications/[category]/[slug]`) targeting `https://thenlo.vercel.app` | High |
 | **HTTP Security Headers** | CSP, Permissions-Policy, nosniff | Hardened with HSTS (`max-age=63072000; includeSubDomains; preload`), `X-Frame-Options: DENY`, and `X-XSS-Protection` | Medium |
 | **PWA & Offline Service Worker** | In place | Preserved service worker precache limits to ensure search bots are not served stale or bloated assets | High |
 
@@ -149,15 +151,15 @@ To index NLO on Google and Bing upon deployment, complete the following verifica
 
 ### 7.1 Google Search Console (GSC) Setup
 1. Log into [Google Search Console](https://search.google.com/search-console).
-2. Choose **URL prefix property**: `https://legal-observatory.vercel.app`.
+2. Choose **URL prefix property**: `https://thenlo.vercel.app`.
 3. Select **HTML tag verification** or upload the verification meta tag to `src/app/layout.tsx` under `verification: { google: '...' }`.
 4. Once verified, submit the sitemap URL:
-   `https://legal-observatory.vercel.app/sitemap.xml`
+   `https://thenlo.vercel.app/sitemap.xml`
 5. Use the **URL Inspection Tool** to inspect:
-   - `https://legal-observatory.vercel.app/`
-   - `https://legal-observatory.vercel.app/bhoomija`
-   - `https://legal-observatory.vercel.app/publications/research/monthly-legal-review-october-2026`
-   - `https://legal-observatory.vercel.app/publications/research/the-law-of-the-dead`
+   - `https://thenlo.vercel.app/`
+   - `https://thenlo.vercel.app/bhoomija`
+   - `https://thenlo.vercel.app/publications/research/monthly-legal-review-october-2026`
+   - `https://thenlo.vercel.app/publications/research/the-law-of-the-dead`
 6. Verify that Rich Results Test displays **ScholarlyArticle**, **BreadcrumbList**, and **Organization** with zero errors.
 
 ### 7.2 Bing Webmaster Tools Setup

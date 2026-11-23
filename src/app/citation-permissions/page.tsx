@@ -69,7 +69,7 @@ export default function CitationPermissionsPage() {
           </div>
           <div className="p-4 rounded-lg border border-outline-variant/40 bg-surface-container-low font-mono text-xs text-on-surface dark:text-on-background/90 overflow-x-auto">
             <span className="font-bold text-oxblood dark:text-primary block font-technical-ui uppercase tracking-wider text-[10px] mb-1">Bluebook Format</span>
-            Bhoomija Khanna, <em>[Publication Title]</em>, Nat&apos;l Legal Observatory (Month Year), https://legal-observatory.vercel.app/publications/...
+            Bhoomija Khanna, <em>[Publication Title]</em>, Nat&apos;l Legal Observatory (Month Year), https://thenlo.vercel.app/publications/...
           </div>
         </div>
       </section>

@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
   const resendKey = process.env.RESEND_API_KEY;
   const from =
     process.env.CMS_MAGIC_LINK_FROM ||
-    `NLO CMS <cms@${new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://legal-observatory.vercel.app').hostname}>`;
+    `NLO CMS <cms@${new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://thenlo.vercel.app').hostname}>`;
 
   if (resendKey) {
     try {

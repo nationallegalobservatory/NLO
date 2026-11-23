@@ -7,12 +7,12 @@ export const metadata = {
   title: 'About the Observatory · National Legal Observatory',
   description: 'Independent legal research platform tracking constitutional developments, public policy shifts, and judicial precedents in India without paywalls.',
   alternates: {
-    canonical: 'https://legal-observatory.vercel.app/about',
+    canonical: 'https://thenlo.vercel.app/about',
   },
   openGraph: {
     title: 'About the Observatory · National Legal Observatory',
     description: 'Independent legal research platform tracking constitutional developments, public policy shifts, and judicial precedents in India without paywalls.',
-    url: 'https://legal-observatory.vercel.app/about',
+    url: 'https://thenlo.vercel.app/about',
     type: 'website',
   },
 };

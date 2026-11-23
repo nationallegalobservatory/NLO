@@ -4,7 +4,7 @@ import { getArticles, getAuthors } from '@/lib/content';
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://legal-observatory.vercel.app';
+  const baseUrl = 'https://thenlo.vercel.app';
   const now = Date.now();
 
   // Static core routes with priority and change frequencies

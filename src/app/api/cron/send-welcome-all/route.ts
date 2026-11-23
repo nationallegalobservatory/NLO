@@ -73,7 +73,7 @@ export async function GET(request: Request) {
                 You'll now receive updates on our latest independent legal research, policy analysis, and expert opinions directly in your inbox.
               </p>
               <div style="text-align: center; margin: 28px 0;">
-                <a href="https://legal-observatory.vercel.app/publications"
+                <a href="https://thenlo.vercel.app/publications"
                    style="display: inline-block; background: #4f46e5; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 700; letter-spacing: 0.5px;">
                   Explore Our Publications →
                 </a>
@@ -81,7 +81,7 @@ export async function GET(request: Request) {
               <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0 16px 0;" />
               <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0; line-height: 1.6;">
                 You received this email because you subscribed to the National Legal Observatory newsletter.<br />
-                <a href="https://legal-observatory.vercel.app" style="color: #6366f1; text-decoration: none;">legal-observatory.vercel.app</a>
+                <a href="https://thenlo.vercel.app" style="color: #6366f1; text-decoration: none;">thenlo.vercel.app</a>
               </p>
             </div>
           `,

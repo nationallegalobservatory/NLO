@@ -7,12 +7,12 @@ export const metadata = {
   title: 'Observatory Contributors · National Legal Observatory',
   description: 'Meet the legal scholars, constitutional researchers, and technology builders behind the National Legal Observatory.',
   alternates: {
-    canonical: 'https://legal-observatory.vercel.app/authors',
+    canonical: 'https://thenlo.vercel.app/authors',
   },
   openGraph: {
     title: 'Observatory Contributors · National Legal Observatory',
     description: 'Meet the legal scholars, constitutional researchers, and technology builders behind the National Legal Observatory.',
-    url: 'https://legal-observatory.vercel.app/authors',
+    url: 'https://thenlo.vercel.app/authors',
     type: 'website',
   },
 };
