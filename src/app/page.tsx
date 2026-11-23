@@ -366,16 +366,17 @@ export default async function Homepage() {
   const allArticles = await getArticles(undefined, true);
   const articleBySlug = new Map(allArticles.map((article) => [article.slug, article]));
 
+  const novemberReviewArticle = articleBySlug.get('monthly-legal-review-november-2026') ?? null;
   const octoberReviewArticle = articleBySlug.get('monthly-legal-review-october-2026') ?? null;
   const septemberReviewArticle = articleBySlug.get('monthly-legal-review-september-2026') ?? null;
   const augustReviewArticle = articleBySlug.get('monthly-legal-review-august-2026') ?? null;
-  const activeMonthlyReview = octoberReviewArticle ?? septemberReviewArticle ?? augustReviewArticle ?? null;
+  const activeMonthlyReview = novemberReviewArticle ?? octoberReviewArticle ?? septemberReviewArticle ?? augustReviewArticle ?? null;
 
   // Check if there is an active future embargo (such as the 30 September release)
   const now = Date.now();
-  const upcomingEmbargoArticle = allArticles.find(
-    (a) => a.publishAt && new Date(a.publishAt).getTime() > now
-  ) ?? null;
+  const upcomingEmbargoArticle = allArticles
+    .filter((a) => a.publishAt && new Date(a.publishAt).getTime() > now)
+    .sort((a, b) => new Date(a.publishAt!).getTime() - new Date(b.publishAt!).getTime())[0] ?? null;
 
   const countdownArticle = upcomingEmbargoArticle ?? activeMonthlyReview;
   const deepfakesArticle = articleBySlug.get('nlo-deepfakes-it-rules-2026') ?? null;

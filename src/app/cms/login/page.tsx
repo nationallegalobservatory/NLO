@@ -13,6 +13,8 @@ const errorCopy: Record<string, string> = {
   missing_token: 'The sign-in link is missing a token. Request a new one.',
   invalid_token: 'That sign-in link is no longer valid.',
   expired_token: 'That sign-in link has expired. Request a new one.',
+  session_expired: 'Your session has expired. Sign in again.',
+  rate_limited: 'Too many attempts. Please wait before trying again.',
   not_configured:
     'The CMS is not fully configured yet. Check the README at /cms/README.md for the env vars you need.',
 };

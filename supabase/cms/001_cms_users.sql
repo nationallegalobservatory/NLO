@@ -1,27 +1,48 @@
 -- NLO CMS — additional tables for Bhumija's editorial dashboard
 -- Run AFTER the existing schema.sql has been applied.
 
--- 1) CMS users (Bhoomija + future editors)
+-- 1) CMS users — strict single-tenant (RFC-2026-CMS-01)
 CREATE TABLE IF NOT EXISTS cms_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'editor' CHECK (role IN ('owner', 'editor', 'viewer')),
+  role TEXT NOT NULL DEFAULT 'owner' CHECK (role IN ('owner', 'editor', 'viewer')),
   magic_link_token TEXT,
   magic_link_expires_at TIMESTAMPTZ,
+  failed_login_attempts INT DEFAULT 0,
+  lockout_until TIMESTAMPTZ,
   last_login_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 ALTER TABLE cms_users ENABLE ROW LEVEL SECURITY;
 
--- Only authenticated cms_users can read the user table (no public access at all).
-CREATE POLICY "cms_users_self_read" ON cms_users
-  FOR SELECT USING (auth.jwt() ->> 'email' = email);
-
--- Inserts/updates go through the service role from API routes (bypasses RLS).
-CREATE POLICY "cms_users_no_public_write" ON cms_users
+-- Deny ALL public/anonymous access. Every read/write goes through the
+-- service-role key inside API routes, which bypasses RLS entirely.
+CREATE POLICY "cms_users_zero_anon_read" ON cms_users
+  FOR SELECT USING (false);
+CREATE POLICY "cms_users_zero_anon_write" ON cms_users
   FOR ALL USING (false) WITH CHECK (false);
+
+-- 1b) CMS auth audit log — security monitoring for login events
+CREATE TABLE IF NOT EXISTS cms_auth_audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_type TEXT NOT NULL, -- 'login_request', 'login_success', 'login_failed', 'login_throttled', 'lockout', 'logout'
+  email_attempted TEXT NOT NULL,
+  ip_address TEXT,
+  user_agent TEXT,
+  timestamp TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE cms_auth_audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "audit_logs_service_only" ON cms_auth_audit_logs
+  FOR ALL USING (false) WITH CHECK (false);
+
+-- 1c) Seed exclusively Bhoomija Khanna as owner
+INSERT INTO cms_users (email, name, role)
+VALUES ('bhoomija.k2810@gmail.com', 'Bhoomija Khanna', 'owner')
+ON CONFLICT (email) DO UPDATE SET role = 'owner', name = 'Bhoomija Khanna';
 
 -- 2) Upload tracking
 CREATE TABLE IF NOT EXISTS cms_uploads (

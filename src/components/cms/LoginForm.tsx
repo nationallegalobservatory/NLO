@@ -61,13 +61,8 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           setStatus('error');
           return;
         }
-        if (data.sent === false) {
-          setError(
-            'No CMS account found for that email. Ask the site owner to invite you from Settings → Team, or use Dev Sign-In.',
-          );
-          setStatus('error');
-          return;
-        }
+        // Generic dispatched state — the API intentionally returns the same
+        // response for authorized and unauthorized emails (no enumeration).
         setStatus('sent');
       } catch (err) {
         setError('Network error. Try again.');
@@ -80,7 +75,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     return (
       <div className="border border-primary/30 bg-primary/5 px-4 py-6 text-sm">
         <strong className="block mb-1">Check your email.</strong>
-        We sent a sign-in link to <span className="font-mono">{email}</span>. The link expires in 15
+        If that email matches an authorized NLO editorial director account, a
+        one-time cryptographic sign-in link has been sent to{' '}
+        <span className="font-mono">{email}</span>. The link expires in 15
         minutes.
       </div>
     );
@@ -99,7 +96,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           autoFocus
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="bhoomija@thenlo.org or your email"
+          placeholder="bhoomija.k2810@gmail.com"
           className="w-full border border-outline/50 bg-surface-container-lowest text-foreground placeholder:text-on-surface-variant/50 px-3 py-2 text-sm focus:border-primary focus:outline-none"
         />
       </label>

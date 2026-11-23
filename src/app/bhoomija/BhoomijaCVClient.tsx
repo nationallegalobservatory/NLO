@@ -65,6 +65,28 @@ const EXPERIENCE = [
 const PUBLICATIONS = [
   {
     type: 'Monthly Review',
+    title: 'Monthly Legal Review — Vol. 1 | Issue 6 | November 2026',
+    desc: 'Covering the Supreme Court landmark Article 22(2) ruling in Sujit Das v. Union of India (2026 INSC 1195), nationwide Bonded Labour SOP, Two-Child Norm reference, and 28-year Seven-Judge reference closure.',
+    href: '/publications/research/monthly-legal-review-november-2026',
+    image: '/images/monthly_review_november_2026.jpg',
+    tag: 'NLO Monthly Review · November 2026',
+    readOnline: true,
+    comingSoon: false,
+    publishAt: '2026-11-27T18:30:00+05:30',
+  },
+  {
+    type: 'Research Article',
+    title: 'Gender, Propaganda and Patriarchal Power in Indian Democratic Politics',
+    desc: 'A socio-legal analysis of gendered rhetoric, political exclusion, and patriarchal propaganda in Indian democratic institutions — interrogating the "Protectionist Trap" and digital state proxies.',
+    href: '/publications/research/propaganda-patriarchy-democracy',
+    image: '/images/propaganda.jpg',
+    tag: 'NLO Research Desk · November 2026',
+    readOnline: true,
+    comingSoon: false,
+    publishAt: '2026-11-27T18:00:00+05:30',
+  },
+  {
+    type: 'Monthly Review',
     title: 'Monthly Legal Review — Vol. 1 | Issue 5 | October 2026',
     desc: 'Covering the Supreme Court landmark ruling in Just Rights for Children Alliance v. S. Harish (2026 INSC 1149), children\'s fundamental right to the internet under Article 21, Delhi-NCR safety war rooms, and Permanent Constitution Bench calls.',
     href: '/publications/research/monthly-legal-review-october-2026',
@@ -320,6 +342,22 @@ export default function BhoomijaCVClient() {
   const skillsCoverRef = useRef<HTMLDivElement>(null);
   useSkillsCursor(skillsCoverRef);
 
+  const [isPreview, setIsPreview] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('preview') === 'true' || params.get('preview') === '1') {
+        setIsPreview(true);
+      }
+    }
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const handleOpenSkills = () => setSkillsOpen(true);
     window.addEventListener('open-skills', handleOpenSkills);
@@ -557,7 +595,14 @@ export default function BhoomijaCVClient() {
           </div>
 
           <div className="bk-pub-grid">
-            {PUBLICATIONS.map((pub, i) => {
+            {PUBLICATIONS.filter((pub) => {
+              if (isPreview) return true;
+              if (!pub.publishAt) return true;
+              return currentTime >= new Date(pub.publishAt).getTime();
+            }).map((pub, i) => {
+              const isEmbargoed = pub.publishAt ? currentTime < new Date(pub.publishAt).getTime() : false;
+              const targetHref = isEmbargoed && isPreview ? `${pub.href}?preview=true` : pub.href;
+
               const cardContent = (
                 <>
                   <div
@@ -572,7 +617,11 @@ export default function BhoomijaCVClient() {
                     <p className="bk-pub-card-desc">{pub.desc}</p>
                     <p className="bk-pub-card-tag">{pub.tag}</p>
                     <div className="bk-pub-card-links">
-                      {pub.comingSoon ? (
+                      {isEmbargoed && isPreview ? (
+                        <span className="bk-pub-card-coming-soon text-amber-300">
+                          🔒 Embargoed · Preview Active
+                        </span>
+                      ) : pub.comingSoon ? (
                         <span className="bk-pub-card-coming-soon">
                           ⏳ Publishing in progress
                         </span>
@@ -593,7 +642,7 @@ export default function BhoomijaCVClient() {
               }
 
               return (
-                <a key={i} href={pub.href} target="_blank" rel="noopener noreferrer" className="bk-pub-card-anchor block no-underline">
+                <a key={i} href={targetHref} target="_blank" rel="noopener noreferrer" className="bk-pub-card-anchor block no-underline">
                   <BorderGlow className="bk-pub-card cursor-pointer" glowColor="#7d1919" colors={['#a01e1e', '#c97a7a', '#7d1919']} backgroundColor="transparent">
                     {cardContent}
                   </BorderGlow>

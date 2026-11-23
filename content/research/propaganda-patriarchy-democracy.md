@@ -1,22 +1,36 @@
 ---
 slug: propaganda-patriarchy-democracy
 type: research
+format: post
 title: "Gender, Propaganda and Patriarchal Power in Indian Democratic Politics"
 author: bhoomija-khanna
-date: 2025-11-15
+date: "2026-11-27"
+publishAt: "2026-11-27T18:00:00+05:30"
 categories:
-  - gender-rights
   - constitutional-law
-  - political-communication
+  - human-rights
+  - public-policy
 tags:
+  - Gender Rights
+  - Patriarchal Power
   - Propaganda
-  - Gender
-  - Patriarchy
-  - Democracy
-  - Political Communication
-abstract: "A socio-legal analysis of gendered rhetoric, political exclusion, and patriarchal propaganda in Indian democratic institutions. This study questions how the concept of womanhood has been strategically instrumentalized as part of contemporary Indian political propaganda, and how the state actively creates ontological insecurity to consolidate majoritarian authority."
+  - Muscular Nationalism
+  - Constitutional Morality
+  - Ontological Insecurity
+  - Love Jihad Rhetoric
+  - Rape Script
+  - Online Gender-Based Violence
+  - Article 21
+  - Democratic Institutions
+  - Brahminical Patriarchy
+abstract: "A critical socio-legal inquiry into the instrumentalization of womanhood in contemporary Indian democratic politics. Drawing on Critical Discourse Analysis, this paper interrogates how populist nationalism mobilizes 'ontological insecurity' to transform the state from a constitutional rights guarantor into a 'masculine protector' — weaponizing anti-conversion laws, the judicial rape script, and algorithmic online harassment to subordinate female citizenship to majoritarian national honour."
+citation: "Bhoomija Khanna, 'Gender, Propaganda and Patriarchal Power in Indian Democratic Politics', National Legal Observatory Research Desk (November 2026)."
 coverImage: "/images/propaganda.jpg"
-draft: true
+keyTakeaways:
+  - "The Protectionist Trap: Indian democratic institutions transform from rights guarantors into 'masculine protectors' trading women's constitutional agency for conditional physical security"
+  - "Instrumentalization of 'Love Jihad': Codification of anti-conversion laws infantilizes adult women under Article 21, treating female consent as communal property"
+  - "The Judicial 'Rape Script' & Zinda Laash: Legal and media apparatuses demand performances of abject victimhood, rendering survivors inaudible unless they conform to patriarchal modesty scripts"
+  - "Digital Khap Panchayats: Algorithmic Online Gender-Based Violence (OGBV) and 'Gaali culture' deployed by organized political cells as state proxies to silence dissenting women"
 references:
   - "Ahmad, N. B. (2021). 'Blood, Sweat, Tears': A Muslim woman law professor's view on degenerative racism, misogyny, and (internal) Islamophobia. FIU Law Review, 16(1), 13–74."
   - "Awais, M., & Al Gharaibeh, F. (2026). Justice or tradition? Cross-national media framing of honor killings. Women's Studies International Forum, 114, 103219."
@@ -40,7 +54,7 @@ references:
 
 India has a complicated status in the international political system because it is a constitutional democracy that ensures gender equality but operates under strongly rooted patriarchal values that often put women's citizenship as subordinate to honouring the community. Although women have managed to rise to top political positions, the wider political culture remains deeply rooted in a culture of misogyny in which the agency of women is usually conditional (Krishnan, 2015).
 
-This study examines one of the most important changes in this dynamic: the instrumentalization of womanhood in modern Indian political propaganda. In particular, it discusses how the emergence of right-wing populism has prompted a process of masculinization of politics in which the nation is no longer a pluralistic space but a feminine body (Bharat Mata) in constant danger requiring a hyper-masculine protector (Dutta & Abbas, 2025). This fundamentally alters the democratic social contract; the political discussion stops portraying women as independent citizens with rights but as honour-bearing subjects whose safety depends upon their compliance with convention (Oza, 2022).
+This study examines one of the most important changes in this dynamic: the instrumentalization of womanhood in modern Indian political propaganda. In particular, it discusses how the emergence of right-wing populism has prompted a process of masculinization of politics in which the nation is no longer a pluralistic space but a feminine body (*Bharat Mata*) in constant danger requiring a hyper-masculine protector (Dutta & Abbas, 2025). This fundamentally alters the democratic social contract; the political discussion stops portraying women as independent citizens with rights but as honour-bearing subjects whose safety depends upon their compliance with convention (Oza, 2022).
 
 The implications of this rhetoric are practical: violence towards women is only agitated under selective conditions when it serves a social purpose, thus making women's bodies discursive spaces where national honour is negotiated rather than sites of justice (Big Think, 2021).
 
@@ -195,3 +209,31 @@ The findings indicate that the masculinization of Indian politics rests on a lea
 The rhetoric of *Bharat Mata* (Mother India) simultaneously deifies women figuratively and subordinates them practically, as biological containers of communal honour (Basu, 2016). The incongruity between popular culture — where films like *Pink* popularized "No means No" — and the reality of courtrooms reveals the chasm between democratic aspiration and patriarchal practice (Oza, 2022).
 
 The paper concludes that real safety for women requires replacing "benevolent sexism" with constitutional morality — acknowledging the autonomy of women without conditions (Boyce, 2015; Nandan, 2022). Whether Indian democracy can tolerate an Argumentative Woman who, instead of being victimized, goddessified, or treated as a corpse, merely and radically seeks to become a citizen — that is the essential question for the future of Indian democracy (Sen, 2005; Jayal, 2008).
+
+---
+
+## REFERENCES
+
+1. Ahmad, N. B. (2021). "Blood, Sweat, Tears": A Muslim woman law professor's view on degenerative racism, misogyny, and (internal) Islamophobia. *FIU Law Review*, 16(1), 13–74.
+2. Awais, M., & Al Gharaibeh, F. (2026). Justice or tradition? Cross-national media framing of honor killings. *Women's Studies International Forum*, 114, 103219.
+3. Banerjee, S. (2012). *Muscular nationalism: Gender, violence and empire in India and Ireland*. New York University Press.
+4. Baxi, P. (2014). *Public secrets of law: Rape trials in India*. Oxford University Press.
+5. Chakravarti, U. (1993). Conceptualising Brahmanical patriarchy in early India: Gender, caste, class and state. *Economic and Political Weekly*, 28(14), 579–585.
+6. Dutta, S., & Abbas, T. (2025). Protecting the people: Populism and masculine security in India and Hungary. *Journal of Political Ideologies*, 30(2), 517–539.
+7. Gurumurthy, A., & Dasarathy, A. (2022). *Profitable provocations: A Twitter-based study of abuse and misogynistic trolling*. IT for Change.
+8. Justice Verma Committee. (2013). *Report of the Committee on Amendments to Criminal Law*. Government of India.
+9. Kinnvall, C. (2019). Populism, ontological insecurity and Hindutva: Stabilizing the nation through gender and caste. *Cambridge Review of International Affairs*, 32(3), 283–302.
+10. Lodhia, S. (2015). From "living corpse" to India's daughter: Exploring the semiotics of rape and protest in Delhi. *Women's Studies International Forum*, 50, 89–101.
+11. Menon, N. (2009). Sexuality, caste, governmentality: Contests over "gender" in India. *Feminist Review*, 91, 94–112.
+12. Oza, R. (2022). *Semiotics of rape: Sexual subjectivity and violation in rural India*. Duke University Press.
+13. Rajkumar, M., & Sen, S. (2023). *The judiciary's tryst with online gender-based violence (OGBV)*. IT for Change.
+14. Rawat, A., & Chaudhary, D. (2021). Judicial misogyny: When "preserver of rights" furthers the culture of misogyny. *GNLU Law Review*, 8(1), 73–103.
+15. Sen, A. (2005). *The argumentative Indian: Writings on Indian history, culture and identity*. Farrar, Straus and Giroux.
+16. Tyagi, P. (2020). Prevalence of rape culture in India: A socio-legal examination. *International Journal of Law Management & Humanities*, 3, 832–836.
+
+---
+
+## PUBLICATION NOTICE
+
+*© 2026 National Legal Observatory | legal-observatory.vercel.app*  
+*Reproduction for non-commercial educational and research purposes permitted with full attribution.*

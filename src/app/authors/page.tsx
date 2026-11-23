@@ -102,13 +102,24 @@ export default function AuthorsPage() {
               <Avatar
                 src="/utkarsh-avatar.svg"
                 alt="Utkarsh Mani Tripathi"
+                authorSlug="utkarsh-mani-tripathi"
+                href="https://utkarshmanitripathi.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="h-20 w-20 shrink-0 rounded-full border border-outline-variant bg-on-background object-cover dark:border-primary/25 sm:h-24 sm:w-24"
               />
               <div className="space-y-2 text-center sm:text-left">
                 <div>
-                  <h3 className="font-serif text-xl font-bold text-on-background dark:text-on-background">
-                    Utkarsh Mani Tripathi
-                  </h3>
+                  <a
+                    href="https://utkarshmanitripathi.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-oxblood dark:hover:text-primary transition-colors"
+                  >
+                    <h3 className="font-serif text-xl font-bold text-on-background dark:text-on-background hover:underline">
+                      Utkarsh Mani Tripathi
+                    </h3>
+                  </a>
                   <p className="font-technical-ui text-xs font-bold uppercase tracking-[0.14em] text-oxblood dark:text-primary">
                     Full Stack Product Builder & Tech Lead
                   </p>

@@ -358,22 +358,43 @@ export default function DynamicReleaseCountdown({
                   {/* Highlights */}
                   {isMonthlyReview ? (
                     <div className="grid gap-2.5 sm:grid-cols-2 pt-2 text-xs font-serif text-on-surface-variant dark:text-on-background/70 border-t border-outline-variant/30 pt-3 dark:border-primary/15">
-                      <div className="flex items-start gap-2">
-                        <span className="text-oxblood dark:text-primary font-bold">01</span>
-                        <span><strong>Judgment of the Month:</strong> Balaji Formalin (2026 INSC 1009)</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-oxblood dark:text-primary font-bold">02</span>
-                        <span><strong>Constitutional Watch:</strong> POCSO Presumption &amp; Cess Reference</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-oxblood dark:text-primary font-bold">03</span>
-                        <span><strong>Legislative Tracker:</strong> Supreme Court Strength at 38</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <span className="text-oxblood dark:text-primary font-bold">05</span>
-                        <span><strong>Editor&apos;s Note:</strong> Proportionality&apos;s Quiet Takeover</span>
-                      </div>
+                      {article.keyTakeaways && article.keyTakeaways.length > 0 ? (
+                        article.keyTakeaways.slice(0, 4).map((takeaway, idx) => {
+                          const colonIdx = takeaway.indexOf(':');
+                          const hasColon = colonIdx !== -1;
+                          const label = hasColon ? takeaway.slice(0, colonIdx) : '';
+                          const text = hasColon ? takeaway.slice(colonIdx + 1).trim() : takeaway;
+                          const num = String(idx + 1).padStart(2, '0');
+                          return (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-oxblood dark:text-primary font-bold">{num}</span>
+                              <span>
+                                {label && <strong>{label}: </strong>}
+                                {text}
+                              </span>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          <div className="flex items-start gap-2">
+                            <span className="text-oxblood dark:text-primary font-bold">01</span>
+                            <span><strong>Judgment of the Month:</strong> Balaji Formalin (2026 INSC 1009)</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-oxblood dark:text-primary font-bold">02</span>
+                            <span><strong>Constitutional Watch:</strong> POCSO Presumption &amp; Cess Reference</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-oxblood dark:text-primary font-bold">03</span>
+                            <span><strong>Legislative Tracker:</strong> Supreme Court Strength at 38</span>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="text-oxblood dark:text-primary font-bold">05</span>
+                            <span><strong>Editor&apos;s Note:</strong> Proportionality&apos;s Quiet Takeover</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2 pt-3 border-t border-outline-variant/30 dark:border-primary/15">

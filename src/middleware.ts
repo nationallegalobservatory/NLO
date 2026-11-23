@@ -11,7 +11,33 @@ const PUBLIC_CMS_PATHS = new Set([
   '/api/cms/auth/dev-login',
 ]);
 
-const isDevLoginAllowed = process.env.NODE_ENV !== 'production' || Boolean(process.env.ENABLE_DEV_LOGIN);
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+const isDevLoginAllowed =
+  process.env.NODE_ENV !== 'production' || Boolean(process.env.ENABLE_DEV_LOGIN);
+
+const ALLOWED_ORIGINS = new Set(
+  [
+    'https://legal-observatory.vercel.app',
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.NODE_ENV !== 'production' ? 'http://localhost:3002' : null,
+    process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : null,
+    process.env.NODE_ENV !== 'production' ? 'http://127.0.0.1:3002' : null,
+  ].filter((o): o is string => Boolean(o)),
+);
+
+/** CSRF guard: state-changing CMS API calls must originate from NLO itself. */
+function checkOrigin(req: NextRequest): NextResponse | null {
+  if (!MUTATING_METHODS.has(req.method)) return null;
+  if (!req.nextUrl.pathname.startsWith('/api/cms')) return null;
+
+  const origin = req.headers.get('origin');
+  // No Origin header → non-browser client (curl, server-to-server). The
+  // SameSite=Strict session cookie is not attached cross-site anyway.
+  if (!origin) return null;
+  if (ALLOWED_ORIGINS.has(origin)) return null;
+  return NextResponse.json({ error: 'FORBIDDEN_ORIGIN' }, { status: 403 });
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,6 +46,9 @@ export async function middleware(request: NextRequest) {
   if (!pathname.startsWith('/cms') && !pathname.startsWith('/api/cms')) {
     return NextResponse.next();
   }
+
+  const originRejection = checkOrigin(request);
+  if (originRejection) return originRejection;
 
   if (pathname === '/api/cms/auth/dev-login' && !isDevLoginAllowed) {
     return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
@@ -43,11 +72,12 @@ export async function middleware(request: NextRequest) {
   const session = await verifySession(token);
   if (!session) {
     if (pathname.startsWith('/api/')) {
-      return NextResponse.json({ error: 'SESSION_EXPIRED' }, { status: 401 });
+      return NextResponse.json({ error: 'FORBIDDEN_IDENTITY' }, { status: 401 });
     }
     const url = request.nextUrl.clone();
     url.pathname = '/cms/login';
-    url.searchParams.set('next', pathname);
+    url.search = '';
+    url.searchParams.set('error', 'session_expired');
     const res = NextResponse.redirect(url);
     res.cookies.delete(SESSION_COOKIE);
     return res;

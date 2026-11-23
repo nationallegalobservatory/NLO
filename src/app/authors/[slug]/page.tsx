@@ -71,6 +71,10 @@ export default async function AuthorProfilePage(props: PageProps) {
           <Avatar
             src={author.avatar}
             alt={author.name}
+            authorSlug={author.slug}
+            href={author.slug === 'utkarsh-mani-tripathi' ? 'https://utkarshmanitripathi.vercel.app' : undefined}
+            target={author.slug === 'utkarsh-mani-tripathi' ? '_blank' : undefined}
+            rel={author.slug === 'utkarsh-mani-tripathi' ? 'noopener noreferrer' : undefined}
             className="w-24 h-24 rounded-full object-cover border-2 border-slate-100 dark:border-slate-800 shadow-inner shrink-0"
           />
           <div className="space-y-3 flex-1 min-w-0">

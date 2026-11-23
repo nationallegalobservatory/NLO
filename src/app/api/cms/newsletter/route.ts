@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
       { status: 503 },
     );
   }
-  const from = process.env.NEWSLETTER_FROM || 'National Legal Observatory <hello@thenlo.org>';
+  const from = process.env.NEWSLETTER_FROM || 'National Legal Observatory <hello@legal-observatory.vercel.app>';
   const resend = new Resend(resendKey);
 
   // BCC all subscribers (single API call).
@@ -206,7 +206,7 @@ export async function POST(req: NextRequest) {
     try {
       const { error } = await resend.emails.send({
         from,
-        to: ['hello@thenlo.org'], // required; we BCC everyone
+        to: ['hello@legal-observatory.vercel.app'], // required; we BCC everyone
         bcc: batch.map((s) => s.email),
         subject,
         html,

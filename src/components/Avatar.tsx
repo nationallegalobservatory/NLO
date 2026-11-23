@@ -15,6 +15,8 @@ interface AvatarProps {
   href?: string;
   authorSlug?: string;
   disableLink?: boolean;
+  target?: string;
+  rel?: string;
 }
 
 export default function Avatar({
@@ -24,24 +26,49 @@ export default function Avatar({
   href,
   authorSlug,
   disableLink = false,
+  target,
+  rel,
 }: AvatarProps) {
-  const isBhoomija =
-    !authorSlug ||
-    authorSlug === 'bhoomija-khanna' ||
-    authorSlug === 'bhoomija' ||
-    (typeof src === 'string' && src.toLowerCase().includes('bhoomija')) ||
-    (alt && alt.toLowerCase().includes('bhoomija'));
+  const isUtkarsh =
+    authorSlug === 'utkarsh-mani-tripathi' ||
+    authorSlug === 'utkarsh' ||
+    (typeof src === 'string' && src.toLowerCase().includes('utkarsh')) ||
+    (alt && alt.toLowerCase().includes('utkarsh'));
 
-  const defaultAvatar = isBhoomija ? '/images/bhoomija-avatar.png' : SILHOUETTE;
+  const isBhoomija =
+    !isUtkarsh &&
+    (authorSlug === 'bhoomija-khanna' ||
+      authorSlug === 'bhoomija' ||
+      (typeof src === 'string' && src.toLowerCase().includes('bhoomija')) ||
+      (alt && alt.toLowerCase().includes('bhoomija')) ||
+      (!authorSlug && !href));
+
+  const defaultAvatar = isBhoomija
+    ? '/images/bhoomija-avatar.png'
+    : isUtkarsh
+    ? '/utkarsh-avatar.svg'
+    : SILHOUETTE;
+
   const [imgSrc, setImgSrc] = useState<string>(src || defaultAvatar);
+
+  const defaultUtkarshHref = 'https://utkarshmanitripathi.vercel.app';
 
   const resolvedHref =
     href ||
-    (authorSlug
+    (isUtkarsh
+      ? defaultUtkarshHref
+      : authorSlug
       ? getAuthorHref(authorSlug)
       : isBhoomija
       ? '/bhoomija'
       : undefined);
+
+  const isExternal =
+    Boolean(resolvedHref && (resolvedHref.startsWith('http://') || resolvedHref.startsWith('https://'))) ||
+    target === '_blank';
+
+  const resolvedTarget = target ?? (isExternal ? '_blank' : undefined);
+  const resolvedRel = rel ?? (resolvedTarget === '_blank' ? 'noopener noreferrer' : undefined);
 
   const imgElement = (
     <img
@@ -53,6 +80,21 @@ export default function Avatar({
   );
 
   if (!disableLink && resolvedHref) {
+    if (isExternal) {
+      return (
+        <a
+          href={resolvedHref}
+          target={resolvedTarget}
+          rel={resolvedRel}
+          className="inline-block transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none shrink-0"
+          title={`View ${alt} Profile`}
+          aria-label={`View ${alt} Profile`}
+        >
+          {imgElement}
+        </a>
+      );
+    }
+
     return (
       <Link
         href={resolvedHref}

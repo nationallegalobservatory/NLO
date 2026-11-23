@@ -1,37 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signSession, setSessionCookie } from '@/lib/cms/session';
+import { signSession, setSessionCookie, isAuthorizedCmsEmail, type CmsRole } from '@/lib/cms/session';
+import { auditCmsAuth } from '@/lib/cms/audit';
 
 export const dynamic = 'force-dynamic';
+
+const SESSION_COOKIE = 'nlo-cms-session';
+const SESSION_TTL_SECONDS = 14 * 24 * 60 * 60;
+
+function devLoginAllowed(): boolean {
+  return process.env.NODE_ENV !== 'production' || Boolean(process.env.ENABLE_DEV_LOGIN);
+}
+
+function resolveIdentity(searchParams: URLSearchParams, body?: {
+  email?: string;
+  name?: string;
+  role?: string;
+}) {
+  const email = (body?.email ?? searchParams.get('email') ?? 'bhoomija.k2810@gmail.com')
+    .trim()
+    .toLowerCase();
+  const name = (body?.name ?? searchParams.get('name') ?? 'Bhoomija Khanna').trim();
+  const roleParam = body?.role ?? searchParams.get('role') ?? 'owner';
+  const role: CmsRole = roleParam === 'editor' || roleParam === 'viewer' ? roleParam : 'owner';
+  return { email, name, role };
+}
 
 /**
  * POST /api/cms/auth/dev-login
  *
- * One-click development login for testing the CMS locally.
- * Disabled in production environments.
+ * Development-only sign-in for testing the CMS locally. Disabled in
+ * production unless ENABLE_DEV_LOGIN=true. The minted session still has to
+ * pass the authorized-identity gate in verifySession.
  */
 export async function POST(req: NextRequest) {
-  if (process.env.NODE_ENV === 'production' && !process.env.ENABLE_DEV_LOGIN) {
+  if (!devLoginAllowed()) {
     return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
   }
 
-  const { email, name, role } = (await req.json().catch(() => ({}))) as {
+  const body = (await req.json().catch(() => ({}))) as {
     email?: string;
     name?: string;
     role?: string;
   };
+  const { email, name, role } = resolveIdentity(new URL(req.url).searchParams, body);
 
-  const userEmail = email?.trim() || 'bhoomija.k2810@gmail.com';
-  const userName = name?.trim() || (userEmail.includes('utkarsh') ? 'Utkarsh Mani Tripathi' : 'Bhoomija Khanna');
-  const userRole = (role === 'editor' || role === 'viewer') ? role : 'owner';
+  if (!isAuthorizedCmsEmail(email)) {
+    await auditCmsAuth('login_failed', email, req);
+    return NextResponse.json({ error: 'FORBIDDEN_IDENTITY' }, { status: 403 });
+  }
 
   try {
-    const token = await signSession({ email: userEmail, name: userName, role: userRole });
+    const token = await signSession({ email, name, role });
     await setSessionCookie(token);
+    await auditCmsAuth('login_success', email, req);
 
-    return NextResponse.json({
-      ok: true,
-      user: { email: userEmail, name: userName, role: userRole },
-    });
+    return NextResponse.json({ ok: true, user: { email, name, role } });
   } catch (err) {
     return NextResponse.json(
       { error: 'SIGN_ERROR', message: (err as Error).message },
@@ -43,34 +66,38 @@ export async function POST(req: NextRequest) {
 /**
  * GET /api/cms/auth/dev-login
  *
- * Direct browser link that signs the session cookie and immediately redirects to /cms/dashboard.
+ * Direct browser link that signs the session cookie and redirects to /cms.
  */
 export async function GET(req: NextRequest) {
-  if (process.env.NODE_ENV === 'production' && !process.env.ENABLE_DEV_LOGIN) {
+  if (!devLoginAllowed()) {
     return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const email = searchParams.get('email') || 'utkarshmanitripathi2006@gmail.com';
-  const name = searchParams.get('name') || 'Utkarsh Mani Tripathi';
-  const role = searchParams.get('role') || 'owner';
-  const next = searchParams.get('next') || '/cms/dashboard';
+  const { email, name, role } = resolveIdentity(req.nextUrl.searchParams);
 
-  const userRole = (role === 'editor' || role === 'viewer') ? role : 'owner';
-  const token = await signSession({ email, name, role: userRole });
+  if (!isAuthorizedCmsEmail(email)) {
+    await auditCmsAuth('login_failed', email, req);
+    return NextResponse.json({ error: 'FORBIDDEN_IDENTITY' }, { status: 403 });
+  }
+
+  const rawNext = req.nextUrl.searchParams.get('next') || '/cms/dashboard';
+  const next = rawNext.startsWith('/cms') ? rawNext : '/cms/dashboard';
+
+  const token = await signSession({ email, name, role });
 
   const url = req.nextUrl.clone();
-  url.pathname = next.startsWith('/cms') ? next : '/cms/dashboard';
+  url.pathname = next;
   url.search = '';
 
   const res = NextResponse.redirect(url);
-  res.cookies.set('nlo-cms-session', token, {
+  res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
     path: '/',
-    maxAge: 14 * 24 * 60 * 60,
+    maxAge: SESSION_TTL_SECONDS,
   });
 
+  await auditCmsAuth('login_success', email, req);
   return res;
 }
