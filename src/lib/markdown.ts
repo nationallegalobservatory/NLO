@@ -6,7 +6,7 @@ import { marked, type Tokens } from 'marked';
 const contentDirectory = path.join(process.cwd(), 'content');
 const categoriesPath = path.join(contentDirectory, 'categories.json');
 
-// Configure marked options to include custom heading renderer with anchor IDs
+// Configure marked options to include custom heading renderer with anchor IDs and lazy-loading images
 const customRenderer = new marked.Renderer();
 customRenderer.heading = function ({ text, depth }: Tokens.Heading) {
   const slug = text
@@ -16,6 +16,19 @@ customRenderer.heading = function ({ text, depth }: Tokens.Heading) {
     .replace(/[\s_]+/g, '-');
   return `<h${depth} id="${slug}">${text}</h${depth}>`;
 };
+
+customRenderer.image = function ({ href, title, text }: Tokens.Image) {
+  const titleAttr = title ? ` title="${title}"` : '';
+  const altAttr = text ? ` alt="${text}"` : ' alt=""';
+  return `<img src="${href}"${altAttr}${titleAttr} loading="lazy" decoding="async" class="rounded-lg max-w-full h-auto my-6" />`;
+};
+
+// In-memory article cache to eliminate redundant disk I/O and markdown re-parsing
+interface CachedArticle {
+  mtime: number;
+  data: ArticleData;
+}
+const articleMemoryCache = new Map<string, CachedArticle>();
 
 marked.use({ renderer: customRenderer });
 
@@ -372,6 +385,12 @@ export async function getArticleBySlug(
     const filePath = path.join(contentDirectory, typeFolder, `${slug}.md`);
     if (!fs.existsSync(filePath)) return undefined;
 
+    const stats = fs.statSync(filePath);
+    const cached = articleMemoryCache.get(filePath);
+    if (cached && cached.mtime === stats.mtimeMs) {
+      return cached.data;
+    }
+
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data, content } = matter(fileContent);
 
@@ -383,7 +402,7 @@ export async function getArticleBySlug(
     const authorDetails = data.author ? getAuthorBySlug(data.author) : undefined;
     const bibliography = extractBibliographyEntries(content, Array.isArray(data.references) ? data.references : []);
 
-    return {
+    const result: ArticleData = {
       slug: data.slug || slug,
       type: data.type || 'research',
       format: data.format,
@@ -419,6 +438,13 @@ export async function getArticleBySlug(
       draft: data.draft || false,
       private: data.private || false,
     };
+
+    articleMemoryCache.set(filePath, {
+      mtime: stats.mtimeMs,
+      data: result,
+    });
+
+    return result;
   } catch (error) {
     console.error(`Error reading article ${typeFolder}/${slug}:`, error);
     return undefined;

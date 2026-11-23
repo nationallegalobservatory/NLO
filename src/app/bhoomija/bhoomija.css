@@ -19,7 +19,7 @@
 .bk-page .bk-block-title,
 .bk-page .bk-project-name,
 .bk-page .bk-quote-text {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
 }
 
 /* ─────────────────────────────────────────
@@ -39,7 +39,7 @@
 }
 
 .bk-nav-logo {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 13px;
   color: #7d1919;
   text-decoration: none;
@@ -220,7 +220,7 @@
 }
 
 .bk-type-word {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(48px, 7.5vw, 84px);
   line-height: 1.05;
   color: #7d1919;
@@ -700,7 +700,7 @@
   border-bottom: 1px solid rgba(125, 25, 25, 0.35);
 }
 .bk-quote-text {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(18px, 2.8vw, 28px);
   color: #efebe8;
   line-height: 1.45;
@@ -785,7 +785,7 @@
 }
 
 .bk-about-label {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: lowercase;
@@ -829,7 +829,7 @@
 }
 
 .bk-about-heading {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(28px, 3.5vw, 44px);
   color: #5c1212;
   margin: 0;
@@ -949,7 +949,7 @@
    SHARED SECTION LABEL (large)
 ───────────────────────────────────────── */
 .bk-section-label-lg {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(11px, 1.2vw, 13px);
   letter-spacing: 0.22em;
   text-transform: lowercase;
@@ -1018,7 +1018,7 @@
 }
 
 .bk-sticky-heading {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 30px;
   color: #7d1919;
   line-height: 1.2;
@@ -1026,7 +1026,7 @@
 }
 
 .bk-sticky-sub {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 15px;
   color: #5c1212;
   opacity: 0.7;
@@ -1098,7 +1098,7 @@
 }
 
 .bk-scrap-card-label {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 16px;
   color: #7d1919;
   margin: 0 0 4px;
@@ -1378,7 +1378,7 @@
 
 /* Title — always visible */
 .bk-pub-card-title {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(15px, 1.6vw, 19px);
   color: rgba(239, 235, 232, 0.8);
   line-height: 1.35;
@@ -1531,7 +1531,7 @@
 }
 
 .bk-lit-band-label {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: lowercase;
@@ -1559,7 +1559,7 @@
 
 /* Large display line variant */
 .bk-lit-line-lg {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(22px, 3.5vw, 42px);
   line-height: 1.3;
   color: rgba(239, 235, 232, 0.38);
@@ -1776,7 +1776,7 @@
 }
 
 .bk-reel-card-value {
-  font-family: 'Gloria Hallelujah', cursive;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive;
   font-size: clamp(16px, 2vw, 22px);
   color: rgba(239, 235, 232, 0.88);
   line-height: 1.3;

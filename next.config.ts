@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  compress: true,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
+  },
   /* config options here */
 
   // Bundle local markdown content into Vercel serverless functions.
@@ -31,6 +36,15 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
+      {
+        source: '/(images|certificates|fonts)/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [

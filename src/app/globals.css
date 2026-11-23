@@ -708,14 +708,14 @@ select {
 /* "NLO" lettering inside badge */
 .bhoomija-mode header .text-yellow-400 {
   color: #efebe8 !important;
-  font-family: 'Gloria Hallelujah', cursive !important;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive !important;
   font-size: 9px !important;
   letter-spacing: 0.18em !important;
 }
 /* "NATIONAL LEGAL OBSERVATORY" brand text */
 .bhoomija-mode header .font-serif {
   color: #7d1919 !important;
-  font-family: 'Gloria Hallelujah', cursive !important;
+  font-family: var(--font-gloria), 'Gloria Hallelujah', cursive !important;
   font-size: 13px !important;
   letter-spacing: 0.02em !important;
 }

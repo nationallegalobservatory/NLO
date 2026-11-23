@@ -566,7 +566,9 @@ create policy "cms_send_log_deny_all"
 
 -- Rate-limit RPC is callable only by service_role.
 revoke all on function public.cms_consume_magic_link_rate_limit(text, text, integer, integer)
-  from PUBLIC, anon, authenticated;
+  from PUBLIC;
+revoke all on function public.cms_consume_magic_link_rate_limit(text, text, integer, integer)
+  from anon, authenticated;
 grant execute on function public.cms_consume_magic_link_rate_limit(text, text, integer, integer)
   to service_role;
 
@@ -771,14 +773,13 @@ import type { NextResponse } from 'next/server';
 import {
   CMS_SESSION_COOKIE,
   CMS_SESSION_TTL_MS,
-  signSessionToken,
   verifySessionToken,
   type CmsSession,
 } from './sessionToken';
 
 export const SESSION_COOKIE = CMS_SESSION_COOKIE;
 export type { CmsSession };
-export { signSessionToken as signSession };
+export { signSessionToken } from './sessionToken';
 
 export class CmsAuthError extends Error {
   constructor(public code: 'UNAUTHENTICATED' | 'SESSION_EXPIRED' | 'FORBIDDEN') {
@@ -899,10 +900,16 @@ export function getCmsPublicOrigin(): string | null {
 export function safeCmsNextPath(value: string | null | undefined): string {
   const fallback = '/cms/dashboard';
   if (!value || typeof value !== 'string') return fallback;
-  if (!value.startsWith('/cms/') || value.includes('://') || value.includes('\\')) {
+  if (
+    !value.startsWith('/cms/') ||
+    value.includes('://') ||
+    value.includes('\\') ||
+    value.includes('%')
+  ) {
     return fallback;
   }
-  if (value === '/cms/login' || value.startsWith('/cms/login?')) return fallback;
+  const pathOnly = value.split('?')[0]?.split('#')[0] || '';
+  if (pathOnly === '/cms/login' || pathOnly.startsWith('/cms/login/')) return fallback;
   return value;
 }
 ```
@@ -964,16 +971,17 @@ export function isCmsBackendConfigured(): boolean {
 export function isCmsAuthConfigured(): boolean {
   if (!isCmsBackendConfigured()) return false;
 
-  const hasResend = Boolean(process.env.RESEND_API_KEY?.trim());
+  const hasResend = Boolean(
+    process.env.RESEND_API_KEY?.trim() && process.env.CMS_MAGIC_LINK_FROM?.trim(),
+  );
   const hasSmtp = Boolean(
     process.env.SMTP_HOST?.trim() &&
     process.env.SMTP_USER?.trim() &&
     process.env.SMTP_PASS?.trim() &&
-    process.env.CMS_SMTP_FROM?.trim(),
+    (process.env.CMS_SMTP_FROM?.trim() || process.env.CMS_MAGIC_LINK_FROM?.trim()),
   );
-  const hasFrom = Boolean(process.env.CMS_MAGIC_LINK_FROM?.trim() || process.env.CMS_SMTP_FROM?.trim());
 
-  return hasFrom && (hasResend || hasSmtp);
+  return hasResend || hasSmtp;
 }
 ```
 
@@ -989,7 +997,7 @@ import {
   verifySessionToken,
 } from '@/lib/cms/sessionToken';
 import { isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
-import { safeCmsNextPath } from '@/lib/cms/authSecurity';
+import { getCmsPublicOrigin, safeCmsNextPath } from '@/lib/cms/authSecurity';
 
 const PUBLIC_PAGE_PATHS = new Set(['/cms/login']);
 const PUBLIC_API_PATHS = new Set([
@@ -998,6 +1006,7 @@ const PUBLIC_API_PATHS = new Set([
   '/api/cms/auth/logout',
 ]);
 const DEV_LOGIN_PATH = '/api/cms/auth/dev-login';
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 function isCmsPath(pathname: string): boolean {
   return pathname === '/cms' || pathname.startsWith('/cms/') ||
@@ -1018,9 +1027,41 @@ function clearCookie(response: NextResponse): void {
   });
 }
 
+function allowedCmsOrigins(): Set<string> {
+  const origins = new Set<string>();
+  const publicOrigin = getCmsPublicOrigin();
+  if (publicOrigin) origins.add(publicOrigin);
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    try {
+      origins.add(new URL(process.env.NEXT_PUBLIC_SITE_URL).origin);
+    } catch {
+      // ignore malformed optional env
+    }
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    origins.add('http://localhost:3002');
+    origins.add('http://localhost:3000');
+    origins.add('http://127.0.0.1:3002');
+  }
+  return origins;
+}
+
+function checkCmsOrigin(request: NextRequest): NextResponse | null {
+  if (!MUTATING_METHODS.has(request.method)) return null;
+  if (!request.nextUrl.pathname.startsWith('/api/cms')) return null;
+  const origin = request.headers.get('origin');
+  if (!origin) return null; // non-browser client; SameSite=strict still applies
+  return allowedCmsOrigins().has(origin)
+    ? null
+    : NextResponse.json({ error: 'FORBIDDEN_ORIGIN' }, { status: 403 });
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (!isCmsPath(pathname)) return NextResponse.next();
+
+  const originRejection = checkCmsOrigin(request);
+  if (originRejection) return originRejection;
 
   if (pathname === DEV_LOGIN_PATH) {
     const devAllowed =
@@ -1034,17 +1075,6 @@ export async function proxy(request: NextRequest) {
 
   if (PUBLIC_PAGE_PATHS.has(pathname) || PUBLIC_API_PATHS.has(pathname)) {
     return NextResponse.next();
-  }
-
-  if (!isCmsBackendConfigured()) {
-    if (pathname.startsWith('/api/')) {
-      return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
-    }
-    const url = request.nextUrl.clone();
-    url.pathname = '/cms/login';
-    url.search = '';
-    url.searchParams.set('error', 'not_configured');
-    return NextResponse.redirect(url);
   }
 
   const token = request.cookies.get(CMS_SESSION_COOKIE)?.value;
@@ -1062,6 +1092,17 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  if (!isCmsBackendConfigured()) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'CMS_NOT_CONFIGURED' }, { status: 503 });
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = '/cms/login';
+    url.search = '';
+    url.searchParams.set('error', 'not_configured');
+    return NextResponse.redirect(url);
+  }
+
   return NextResponse.next();
 }
 
@@ -1070,9 +1111,11 @@ export const config = {
 };
 ```
 
-#### Legacy Edge middleware note
+#### Edge-runtime compatibility note
 
-If the team deliberately requires the deprecated Edge filename, keep `src/middleware.ts`, rename the export to `middleware`, and keep the same logic. Do **not** run both `middleware.ts` and `proxy.ts`. For this repository, `src/proxy.ts` is the recommended target because Next.js 16.2.7 documents `proxy` as the replacement and provides the Node runtime needed for `node:crypto`.
+`sessionToken.ts` above intentionally uses `node:crypto` and `Buffer` so signature checks can use `crypto.timingSafeEqual`. That module is compatible with `src/proxy.ts` because Next.js 16 `proxy` runs on the Node.js runtime.
+
+If the organization mandates the deprecated Edge `src/middleware.ts` filename, `node:crypto`/`Buffer` are not available there. In that case, implement a separate edge-safe verifier with Web Crypto (`crypto.subtle`) and a manual constant-time byte comparison, and keep `src/middleware.ts` as the only guard file. Do **not** run both `middleware.ts` and `proxy.ts`. For this repository, `src/proxy.ts` is the recommended target.
 
 ### 9.6 `POST /api/cms/auth/magic`
 
@@ -1080,6 +1123,7 @@ If the team deliberately requires the deprecated Edge filename, keep `src/middle
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'node:crypto';
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   getSupabaseAdmin,
@@ -1178,7 +1222,7 @@ export async function POST(req: NextRequest) {
   const tokenHash = hashToken(rawToken);
   const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS);
 
-  const { error: updateError } = await admin
+  const { data: updatedUser, error: updateError } = await admin
     .from('cms_users')
     .update({
       magic_link_token_hash: tokenHash,
@@ -1188,16 +1232,18 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString(),
     })
     .eq('email', CMS_OWNER_EMAIL)
-    .eq('status', 'active');
+    .eq('status', 'active')
+    .select('id')
+    .maybeSingle();
 
-  if (updateError) {
+  if (updateError || !updatedUser) {
     console.error('[cms/auth/magic] token update failed', updateError);
     await auditSafe(admin, {
       eventType: 'magic_token_update_failed',
       emailHash,
       ipHash,
       userAgentHash: uaHash,
-      metadata: { stage: 'token_update' },
+      metadata: { stage: 'token_update', reason: updateError ? 'update_error' : 'owner_missing_or_inactive' },
     });
     await enforceMinimumResponseDelay(startedAt);
     return NextResponse.json({ ok: true });
@@ -1224,25 +1270,48 @@ async function sendMagicLinkEmail(
   link: string,
   expiresAt: Date,
 ): Promise<boolean> {
-  const resendKey = process.env.RESEND_API_KEY;
-  const from = process.env.CMS_MAGIC_LINK_FROM;
-  if (!resendKey || !from) return false;
+  const subject = 'Your NLO Editorial CMS sign-in link';
+  const html = magicLinkEmail(link, expiresAt);
 
-  try {
-    const resend = new Resend(resendKey);
-    const { error } = await resend.emails.send({
-      from,
-      to: [to],
-      subject: 'Your NLO Editorial CMS sign-in link',
-      html: magicLinkEmail(link, expiresAt),
-    });
-    if (error) {
-      console.error('[cms/auth/magic] resend error', error);
+  const resendKey = process.env.RESEND_API_KEY;
+  const resendFrom = process.env.CMS_MAGIC_LINK_FROM;
+  if (resendKey && resendFrom) {
+    try {
+      const resend = new Resend(resendKey);
+      const { error } = await resend.emails.send({
+        from: resendFrom,
+        to: [to],
+        subject,
+        html,
+      });
+      if (error) {
+        console.error('[cms/auth/magic] resend error', error);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('[cms/auth/magic] resend send failed', err);
       return false;
     }
+  }
+
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  const smtpFrom = process.env.CMS_SMTP_FROM || process.env.CMS_MAGIC_LINK_FROM;
+  if (!smtpHost || !smtpUser || !smtpPass || !smtpFrom) return false;
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: { user: smtpUser, pass: smtpPass },
+    });
+    await transporter.sendMail({ from: smtpFrom, to, subject, html });
     return true;
   } catch (err) {
-    console.error('[cms/auth/magic] email send failed', err);
+    console.error('[cms/auth/magic] smtp send failed', err);
     return false;
   }
 }
@@ -1526,6 +1595,7 @@ Every protected `/cms/*` page must verify the session before reading CMS data:
 
 ```tsx
 import { readSession } from '@/lib/cms/session';
+import { isCmsBackendConfigured } from '@/lib/cms/supabaseAdmin';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -1533,6 +1603,7 @@ export const dynamic = 'force-dynamic';
 export default async function ProtectedCmsPage() {
   const session = await readSession();
   if (!session) redirect('/cms/login');
+  if (!isCmsBackendConfigured()) redirect('/cms/login?error=not_configured');
   // render protected content
 }
 ```
@@ -1601,16 +1672,18 @@ export default async function ProtectedCmsPage() {
 1. Add `src/lib/cms/sessionToken.ts`.
 2. Refactor `src/lib/cms/session.ts` to cookie helpers only.
 3. Add `src/lib/cms/authSecurity.ts`.
-4. Update `src/lib/cms/supabaseAdmin.ts` with strict `isCmsBackendConfigured()` / `isCmsAuthConfigured()`.
-5. Replace `src/middleware.ts` with `src/proxy.ts`.
-6. Rewrite `src/app/api/cms/auth/magic/route.ts`.
-7. Rewrite `src/app/api/cms/auth/callback/route.ts`.
-8. Rewrite `src/app/api/cms/auth/logout/route.ts`.
-9. Harden or delete `src/app/api/cms/auth/dev-login/route.ts`.
-10. Delete or disable `src/app/api/cms/auth/invite/route.ts`; remove team invite UI from Settings.
-11. Update every protected `/api/cms/*` handler to call `requireSession()` and remove role branches.
-12. Update every protected `/cms/*` page to call `readSession()`/`requireSession()` before data access.
-13. Remove silent local-store fallbacks for CMS mutations unless `NODE_ENV==='development'` and an explicit local flag is set.
+4. Refactor `src/lib/cms/audit.ts` to write only hashed identifiers, or remove it and use the route-local `auditSafe` helper.
+5. Remove `src/lib/cms/rateLimit.ts` and all imports; use the DB-backed RPC instead.
+6. Update `src/lib/cms/supabaseAdmin.ts` with strict `isCmsBackendConfigured()` / `isCmsAuthConfigured()`.
+7. Replace `src/middleware.ts` with `src/proxy.ts`.
+8. Rewrite `src/app/api/cms/auth/magic/route.ts`.
+9. Rewrite `src/app/api/cms/auth/callback/route.ts`.
+10. Rewrite `src/app/api/cms/auth/logout/route.ts`.
+11. Harden or delete `src/app/api/cms/auth/dev-login/route.ts`.
+12. Delete or disable `src/app/api/cms/auth/invite/route.ts`; remove team invite UI from Settings.
+13. Update every protected `/api/cms/*` handler to call `requireSession()` and remove role branches.
+14. Update every protected `/cms/*` page to call `readSession()`/`requireSession()` before data access.
+15. Remove silent local-store fallbacks for CMS mutations unless `NODE_ENV==='development'` and an explicit local flag is set.
 
 ### Phase 4 — Tests
 
@@ -1747,6 +1820,8 @@ limit 50;
 | `src/lib/cms/sessionToken.ts` | Add | Pure HMAC session token sign/verify |
 | `src/lib/cms/session.ts` | Refactor | Cookie helpers + `requireSession()` |
 | `src/lib/cms/authSecurity.ts` | Add | Email/IP/hash/jitter/origin/next sanitizers |
+| `src/lib/cms/audit.ts` | Refactor/remove | Replace raw PII audit with hashed `cms_auth_audit_logs` writes |
+| `src/lib/cms/rateLimit.ts` | Remove | Replace in-memory limiter with `cms_consume_magic_link_rate_limit` RPC |
 | `src/lib/cms/supabaseAdmin.ts` | Update | Strict fail-closed config checks |
 | `src/proxy.ts` | Add | Next.js 16 perimeter guard |
 | `src/middleware.ts` | Remove | Replaced by `proxy.ts` |

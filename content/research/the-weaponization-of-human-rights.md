@@ -10,14 +10,14 @@ format: "Research Article"
 author: "bhoomija-khanna"
 date: "2026-07-09"
 readingTime: "25 min read"
-coverImage: "/images/weaponization/cover.png"
+coverImage: "/images/weaponization/cover.webp"
 abstract: "An examination of how international human rights frameworks are selectively applied as instruments of geopolitical strategy — and what this selective morality means for the people the system was designed to protect."
 draft: false
 ---
 
 ## The Weaponization of Human Rights: When Morality Becomes a Geopolitical Tool
 
-![Image](/images/weaponization/image4.png)
+![Image](/images/weaponization/image4.webp)
 
 March 2022. The UN General Assembly votes 141 to 5 to condemn a violation of sovereignty. The speeches afterward are extraordinary. Aggression must never be rewarded. Borders must be respected. Nobody in that room sounds confused about right and wrong. Nobody hedges.
 
@@ -29,7 +29,7 @@ Once you sit with that question it doesn't really let go of you.
 
 Human rights was supposed to be the one place where power didn't get to write the rules. That was the whole point in 1948. A war had just shown the world exactly what happens when states decide certain humans matter less than others, and out of that came a document meant to draw a line no government could cross without paying for it. Life. Dignity. No torture. No arbitrary detention. Not negotiable, not contextual, not something you get to waive because of an alliance.
 
-![Image](/images/weaponization/image1.png)
+![Image](/images/weaponization/image1.webp)
 
 It's a beautiful document, and I mean that with zero irony. Read it slowly some time. Not like a lawyer hunting for clauses, like a person imagining what the world would look like if every government actually meant it.
 
@@ -65,7 +65,7 @@ Yemen. A war that has, by most humanitarian estimates, produced one of the worst
 
 Hypocrisy? Probably. The more useful question is what that hypocrisy does to the credibility of the whole apparatus.
 
-![Image](/images/weaponization/image5.png)
+![Image](/images/weaponization/image5.webp)
 
 International law and human rights doctrine were never really about enforcement mechanisms, if we're honest about it. The International Criminal Court has no army. The UN can't compel a permanent Security Council member to do anything it doesn't want to, because any of the five can simply veto action against themselves or their allies. The entire structure runs on legitimacy. On a shared belief that the rules apply to everyone, so even the powerful feel some cost, reputational if nothing else, for crossing them.
 
@@ -83,7 +83,7 @@ So where does that leave things.
 
 Somewhere harder than either "human rights are sacred and universal" or "human rights are a cynical tool." Both too clean. The truth lives in the friction between them, genuinely valuable and genuinely instrumentalized at the same time, and pretending only one of those is happening at any given moment is how you end up either naive or completely nihilistic.
 
-![Image](/images/weaponization/image3.png)
+![Image](/images/weaponization/image3.webp)
 
 Take the Responsibility to Protect doctrine, adopted by the UN in 2005, meant to establish that sovereignty isn't a shield behind which a government commits mass atrocities against its own people. In principle it closed a gap that let genocides like Rwanda's unfold while the world claimed it had no legal basis to intervene. In practice, R2P got invoked in Libya in a way many governments now think was stretched well past its mandate, and basically ignored in Syria, ignored with the Rohingya in Myanmar, ignored anywhere intervention would mean confronting a state with real military capacity or a powerful patron behind it.
 
@@ -91,7 +91,7 @@ Myanmar is worth pausing on, because it shows something specific about how visib
 
 Which brings up something underdiscussed, media framing, and how it decides which victims even become legible to a global audience in the first place. A victim needs a story a newsroom can tell efficiently. Images that translate. A narrative arc the audience already recognizes. Ukraine slotted into an existing Cold War template almost instantly, familiar aggressor, familiar sympathetic victim, familiar stakes. Sudan doesn't fit any template most Western newsrooms keep on hand. Neither does the Democratic Republic of Congo, where a conflict that's killed millions over decades gets, in any given month, a fraction of the coverage one week of a more legible war receives.
 
-![Image](/images/weaponization/image2.png)
+![Image](/images/weaponization/image2.webp)
 
 Visibility isn't a neutral reflection of severity. It's manufactured. Partly by algorithms rewarding engagement. Partly by editorial decisions about what audiences will find compelling. Partly by government messaging operations working, actively, to keep some stories lit and others in the dark.
 

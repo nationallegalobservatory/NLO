@@ -150,7 +150,7 @@ const PUBLICATIONS = [
     title: 'Manufacturing Consent: How Political Narratives Are Engineered in India',
     desc: 'Examines the mechanisms through which political consent is manufactured in India — from historical propaganda techniques to modern algorithmic amplification.',
     href: '/publications/research/manufacturing-consent',
-    image: '/images/manufacturing.png',
+    image: '/images/manufacturing.webp',
     tag: 'NLO Research Desk · June 2026',
     readOnline: true,
     comingSoon: false,
@@ -160,7 +160,7 @@ const PUBLICATIONS = [
     title: 'Digital Self-Defence Handbook',
     desc: 'Practical guidance on navigating digital safety, privacy, and self-defence in online spaces, authored and published by Bhoomija Khanna.',
     href: 'https://media.licdn.com/dms/document/media/v2/D561FAQGL95AefM2ugw/feedshare-document-sanitized-pdf/B56Z6i.cRrJsA8-/0/1780850740601?e=1782990000&v=beta&t=QP1vhu-bMBBqCRfHDG9fcUc1E3Rb5Kqiit0Lve9GTWU',
-    image: '/images/digital-self-defence.png',
+    image: '/images/digital-self-defence.webp',
     tag: 'NLO · 2025',
     readOnline: true,
     comingSoon: false,
@@ -367,14 +367,6 @@ export default function BhoomijaCVClient() {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add('bhoomija-mode');
-    const FONT_ID = 'gloria-hallelujah-font';
-    if (!document.getElementById(FONT_ID)) {
-      const link = document.createElement('link');
-      link.id = FONT_ID;
-      link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap';
-      document.head.appendChild(link);
-    }
     return () => root.classList.remove('bhoomija-mode');
   }, []);
 
@@ -408,7 +400,7 @@ export default function BhoomijaCVClient() {
         </div>
         <div className="bk-hero-right">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/bhoomija-desk.png" alt="Bhoomija Khanna — Legal Research Desk" className="bk-hero-photo" />
+          <img src="/images/bhoomija-desk.webp" alt="Bhoomija Khanna — Legal Research Desk" className="bk-hero-photo" />
         </div>
       </section>
 

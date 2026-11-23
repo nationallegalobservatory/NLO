@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono, Playfair_Display, Source_Serif_4 } from 'next/font/google';
+import { Inter, JetBrains_Mono, Playfair_Display, Source_Serif_4, Gloria_Hallelujah } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '../components/ThemeProvider';
 import Header from '../components/Header';
@@ -30,6 +30,13 @@ const sourceSerif = Source_Serif_4({
 
 const jetBrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const gloriaHallelujah = Gloria_Hallelujah({
+  weight: '400',
+  variable: '--font-gloria',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -161,7 +168,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable} ${sourceSerif.variable} ${jetBrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${playfair.variable} ${sourceSerif.variable} ${jetBrainsMono.variable} ${gloriaHallelujah.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
