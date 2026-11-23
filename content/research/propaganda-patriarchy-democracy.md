@@ -2,10 +2,10 @@
 slug: propaganda-patriarchy-democracy
 type: research
 format: post
+draft: true
 title: "Gender, Propaganda and Patriarchal Power in Indian Democratic Politics"
 author: bhoomija-khanna
 date: "2026-11-27"
-publishAt: "2026-11-27T18:00:00+05:30"
 categories:
   - constitutional-law
   - human-rights
